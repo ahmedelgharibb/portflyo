@@ -2,7 +2,7 @@ name: Upload Teacher Website
 
 on:
   workflow_dispatch:  # Allows manual trigger
-  repository_dispatch:  # Allows external trigger from JavaScript
+  repository_dispatch:  # Allows JavaScript to trigger it
     types: [upload-teacher]
 
 jobs:
@@ -11,11 +11,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
 
       - name: Configure Git
         run: |
@@ -32,13 +27,12 @@ jobs:
 
       - name: Ensure Git Detects Changes
         run: |
-          echo "# Auto-generated update" >> .github/update.log  # Append timestamp to force change
+          echo "# Auto-generated update $(date)" >> .github/update.log  # Append timestamp to force change
 
       - name: Commit and Push Changes
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Uses GitHub's built-in token
         run: |
           git add .
           git commit -m "Updated teacher site for ${{ github.event.client_payload.teacher_name }}" || echo "No changes to commit"
           git push || echo "Nothing new to push"
-
