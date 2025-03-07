@@ -1,0 +1,36 @@
+name: Upload Teacher Website
+
+on:
+  workflow_dispatch:  # Allows manual trigger
+  repository_dispatch:  # Allows external trigger from JavaScript
+    types: [upload-teacher]
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Create new teacher folder
+        run: |
+          mkdir -p teacher/${{ github.event.client_payload.teacher_name }}
+          echo "${{ github.event.client_payload.index_html }}" | base64 --decode > teacher/${{ github.event.client_payload.teacher_name }}/index.html
+          echo "${{ github.event.client_payload.script_js }}" | base64 --decode > teacher/${{ github.event.client_payload.teacher_name }}/script.js
+          echo "${{ github.event.client_payload.styles_css }}" | base64 --decode > teacher/${{ github.event.client_payload.teacher_name }}/styles.css
+
+      - name: Commit and Push Changes
+        run: |
+          git add teacher/${{ github.event.client_payload.teacher_name }}
+          git commit -m "Added teacher site for ${{ github.event.client_payload.teacher_name }}"
+          git push
