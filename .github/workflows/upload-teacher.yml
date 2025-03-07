@@ -24,13 +24,17 @@ jobs:
 
       - name: Create new teacher folder
         run: |
-          mkdir -p teacher/${{ github.event.client_payload.teacher_name }}
-          echo "${{ github.event.client_payload.index_html }}" | base64 --decode > teacher/${{ github.event.client_payload.teacher_name }}/index.html
-          echo "${{ github.event.client_payload.script_js }}" | base64 --decode > teacher/${{ github.event.client_payload.teacher_name }}/script.js
-          echo "${{ github.event.client_payload.styles_css }}" | base64 --decode > teacher/${{ github.event.client_payload.teacher_name }}/styles.css
+          TEACHER_DIR="teacher/${{ github.event.client_payload.teacher_name }}"
+          mkdir -p $TEACHER_DIR
+          echo "${{ github.event.client_payload.index_html }}" | base64 --decode > $TEACHER_DIR/index.html
+          echo "${{ github.event.client_payload.script_js }}" | base64 --decode > $TEACHER_DIR/script.js
+          echo "${{ github.event.client_payload.styles_css }}" | base64 --decode > $TEACHER_DIR/styles.css
 
       - name: Commit and Push Changes
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}  # Token stored securely in GitHub Secrets
         run: |
+          git remote set-url origin https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}
           git add teacher/${{ github.event.client_payload.teacher_name }}
           git commit -m "Added teacher site for ${{ github.event.client_payload.teacher_name }}"
-          git push
+          git push origin main
