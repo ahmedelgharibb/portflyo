@@ -64,6 +64,7 @@ body {
     color: var(--text-color);
 }
 
+
 .container {
     width: 90%;
     max-width: 1200px;
@@ -544,10 +545,5 @@ body.edit-mode {
     
     .teaching-grid {
         grid-template-columns: 1fr; /* Switch to 1 column on smaller screens */
-    }
-}
-
-    nav ul li {
-        margin: 10px 0;
     }
 }
