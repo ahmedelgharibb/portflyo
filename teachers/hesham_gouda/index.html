@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Hesham Gouda - Education Portfolio</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Password Entry Overlay -->
+    <div id="password-overlay" class="edit-overlay">
+        <div class="password-modal">
+            <h2>Enter Admin Password</h2>
+            <input type="password" id="admin-password" placeholder="Enter password">
+            <div class="btn-container">
+                <button class="btn back-btn" onclick="hidePasswordOverlay()">Back</button>
+                <button class="btn" onclick="checkPassword()">Submit</button>
+            </div>
+            <p id="password-error" style="color: red;"></p>
+        </div>
+    </div>
+
+    <!-- Theme Selector Overlay - Will be shown in edit mode -->
+    <div id="theme-selector-panel" class="theme-selector-panel" style="display: none;">
+        <h3>Select Website Theme</h3>
+        <div class="theme-selector">
+            <div class="theme-option green active" data-theme="default" title="Green Theme"></div>
+            <div class="theme-option blue" data-theme="blue" title="Blue Theme"></div>
+            <div class="theme-option purple" data-theme="purple" title="Purple Theme"></div>
+            <div class="theme-option dark" data-theme="dark" title="Dark Theme"></div>
+        </div>
+    </div>
+
+    <!-- Save Changes Button -->
+    <button id="save-changes-btn" class="save-changes-btn" onclick="saveChanges()" style="display: none;">
+        Save Changes
+    </button>
+    
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <div>
+                    <h1>Dr. Aly Wael</h1>
+                    <p>Igcse Biology Teacher</p>
+                </div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#hero">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#services">Expertise</a></li>
+                    <li><a href="#teaching-locations">Teaching Locations</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section id="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2>Inspiring Young Minds</h2>
+                <p>Empowering students through engaging and transformative education.</p>
+                <a href="#contact" class="btn">Book Consultation</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-image">
+                    <img src="https://ahmedelgharibb.github.io/portflyo/teachers/template/Screenshot%202025-03-05%20at%2012.10.50%20AM.png" alt="Teacher Picture">
+                </div>
+                <div class="about-text">
+                    <h2>About Dr. Aly Wael</h2>
+                    <p>Mr Aly Wael is an experienced high school English teacher with over 12 years of dedicated service in education. She specializes in creating dynamic, student-centered learning environments that foster critical thinking, creativity, and personal growth.</p>
+                    <p>With a Master's in Education from Columbia University and multiple teaching awards, Mr. Aly has developed innovative curriculum strategies that engage students and make learning both challenging and enjoyable.</p>
+                    <div class="doctor-info">
+                        <div class="info-item">
+                            <p><span>Courses Teaching:</span> Biology O-Level , Biology AS , Biology A2 , Combined Science O-Level</p>
+                        </div>
+                        <div class="info-item">
+                            <p><span>Experience:</span> 7+ Years</p>
+                        </div>
+                        <div class="info-item">
+                            <p><span>Education:</span> Kasr AL Ainy Uiniversity</p>
+                        </div>
+                        <div class="info-item">
+                            <p><span>Number of A* and A's last session: </span> </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services">
+        <div class="container">
+            <h2>Teaching Expertise</h2>
+            <div class="services-grid">
+                <div class="service">
+                    <div class="service-icon"><i class="fas fa-book-open"></i></div>
+                    <div class="service-content">
+                        <h3>Curriculum Development</h3>
+                        <p>Designing innovative and engaging learning experiences that challenge and inspire students across various grade levels and learning styles.</p>
+                    </div>
+                </div>
+                <div class="service">
+                    <div class="service-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                    <div class="service-content">
+                        <h3>Academic Mentorship</h3>
+                        <p>Providing personalized guidance and support to help students develop critical thinking skills, academic confidence, and lifelong learning habits.</p>
+                    </div>
+                </div>
+                <div class="service">
+                    <div class="service-icon"><i class="fas fa-trophy"></i></div>
+                    <div class="service-content">
+                        <h3>Advanced Preparation</h3>
+                        <p>Specialized coaching for AP Literature, college application essays, and advanced writing techniques to prepare students for future academic success.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="teaching-locations">
+        <div class="container">
+            <h2>Teaching Locations</h2>
+            <p>Here are the schools, centers, and online platforms where Dr. Aly Wael teaches:</p>
+    
+            <!-- Schools Section -->
+            <div class="teaching-section">
+                <h3>Schools</h3>
+                <div class="teaching-grid">
+                    <div class="teaching-item">Lincoln High School</div>
+                    <div class="teaching-item">Greenwood Academy</div>
+                    <div class="teaching-item">Sunrise International School</div>
+                    <div class="teaching-item">Cityville Preparatory</div>
+                    <div class="teaching-item">Bright Future School</div>
+                    <div class="teaching-item">Golden Gate High School</div>
+                    <div class="teaching-item">Maplewood College</div>
+                    <div class="teaching-item">Riverside Secondary School</div>
+                    <div class="teaching-item">Pinecrest Academy</div>
+                    <div class="teaching-item">Horizon International School</div>
+                </div>
+            </div>
+    
+            <!-- Centers Section -->
+            <div class="teaching-section">
+                <h3>Centers</h3>
+                <div class="teaching-grid">
+                    <div class="teaching-item">Cityville Learning Center</div>
+                    <div class="teaching-item">Bright Minds Tutoring</div>
+                    <div class="teaching-item">Future Leaders Academy</div>
+                    <div class="teaching-item">Knowledge Hub</div>
+                    <div class="teaching-item">Excel Education Center</div>
+                    <div class="teaching-item">Star Tutors</div>
+                    <div class="teaching-item">EduCare Learning</div>
+                    <div class="teaching-item">Success Pathways</div>
+                    <div class="teaching-item">Inspire Tutoring Center</div>
+                    <div class="teaching-item">NextGen Learning</div>
+                </div>
+            </div>
+    
+            <!-- Online Platforms Section -->
+            <div class="teaching-section">
+                <h3>Online Platforms</h3>
+                <div class="teaching-grid">
+                    <div class="teaching-item">Zoom Classes</div>
+                    <div class="teaching-item">Google Classroom</div>
+                    <div class="teaching-item">Microsoft Teams</div>
+                    <div class="teaching-item">Udemy</div>
+                    <div class="teaching-item">Coursera</div>
+                    <div class="teaching-item">Khan Academy</div>
+                    <div class="teaching-item">Edmodo</div>
+                    <div class="teaching-item">Skype Tutoring</div>
+                    <div class="teaching-item">Webex</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="container">
+            <h2>Get In Touch</h2>
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h3>Contact Information</h3>
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fas fa-phone"></i></div>
+                        <div class="contact-details">
+                            <h4>Phone</h4>
+                            <p>(555) 987-6543</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                        <div class="contact-details">
+                            <h4>Email</h4>
+                            <p>Dr. Aly Wael</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fas fa-school"></i></div>
+                        <div class="contact-details">
+                            <h4>School Address</h4>
+                            <p>Lincoln High School<br>456 Education Lane<br>Suite 200<br>Cityville, State 67890</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fas fa-clock"></i></div>
+                        <div class="contact-details">
+                            <h4>Consultation Hours</h4>
+                            <p>Monday - Friday: 2:30 PM - 4:30 PM<br>Saturday: By Appointment<br>Sunday: Closed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <form>
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" class="form-control" placeholder="Your full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" class="form-control" placeholder="Your email address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" class="form-control" placeholder="Your phone number">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" class="form-control" placeholder="How can I help you?" required></textarea>
+                        </div>
+                        <button type="submit" class="btn">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="logo">
+                <img href="https://www.instagram.com/portflyo.co/" src="https://ahmedelgharibb.github.io/portflyo/teachers/template/Screenshot%202025-03-04%20at%2011.39.20%20PM.png" alt="Logo">
+                <p>Developed by Portflyo</p>
+            </div>
+            
+            <div class="social-links">
+                <a href="https://www.instagram.com/portflyo.co/" class="social-link"><i class="fab fa-instagram"></i></a>
+            </div>
+            <p class="copyright">&copy; 2025 Dr Aly wael. All rights reserved.</p>
+            
+            <!-- Edit Information Button (moved to bottom) -->
+            <button id="edit-info-bottom-btn" class="edit-info-bottom-btn" onclick="showPasswordOverlay()">
+                Edit Information
+            </button>
+        </div>
+    </footer>
+    
+    <script src="script.js"></script>
+</body>
+</html>
