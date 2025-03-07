@@ -2,6 +2,7 @@ const express = require('express');
 const { Octokit } = require('@octokit/rest');
 const dotenv = require('dotenv');
 const path = require('path');
+const cors = require('cors');
 
 // Load environment variables
 dotenv.config();
@@ -21,13 +22,20 @@ const octokit = new Octokit({
 });
 
 // Middleware
+app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public')); // Serve static files
 
 // API endpoint to create teacher website
 app.post('/api/create-teacher-website', async (req, res) => {
   try {
+    // Set Content-Type header explicitly
+    res.setHeader('Content-Type', 'application/json');
+    
     const { name, subject, slug } = req.body;
+    
+    console.log("Received request:", { name, subject, slug });
     
     // Validate inputs
     if (!name || !subject || !slug) {
@@ -83,14 +91,21 @@ app.post('/api/create-teacher-website', async (req, res) => {
     
     // Return success with website URL
     const websiteUrl = `https://${GITHUB_OWNER}.github.io/${GITHUB_REPO}/teachers/${slug}/`;
-    res.status(201).json({
+    
+    console.log("Success response:", { 
+      message: "Teacher website created successfully",
+      slug: slug,
+      websiteUrl: websiteUrl
+    });
+    
+    return res.status(201).json({
       message: "Teacher website created successfully",
       slug: slug,
       websiteUrl: websiteUrl
     });
   } catch (error) {
     console.error("Error creating teacher website:", error);
-    res.status(500).json({ message: "Failed to create teacher website" });
+    return res.status(500).json({ message: "Failed to create teacher website: " + error.message });
   }
 });
 
@@ -186,6 +201,14 @@ async function triggerGitHubAction(slug, name) {
     throw new Error("Failed to trigger deployment workflow");
   }
 }
+
+// Handle 404s
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ message: "API endpoint not found" });
+  }
+  next();
+});
 
 // Serve frontend for any other routes
 app.get('*', (req, res) => {
