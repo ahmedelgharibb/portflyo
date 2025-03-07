@@ -12,29 +12,35 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <body>
-        <!-- Edit Information Button -->
-        <button id="edit-info-top-btn" class="edit-info-top-btn" onclick="showPasswordOverlay()">
-            Edit Information
-        </button>
-    
-        <!-- Password Entry Overlay -->
-        <div id="password-overlay" class="edit-overlay">
-            <div class="password-modal">
-                <h2>Enter Admin Password</h2>
-                <input type="password" id="admin-password" placeholder="Enter password">
-                <div class="btn-container">
-                    <button class="btn back-btn" onclick="hidePasswordOverlay()">Back</button>
-                    <button class="btn" onclick="checkPassword()">Submit</button>
-                </div>
-                <p id="password-error" style="color: red;"></p>
+    <!-- Password Entry Overlay -->
+    <div id="password-overlay" class="edit-overlay">
+        <div class="password-modal">
+            <h2>Enter Admin Password</h2>
+            <input type="password" id="admin-password" placeholder="Enter password">
+            <div class="btn-container">
+                <button class="btn back-btn" onclick="hidePasswordOverlay()">Back</button>
+                <button class="btn" onclick="checkPassword()">Submit</button>
             </div>
+            <p id="password-error" style="color: red;"></p>
         </div>
+    </div>
+
+    <!-- Theme Selector Overlay - Will be shown in edit mode -->
+    <div id="theme-selector-panel" class="theme-selector-panel" style="display: none;">
+        <h3>Select Website Theme</h3>
+        <div class="theme-selector">
+            <div class="theme-option green active" data-theme="default" title="Green Theme"></div>
+            <div class="theme-option blue" data-theme="blue" title="Blue Theme"></div>
+            <div class="theme-option purple" data-theme="purple" title="Purple Theme"></div>
+            <div class="theme-option dark" data-theme="dark" title="Dark Theme"></div>
+        </div>
+    </div>
+
+    <!-- Save Changes Button -->
+    <button id="save-changes-btn" class="save-changes-btn" onclick="saveChanges()" style="display: none;">
+        Save Changes
+    </button>
     
-        <!-- Save Changes Button -->
-        <button id="save-changes-btn" class="save-changes-btn" onclick="saveChanges()" style="display: none;">
-            Save Changes
-        </button>
     <header>
         <div class="container header-container">
             <div class="logo">
@@ -55,7 +61,6 @@
         </div>
     </header>
 
-
     <section id="hero">
         <div class="container">
             <div class="hero-content">
@@ -70,7 +75,7 @@
         <div class="container">
             <div class="about-content">
                 <div class="about-image">
-                    <img src="https://ahmedelgharibb.github.io/portflyo/teachers/template/Screenshot%202025-03-05%20at%2012.10.50%20AM.png" alt="Teacher Pic">
+                    <img src="/Users/ahmedmahmoud/Desktop/Byte/portflyo/teacher/Screenshot 2025-03-05 at 12.10.50 AM.png" alt="Ms. Emily Rodriguez">
                 </div>
                 <div class="about-text">
                     <h2>About Dr. Aly Wael</h2>
@@ -176,7 +181,6 @@
                     <div class="teaching-item">Edmodo</div>
                     <div class="teaching-item">Skype Tutoring</div>
                     <div class="teaching-item">Webex</div>
-                
                 </div>
             </div>
         </div>
@@ -245,7 +249,7 @@
     <footer>
         <div class="container footer-content">
             <div class="logo">
-                <img href="https://www.instagram.com/portflyo.co/" src="https://ahmedelgharibb.github.io/portflyo/teachers/template/Screenshot%202025-03-04%20at%2011.39.20%20PM.png" alt="Logo">
+                <img href="https://www.instagram.com/portflyo.co/" src="/Users/ahmedmahmoud/Desktop/Byte/portflyo/teacher/Screenshot 2025-03-04 at 11.39.20 PM.png" alt="Logo">
                 <p>Developed by Portflyo</p>
             </div>
             
@@ -256,105 +260,14 @@
                 <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
             </div>
             <p class="copyright">&copy; 2025 Dr Aly wael. All rights reserved.</p>
+            
+            <!-- Edit Information Button (moved to bottom) -->
+            <button id="edit-info-bottom-btn" class="edit-info-bottom-btn" onclick="showPasswordOverlay()">
+                Edit Information
+            </button>
         </div>
-        
     </footer>
-    <script>
-        let isEditMode = false;
-
-        function showPasswordOverlay() {
-            document.getElementById('password-overlay').style.display = 'flex';
-        }
-
-        function hidePasswordOverlay() {
-            document.getElementById('password-overlay').style.display = 'none';
-        }
-
-        function checkPassword() {
-            const passwordInput = document.getElementById('admin-password');
-            const passwordError = document.getElementById('password-error');
-
-            if (passwordInput.value === 'admin123') {
-                document.getElementById('password-overlay').style.display = 'none';
-                enableEditMode();
-            } else {
-                passwordError.textContent = 'Incorrect password. Please try again.';
-            }
-        }
-
-        function enableEditMode() {
-            isEditMode = true;
-            document.getElementById('save-changes-btn').style.display = 'block';
-
-            // Make all text elements editable
-            const editableElements = document.querySelectorAll('h1, h2, p, span, .logo p');
-            editableElements.forEach(el => {
-                el.setAttribute('contenteditable', 'true');
-                el.classList.add('edit-mode-input');
-            });
-
-            // Enable editing for teaching locations
-            enableTeachingLocationsEdit();
-        }
-
-        function enableTeachingLocationsEdit() {
-            const teachingSections = document.querySelectorAll('.teaching-section');
-            teachingSections.forEach(section => {
-                const grid = section.querySelector('.teaching-grid');
-                
-                // Add remove button to existing locations
-                const locations = grid.querySelectorAll('.teaching-item');
-                locations.forEach(location => {
-                    const removeBtn = document.createElement('button');
-                    removeBtn.textContent = 'Remove';
-                    removeBtn.classList.add('remove-location');
-                    removeBtn.onclick = () => location.remove();
-                    location.appendChild(removeBtn);
-                });
-
-                // Add "Add New Location" button
-                const addButton = document.createElement('button');
-                addButton.textContent = 'Add New Location';
-                addButton.classList.add('add-new-location');
-                addButton.onclick = () => {
-                    const newLocation = document.createElement('div');
-                    newLocation.classList.add('teaching-item', 'edit-mode-input');
-                    newLocation.setAttribute('contenteditable', 'true');
-                    newLocation.textContent = 'New Location';
-                    
-                    const removeBtn = document.createElement('button');
-                    removeBtn.textContent = 'Remove';
-                    removeBtn.classList.add('remove-location');
-                    removeBtn.onclick = () => newLocation.remove();
-                    
-                    newLocation.appendChild(removeBtn);
-                    grid.appendChild(newLocation);
-                };
-                
-                section.appendChild(addButton);
-            });
-        }
-
-        function saveChanges() {
-            if (isEditMode) {
-                // Remove edit-related elements and styling
-                const editableElements = document.querySelectorAll('[contenteditable="true"]');
-                editableElements.forEach(el => {
-                    el.setAttribute('contenteditable', 'false');
-                    el.classList.remove('edit-mode-input');
-                });
-
-                // Remove remove buttons and add new location buttons
-                document.querySelectorAll('.remove-location').forEach(btn => btn.remove());
-                document.querySelectorAll('.add-new-location').forEach(btn => btn.remove());
-
-                // Hide save changes button
-                document.getElementById('save-changes-btn').style.display = 'none';
-                isEditMode = false;
-
-                alert('Changes saved successfully!');
-            }
-        }
-    </script>
+    
+    <script src="script.js"></script>
 </body>
 </html>
