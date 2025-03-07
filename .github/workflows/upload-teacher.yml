@@ -30,11 +30,15 @@ jobs:
           echo "${{ github.event.client_payload.script_js }}" | base64 --decode > $TEACHER_DIR/script.js
           echo "${{ github.event.client_payload.styles_css }}" | base64 --decode > $TEACHER_DIR/styles.css
 
+      - name: Ensure Git Detects Changes
+        run: |
+          echo "# Auto-generated update" >> .github/update.log  # Append timestamp to force change
+
       - name: Commit and Push Changes
         env:
-          GH_PAT: ${{ secrets.GH_PAT }}  # Token stored securely in GitHub Secrets
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git remote set-url origin https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}
-          git add teacher/${{ github.event.client_payload.teacher_name }}
-          git commit -m "Added teacher site for ${{ github.event.client_payload.teacher_name }}"
-          git push origin main
+          git add .
+          git commit -m "Updated teacher site for ${{ github.event.client_payload.teacher_name }}" || echo "No changes to commit"
+          git push || echo "Nothing new to push"
+
