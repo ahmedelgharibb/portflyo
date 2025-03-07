@@ -35,7 +35,8 @@ document.addEventListener("DOMContentLoaded", function() {
             const response = await fetch('/api/create-teacher-website', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify({
                     name: teacherName,
@@ -44,12 +45,17 @@ document.addEventListener("DOMContentLoaded", function() {
                 })
             });
 
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || "Failed to create website");
+            // Check if response is valid JSON
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new Error("Server returned non-JSON response");
             }
             
             const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to create website");
+            }
             
             // Show success message and website link
             showStatus(`Website for ${teacherName} created successfully!`, "success");
