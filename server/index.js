@@ -55,7 +55,7 @@ app.post('/update-content', async (req, res) => {
     }
     
     try {
-        if (!GITHUB_TOKEN) {
+        if (!MY_GITHUB_TOKEN) {
             return res.status(500).send('GitHub token not configured');
         }
         
