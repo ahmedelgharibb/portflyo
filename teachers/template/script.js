@@ -1,9 +1,11 @@
+const BACKEND_URL = 'https://portflyo-hp9y.vercel.app'; // Replace with your Vercel backend URL
+
 let isEditMode = false;
 
-// Function to fetch content from GitHub
+// Function to fetch content from GitHub via backend
 async function fetchContent() {
     try {
-        const response = await fetch('/fetch-content');
+        const response = await fetch(`${BACKEND_URL}/fetch-content`);
         const content = await response.text();
         document.getElementById('content-container').innerHTML = content;
         console.log("Content fetched successfully from GitHub");
@@ -12,10 +14,10 @@ async function fetchContent() {
     }
 }
 
-// Function to update content on GitHub
+// Function to update content on GitHub via backend
 async function updateContent(content) {
     try {
-        const response = await fetch('/update-content', {
+        const response = await fetch(`${BACKEND_URL}/update-content`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
