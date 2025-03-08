@@ -695,7 +695,506 @@ function enableEditMode() {
     // Enable editing for teaching locations
     enableTeachingLocationsEdit();
 }
+// Add these functions to your script.js file
 
+// Configuration for cloud storage
+const CLOUD_STORAGE_URL = 'YOUR_API_ENDPOINT'; // Replace with your actual API endpoint
+let syncEnabled = false;
+
+// Function to initialize cloud sync
+function initCloudSync() {
+    // Check if cloud sync is enabled in settings
+    readFromDb('settings', 'cloudSyncEnabled')
+        .then(enabled => {
+            syncEnabled = enabled === true;
+            if (syncEnabled) {
+                console.log("Cloud sync is enabled");
+                // Perform initial sync on startup
+                syncFromCloud();
+            }
+        })
+        .catch(err => {
+            console.error("Error checking cloud sync setting:", err);
+        });
+}
+
+// Function to enable/disable cloud sync
+function toggleCloudSync(enabled) {
+    syncEnabled = enabled;
+    writeToDb('settings', 'cloudSyncEnabled', enabled)
+        .then(() => {
+            console.log("Cloud sync setting updated:", enabled);
+            if (enabled) {
+                // If enabling, do an immediate sync to cloud
+                syncToCloud();
+            }
+        })
+        .catch(err => {
+            console.error("Failed to update cloud sync setting:", err);
+        });
+}
+
+// Function to sync local data to cloud
+function syncToCloud() {
+    if (!syncEnabled) return;
+    
+    console.log("Syncing data to cloud...");
+    
+    // 1. Collect all data to sync
+    Promise.all([
+        readFromDb('settings', 'theme'),
+        readFromDb('settings', 'adminPassword'),
+        readFromDb('images', 'profile-photo'),
+        readFromDb('content', 'editableContent'),
+        readFromDb('content', 'teachingData')
+    ])
+    .then(([theme, adminPassword, profilePhoto, editableContent, teachingData]) => {
+        // Create payload with all data
+        const payload = {
+            lastUpdated: new Date().toISOString(),
+            data: {
+                settings: {
+                    theme: theme,
+                    adminPassword: adminPassword
+                },
+                images: {
+                    'profile-photo': profilePhoto
+                },
+                content: {
+                    editableContent: editableContent,
+                    teachingData: teachingData
+                }
+            }
+        };
+        
+        // 2. Send data to cloud storage
+        fetch(CLOUD_STORAGE_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Cloud sync failed: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Cloud sync successful:", data);
+            // Save the sync timestamp
+            writeToDb('settings', 'lastSyncTime', new Date().toISOString());
+        })
+        .catch(err => {
+            console.error("Cloud sync error:", err);
+        });
+    })
+    .catch(err => {
+        console.error("Error collecting data for cloud sync:", err);
+    });
+}
+
+// Function to sync from cloud to local
+function syncFromCloud() {
+    if (!syncEnabled) return;
+    
+    console.log("Syncing data from cloud...");
+    
+    // Get the last sync timestamp
+    readFromDb('settings', 'lastSyncTime')
+        .then(lastSyncTime => {
+            // Add timestamp to URL if available
+            let url = CLOUD_STORAGE_URL;
+            if (lastSyncTime) {
+                url += `?since=${encodeURIComponent(lastSyncTime)}`;
+            }
+            
+            // Fetch the latest data from cloud
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Cloud fetch failed: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(cloudData => {
+                    // Only update if cloud data is newer
+                    if (!lastSyncTime || new Date(cloudData.lastUpdated) > new Date(lastSyncTime)) {
+                        console.log("Newer data found in cloud, updating local data");
+                        
+                        // Update settings
+                        if (cloudData.data.settings) {
+                            if (cloudData.data.settings.theme) {
+                                writeToDb('settings', 'theme', cloudData.data.settings.theme)
+                                    .then(() => setTheme(cloudData.data.settings.theme))
+                                    .catch(err => console.error("Error updating theme:", err));
+                            }
+                            
+                            if (cloudData.data.settings.adminPassword) {
+                                writeToDb('settings', 'adminPassword', cloudData.data.settings.adminPassword)
+                                    .catch(err => console.error("Error updating admin password:", err));
+                            }
+                        }
+                        
+                        // Update images
+                        if (cloudData.data.images && cloudData.data.images['profile-photo']) {
+                            writeToDb('images', 'profile-photo', cloudData.data.images['profile-photo'])
+                                .then(() => {
+                                    // Update the image if it's on the page
+                                    const profileImg = document.getElementById('profile-photo');
+                                    if (profileImg) {
+                                        profileImg.src = cloudData.data.images['profile-photo'];
+                                    }
+                                })
+                                .catch(err => console.error("Error updating profile photo:", err));
+                        }
+                        
+                        // Update content
+                        if (cloudData.data.content) {
+                            if (cloudData.data.content.editableContent) {
+                                writeToDb('content', 'editableContent', cloudData.data.content.editableContent)
+                                    .then(() => {
+                                        // Update the page content
+                                        const content = cloudData.data.content.editableContent;
+                                        Object.keys(content).forEach(selector => {
+                                            try {
+                                                const element = document.querySelector(`[data-content-id="${selector}"]`);
+                                                if (element) {
+                                                    element.innerHTML = content[selector];
+                                                } else {
+                                                    // Try direct selector as fallback
+                                                    const directElement = document.querySelector(selector);
+                                                    if (directElement) {
+                                                        directElement.innerHTML = content[selector];
+                                                    }
+                                                }
+                                            } catch (error) {
+                                                console.error(`Error updating content for ${selector}:`, error);
+                                            }
+                                        });
+                                    })
+                                    .catch(err => console.error("Error updating editable content:", err));
+                            }
+                            
+                            if (cloudData.data.content.teachingData) {
+                                writeToDb('content', 'teachingData', cloudData.data.content.teachingData)
+                                    .then(() => {
+                                        // Update teaching sections
+                                        const teachingData = cloudData.data.content.teachingData;
+                                        Object.keys(teachingData).forEach(sectionId => {
+                                            let section = document.getElementById(sectionId);
+                                            
+                                            // Fall back to index-based lookup if needed
+                                            if (!section && sectionId.startsWith('teaching-section-')) {
+                                                const index = parseInt(sectionId.split('-').pop());
+                                                const allSections = document.querySelectorAll('.teaching-section');
+                                                if (index < allSections.length) {
+                                                    section = allSections[index];
+                                                }
+                                            }
+                                            
+                                            if (section) {
+                                                const grid = section.querySelector('.teaching-grid');
+                                                if (grid) {
+                                                    // Only update if in normal mode (not edit mode)
+                                                    if (!isEditMode) {
+                                                        // Clear existing items
+                                                        grid.innerHTML = '';
+                                                        
+                                                        // Add locations
+                                                        teachingData[sectionId].forEach(locationText => {
+                                                            const newLocation = document.createElement('div');
+                                                            newLocation.classList.add('teaching-item');
+                                                            newLocation.textContent = locationText;
+                                                            grid.appendChild(newLocation);
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    })
+                                    .catch(err => console.error("Error updating teaching data:", err));
+                            }
+                        }
+                        
+                        // Update last sync time
+                        writeToDb('settings', 'lastSyncTime', cloudData.lastUpdated);
+                    } else {
+                        console.log("Local data is up-to-date");
+                    }
+                })
+                .catch(err => {
+                    console.error("Error syncing from cloud:", err);
+                });
+        })
+        .catch(err => {
+            console.error("Error getting last sync time:", err);
+        });
+}
+
+// Modify the saveChanges() function to trigger cloud sync
+function saveChanges() {
+    if (isEditMode) {
+        // First save all content before removing edit mode
+        saveAllContent();
+        
+        // Trigger sync to cloud if enabled
+        if (syncEnabled) {
+            syncToCloud();
+        }
+        
+        // [... rest of the original function ...]
+        // Remove edit-mode class from body
+        document.body.classList.remove('edit-mode');
+        
+        // Remove edit-related elements and styling
+        const editableElements = document.querySelectorAll('[contenteditable="true"]');
+        editableElements.forEach(el => {
+            el.setAttribute('contenteditable', 'false');
+            el.classList.remove('edit-mode-input');
+        });
+
+        // Remove remove buttons and add new location buttons
+        document.querySelectorAll('.remove-location').forEach(btn => btn.remove());
+        document.querySelectorAll('.add-new-location').forEach(btn => btn.remove());
+
+        // Remove photo upload buttons but keep the uploaded images
+        document.querySelectorAll('.photo-upload-container').forEach(container => container.remove());
+        document.querySelectorAll('.editable-image').forEach(img => img.classList.remove('editable-image'));
+
+        // Hide theme selector
+        document.getElementById('theme-selector-panel').style.display = 'none';
+        
+        // Remove the theme toggle button
+        const themeToggleBtn = document.getElementById('toggle-theme-btn');
+        if (themeToggleBtn) {
+            themeToggleBtn.remove();
+        }
+        
+        // Remove the change password button
+        const changePasswordBtn = document.getElementById('change-password-btn');
+        if (changePasswordBtn) {
+            changePasswordBtn.remove();
+        }
+
+        // Hide save changes button
+        document.getElementById('save-changes-btn').style.display = 'none';
+        isEditMode = false;
+
+        alert('Changes saved successfully!');
+    }
+}
+
+// Add a cloud sync toggle to the admin UI
+function addCloudSyncToggle() {
+    if (isEditMode && !document.getElementById('cloud-sync-toggle')) {
+        // Create the toggle container
+        const toggleContainer = document.createElement('div');
+        toggleContainer.id = 'cloud-sync-container';
+        toggleContainer.className = 'cloud-sync-container';
+        
+        // Create the toggle switch
+        const toggleLabel = document.createElement('label');
+        toggleLabel.className = 'switch';
+        
+        const toggleInput = document.createElement('input');
+        toggleInput.type = 'checkbox';
+        toggleInput.id = 'cloud-sync-toggle';
+        
+        // Check current setting
+        readFromDb('settings', 'cloudSyncEnabled')
+            .then(enabled => {
+                toggleInput.checked = enabled === true;
+            })
+            .catch(() => {
+                toggleInput.checked = false;
+            });
+        
+        toggleInput.addEventListener('change', function() {
+            toggleCloudSync(this.checked);
+            if (this.checked) {
+                // If enabling, sync immediately
+                syncToCloud();
+            }
+        });
+        
+        const toggleSlider = document.createElement('span');
+        toggleSlider.className = 'slider';
+        
+        toggleLabel.appendChild(toggleInput);
+        toggleLabel.appendChild(toggleSlider);
+        
+        // Create the label text
+        const toggleText = document.createElement('span');
+        toggleText.textContent = 'Enable Cross-Browser Sync';
+        toggleText.className = 'sync-label';
+        
+        // Assemble the container
+        toggleContainer.appendChild(toggleLabel);
+        toggleContainer.appendChild(toggleText);
+        
+        // Add an info icon with explanation
+        const infoIcon = document.createElement('span');
+        infoIcon.innerHTML = '<i class="fas fa-info-circle"></i>';
+        infoIcon.className = 'sync-info';
+        infoIcon.title = 'Enable this to sync your changes across different browsers and devices. Requires server configuration.';
+        
+        toggleContainer.appendChild(infoIcon);
+        
+        // Add the container to the page
+        const changePasswordBtn = document.getElementById('change-password-btn');
+        if (changePasswordBtn) {
+            changePasswordBtn.parentNode.insertBefore(toggleContainer, changePasswordBtn.nextSibling);
+        } else {
+            const themeToggleBtn = document.getElementById('toggle-theme-btn');
+            if (themeToggleBtn) {
+                themeToggleBtn.parentNode.insertBefore(toggleContainer, themeToggleBtn.nextSibling);
+            }
+        }
+    }
+}
+
+// Add to the enableEditMode function
+function enableEditMode() {
+    // [... existing code ...]
+    isEditMode = true;
+    
+    // Add edit-mode class to body for CSS hooks
+    document.body.classList.add('edit-mode');
+    
+    // Show the theme selector panel at the top of the page
+    const themeSelectorPanel = document.getElementById('theme-selector-panel');
+    themeSelectorPanel.style.display = 'block';
+    
+    // Show save changes button
+    document.getElementById('save-changes-btn').style.display = 'block';
+
+    // [... rest of the existing function ...]
+    
+    // Add cloud sync toggle
+    addCloudSyncToggle();
+    
+    // Enable teaching locations edit
+    enableTeachingLocationsEdit();
+}
+
+// Add to the document ready function
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM Content Loaded"); // Debug log
+    
+    // Initialize the database first
+    initDB()
+        .then(() => {
+            console.log("Database initialized, loading data");
+            
+            // Initialize cloud sync
+            initCloudSync();
+            
+            // Add a periodic sync check (every 5 minutes)
+            setInterval(syncFromCloud, 5 * 60 * 1000);
+            
+            // Make sure theme options are properly initialized
+            initThemeSelector();
+            
+            // Load saved theme (if any)
+            loadSavedTheme();
+            
+            // First, ensure the profile image has an ID
+            const profileImage = document.querySelector('.about-image img');
+            if (profileImage && !profileImage.id) {
+                profileImage.id = 'profile-photo';
+            }
+            
+            // Then load the saved image
+            loadSavedImage('profile-photo');
+            
+            // Load all saved text content and teaching locations
+            loadAllSavedContent();
+            
+            // Debug log to check if theme selector elements exist
+            const themeOptions = document.querySelectorAll('.theme-option');
+            console.log("Number of theme options found:", themeOptions.length);
+            themeOptions.forEach(option => {
+                console.log("Theme option:", option.getAttribute('data-theme'));
+            });
+        })
+        .catch(err => {
+            console.error("Failed to initialize database:", err);
+            alert("There was an error initializing the database. Some features may not work correctly.");
+        });
+});
+
+// Add some CSS for the cloud sync toggle
+document.head.insertAdjacentHTML('beforeend', `
+<style>
+.cloud-sync-container {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    padding: 8px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+}
+
+.sync-label {
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+.sync-info {
+    margin-left: 8px;
+    color: #666;
+    cursor: help;
+}
+
+/* Toggle switch styles */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+</style>
+`);
 function saveChanges() {
     if (isEditMode) {
         // First save all content before removing edit mode
