@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(cors()); // Enable CORS for all routes
 
 // Use environment variables for sensitive information
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_TOKEN = process.env.MY_GITHUB_TOKEN;
 const REPO_OWNER = process.env.REPO_OWNER || 'ahmedelgharibb';
 const REPO_NAME = process.env.REPO_NAME || 'portflyo';
 const FILE_PATH = process.env.FILE_PATH || 'teachers/template/index.html';
@@ -36,7 +36,7 @@ app.get('/fetch-content', async (req, res) => {
         
         const response = await axios.get(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
             headers: {
-                'Authorization': `token ${GITHUB_TOKEN}`
+                'Authorization': `token ${MY_GITHUB_TOKEN}`
             }
         });
         const content = Buffer.from(response.data.content, 'base64').toString('utf-8');
@@ -61,7 +61,7 @@ app.post('/update-content', async (req, res) => {
         
         const response = await axios.get(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
             headers: {
-                'Authorization': `token ${GITHUB_TOKEN}`
+                'Authorization': `token ${MY_GITHUB_TOKEN}`
             }
         });
         const sha = response.data.sha;
@@ -72,7 +72,7 @@ app.post('/update-content', async (req, res) => {
             sha: sha
         }, {
             headers: {
-                'Authorization': `token ${GITHUB_TOKEN}`
+                'Authorization': `token ${MY_GITHUB_TOKEN}`
             }
         });
         res.send('Content updated successfully');
