@@ -52,7 +52,28 @@ function enableEditMode() {
     // Make teaching locations editable
     makeTeachingLocationsEditable();
 }
-
+// Function to enable edit mode
+function enableEditMode() {
+    console.log("Enabling edit mode");
+    isEditMode = true;
+    
+    // Make all editable elements contenteditable
+    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+        el.setAttribute('contenteditable', 'true');
+    });
+    
+    // Show the save changes button
+    document.getElementById('save-changes-btn').style.display = 'block';
+    
+    // Show the theme selector panel
+    document.getElementById('theme-selector-panel').style.display = 'block';
+    
+    // Enable image upload functionality
+    document.querySelectorAll('.editable-image').forEach(img => {
+        img.addEventListener('click', function() {
+            document.getElementById('image-upload-input').click();
+        });
+    });
 // Function to make content editable
 function makeContentEditable() {
     console.log("Making content editable");
