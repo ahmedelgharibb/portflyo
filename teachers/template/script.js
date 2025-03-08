@@ -31,316 +31,64 @@ async function updateContent(content) {
     }
 }
 
-// Function to enable edit mode
-function enableEditMode() {
-    console.log("Enabling edit mode");
-    isEditMode = true;
-    
-    // Show save changes button
-    document.getElementById('save-changes-btn').style.display = 'block';
-    
-    // Show theme selector
-    document.getElementById('theme-selector-panel').style.display = 'block';
-    document.body.classList.add('edit-mode');
-    
-    // Make content editable
-    makeContentEditable();
-    
-    // Enable image upload
-    enableImageUpload();
-    
-    // Make teaching locations editable
-    makeTeachingLocationsEditable();
-}
-// Function to enable edit mode
-function enableEditMode() {
-    console.log("Enabling edit mode");
-    isEditMode = true;
-    
-    // Make all editable elements contenteditable
-    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-        el.setAttribute('contenteditable', 'true');
-    });
-    
-    // Show the save changes button
-    document.getElementById('save-changes-btn').style.display = 'block';
-    
-    // Show the theme selector panel
-    document.getElementById('theme-selector-panel').style.display = 'block';
-    
-    // Enable image upload functionality
-    document.querySelectorAll('.editable-image').forEach(img => {
-        img.addEventListener('click', function() {
-            document.getElementById('image-upload-input').click();
-        });
-    });
-// Function to make content editable
-function makeContentEditable() {
-    console.log("Making content editable");
-    
-    // Make headings, paragraphs, and spans editable (except protected content)
-    const editableElements = document.querySelectorAll('h1, h2, h3, p, span, .logo p');
-    
-    editableElements.forEach(el => {
-        // Skip protected elements
-        if (
-            el.textContent.trim() === "Developed by Portflyo" || 
-            el.textContent.trim() === "Enter Admin Password" ||
-            el.closest('footer') && el.tagName === 'P' && el.classList.contains('copyright') ||
-            el.closest('.password-modal') ||
-            el.classList.contains('protected-content')
-        ) {
-            return;
-        }
-        
-        el.setAttribute('contenteditable', 'true');
-        el.classList.add('edit-mode-input');
-    });
-}
-
-// Function to disable edit mode
-function disableEditMode() {
-    console.log("Disabling edit mode");
-    isEditMode = false;
-    
-    // Hide save changes button
-    document.getElementById('save-changes-btn').style.display = 'none';
-    
-    // Hide theme selector
-    document.getElementById('theme-selector-panel').style.display = 'none';
-    document.body.classList.remove('edit-mode');
-    
-    // Make content non-editable
-    const editableElements = document.querySelectorAll('[contenteditable="true"]');
-    editableElements.forEach(el => {
-        el.removeAttribute('contenteditable');
-        el.classList.remove('edit-mode-input');
-    });
-    
-    // Remove teaching location edit features
-    removeTeachingLocationControls();
-}
-
-// Function to enable image upload
-function enableImageUpload() {
-    console.log("Enabling image upload");
-    
-    // Find and modify the profile photo
-    const profilePhoto = document.querySelector('.about-image img');
-    if (profilePhoto) {
-        // Set ID if not already set
-        if (!profilePhoto.id) {
-            profilePhoto.id = 'profile-photo';
-        }
-        
-        // Add special styling
-        profilePhoto.classList.add('editable-image');
-        
-        // Create file input
-        let fileInput = document.getElementById('profile-photo-input');
-        if (!fileInput) {
-            fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.id = 'profile-photo-input';
-            fileInput.accept = 'image/*';
-            fileInput.style.display = 'none';
-            fileInput.addEventListener('change', (e) => handleImageUpload(e, 'profile-photo'));
-            document.body.appendChild(fileInput);
-        }
-        
-        // Add click handler to image
-        profilePhoto.onclick = function() {
-            fileInput.click();
-        };
-        
-        // Add upload button
-        const uploadContainer = document.createElement('div');
-        uploadContainer.className = 'photo-upload-container';
-        uploadContainer.id = 'photo-upload-container';
-        
-        const uploadBtn = document.createElement('button');
-        uploadBtn.className = 'photo-upload-btn';
-        uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Change Photo';
-        uploadBtn.onclick = function() {
-            fileInput.click();
-        };
-        
-        uploadContainer.appendChild(uploadBtn);
-        
-        // Add the upload button after the image
-        const aboutImageDiv = document.querySelector('.about-image');
-        if (aboutImageDiv && !document.getElementById('photo-upload-container')) {
-            aboutImageDiv.appendChild(uploadContainer);
-        }
-    }
-}
-
-// Function to make teaching locations editable
-function makeTeachingLocationsEditable() {
-    console.log("Making teaching locations editable");
-    
-    // Get all teaching sections
-    const teachingSections = document.querySelectorAll('.teaching-section');
-    
-    teachingSections.forEach((section, sectionIndex) => {
-        // Assign ID if not present
-        if (!section.id) {
-            section.id = `teaching-section-${sectionIndex}`;
-        }
-        
-        // Get the grid for this section
-        const grid = section.querySelector('.teaching-grid');
-        if (!grid) return;
-        
-        // Add "Add Location" button
-        const addButton = document.createElement('button');
-        addButton.className = 'add-new-location';
-        addButton.textContent = 'Add Location';
-        addButton.onclick = function() {
-            addNewLocation(grid);
-        };
-        
-        // Add the button to the section
-        section.appendChild(addButton);
-        
-        // Make existing items editable
-        const items = grid.querySelectorAll('.teaching-item');
-        items.forEach(item => makeLocationItemEditable(item));
-    });
-}
-
-// Function to make a location item editable
-function makeLocationItemEditable(item) {
-    // Make the item text content editable
-    item.setAttribute('contenteditable', 'true');
-    
-    // Add a remove button if it doesn't exist
-    if (!item.querySelector('.remove-location')) {
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'remove-location';
-        removeBtn.textContent = 'Remove';
-        removeBtn.onclick = function(e) {
-            e.stopPropagation(); // Prevent bubbling
-            item.remove();
-        };
-        
-        // Add the button to the item
-        item.appendChild(removeBtn);
-    }
-}
-
-// Function to add a new location
-function addNewLocation(grid) {
-    const newLocation = document.createElement('div');
-    newLocation.className = 'teaching-item';
-    newLocation.setAttribute('contenteditable', 'true');
-    newLocation.textContent = 'New Location';
-    
-    const removeBtn = document.createElement('button');
-    removeBtn.className = 'remove-location';
-    removeBtn.textContent = 'Remove';
-    removeBtn.onclick = function(e) {
-        e.stopPropagation();
-        newLocation.remove();
-    };
-    
-    newLocation.appendChild(removeBtn);
-    grid.appendChild(newLocation);
-}
-
-// Function to remove teaching location edit controls
-function removeTeachingLocationControls() {
-    // Remove "Add Location" buttons
-    document.querySelectorAll('.add-new-location').forEach(btn => btn.remove());
-    
-    // Remove "Remove" buttons from teaching items
-    document.querySelectorAll('.remove-location').forEach(btn => btn.remove());
-    
-    // Remove contenteditable attribute from teaching items
-    document.querySelectorAll('.teaching-item').forEach(item => {
-        item.removeAttribute('contenteditable');
-    });
-    
-    // Remove photo upload containers
-    document.querySelectorAll('.photo-upload-container').forEach(container => container.remove());
-    
-    // Remove editable class from images
-    document.querySelectorAll('.editable-image').forEach(img => {
-        img.classList.remove('editable-image');
-        img.onclick = null;
-    });
-}
-
 // Function to save all editable content
 async function saveAllContent() {
     console.log("Saving all editable content");
     
-    // Clear previous saved content
-    localStorage.removeItem('editableContent');
-    
-    // Save text content of all editable elements with better identification
-    const editableElements = document.querySelectorAll('[contenteditable="true"]');
-    let savedContent = {};
-    
-    editableElements.forEach(el => {
-        // Skip protected elements
-        if (
-            el.textContent.trim() === "Developed by Portflyo" || 
-            el.textContent.trim() === "Enter Admin Password" ||
-            el.closest('footer') && el.tagName === 'P' && el.classList.contains('copyright') ||
-            el.closest('.password-modal')
-        ) {
-            return;
-        }
-        
-        // Create a unique and reliable identifier for this element
-        let elementId = el.getAttribute('data-content-id');
-        if (!elementId) {
-            elementId = generateElementPath(el);
-            el.setAttribute('data-content-id', elementId);
-        }
-        
-        // Save content
-        savedContent[elementId] = el.innerHTML;
-        console.log(`Saving content for: ${elementId}`);
-    });
-    
-    // Save teaching locations separately for more reliability
-    const teachingSections = document.querySelectorAll('.teaching-section');
-    let teachingData = {};
-    
-    teachingSections.forEach((section, sectionIndex) => {
-        const sectionId = section.id || `teaching-section-${sectionIndex}`;
-        const items = section.querySelectorAll('.teaching-item');
-        
-        let locations = [];
-        items.forEach(item => {
-            // Get only the text content (not including the "Remove" button)
-            const textContent = item.childNodes[0].nodeValue || item.textContent.replace('Remove', '').trim();
-            if (textContent) {
-                locations.push(textContent);
-            }
-        });
-        
-        teachingData[sectionId] = locations;
-    });
-    
-    // Save to localStorage
-    localStorage.setItem('editableContent', JSON.stringify(savedContent));
-    localStorage.setItem('teachingData', JSON.stringify(teachingData));
-    
-    console.log("Content saved successfully", savedContent);
-    console.log("Teaching data saved", teachingData);
-    
-    // Update content on GitHub
     const content = document.getElementById('content-container').innerHTML;
     await updateContent(content);
     
-    // Alert user
     alert('Changes saved successfully!');
+}
+
+// Function to toggle theme
+function setTheme(themeName) {
+    console.log("Setting theme to:", themeName);
     
-    // Exit edit mode
-    disableEditMode();
+    // Remove all theme classes first
+    document.body.classList.remove('theme-blue', 'theme-purple', 'theme-dark');
+    
+    // Add the selected theme class if not default
+    if (themeName !== 'default') {
+        document.body.classList.add('theme-' + themeName);
+    }
+    
+    // Save the theme preference
+    localStorage.setItem('theme', themeName);
+    
+    // Update active state in theme selector
+    document.querySelectorAll('.theme-option').forEach(option => {
+        option.classList.remove('active');
+    });
+    
+    // Find and add active class to the selected theme option
+    const selectedOption = document.querySelector(`.theme-option[data-theme="${themeName}"]`);
+    if (selectedOption) {
+        selectedOption.classList.add('active');
+    } else {
+        console.log("Theme option not found for:", themeName);
+    }
+}
+
+// Function to apply saved theme on page load
+function loadSavedTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'default';
+    console.log("Loading saved theme:", savedTheme);
+    setTheme(savedTheme);
+}
+
+// Initialize theme selector
+function initThemeSelector() {
+    console.log("Initializing theme selector");
+    document.querySelectorAll('.theme-option').forEach(option => {
+        const theme = option.getAttribute('data-theme');
+        console.log("Found theme option:", theme);
+        
+        option.addEventListener('click', function() {
+            console.log("Theme clicked:", theme);
+            setTheme(theme);
+        });
+    });
 }
 
 function showPasswordOverlay() {
@@ -374,7 +122,29 @@ function checkPassword() {
         passwordError.textContent = 'Incorrect password. Please try again.';
     }
 }
-
+// Function to enable edit mode
+function enableEditMode() {
+    console.log("Enabling edit mode");
+    isEditMode = true;
+    
+    // Make all editable elements contenteditable
+    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+        el.setAttribute('contenteditable', 'true');
+    });
+    
+    // Show the save changes button
+    document.getElementById('save-changes-btn').style.display = 'block';
+    
+    // Show the theme selector panel
+    document.getElementById('theme-selector-panel').style.display = 'block';
+    
+    // Enable image upload functionality
+    document.querySelectorAll('.editable-image').forEach(img => {
+        img.addEventListener('click', function() {
+            document.getElementById('image-upload-input').click();
+        });
+    });
+}
 // Add an image upload handler
 function handleImageUpload(event, imageElementId) {
     const file = event.target.files[0];
@@ -480,54 +250,70 @@ function generateElementPath(element) {
     return path;
 }
 
-// Function to toggle theme
-function setTheme(themeName) {
-    console.log("Setting theme to:", themeName);
+// Improved function to save all editable content
+async function saveAllContent() {
+    console.log("Saving all editable content");
     
-    // Remove all theme classes first
-    document.body.classList.remove('theme-blue', 'theme-purple', 'theme-dark');
+    // Clear previous saved content
+    localStorage.removeItem('editableContent');
     
-    // Add the selected theme class if not default
-    if (themeName !== 'default') {
-        document.body.classList.add('theme-' + themeName);
-    }
+    // Save text content of all editable elements with better identification
+    const editableElements = document.querySelectorAll('[contenteditable="true"]');
+    let savedContent = {};
     
-    // Save the theme preference
-    localStorage.setItem('theme', themeName);
-    
-    // Update active state in theme selector
-    document.querySelectorAll('.theme-option').forEach(option => {
-        option.classList.remove('active');
-    });
-    
-    // Find and add active class to the selected theme option
-    const selectedOption = document.querySelector(`.theme-option[data-theme="${themeName}"]`);
-    if (selectedOption) {
-        selectedOption.classList.add('active');
-    } else {
-        console.log("Theme option not found for:", themeName);
-    }
-}
-
-// Function to apply saved theme on page load
-function loadSavedTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'default';
-    console.log("Loading saved theme:", savedTheme);
-    setTheme(savedTheme);
-}
-
-// Initialize theme selector
-function initThemeSelector() {
-    console.log("Initializing theme selector");
-    document.querySelectorAll('.theme-option').forEach(option => {
-        const theme = option.getAttribute('data-theme');
-        console.log("Found theme option:", theme);
+    editableElements.forEach(el => {
+        // Skip protected elements
+        if (
+            el.textContent.trim() === "Developed by Portflyo" || 
+            el.textContent.trim() === "Enter Admin Password" ||
+            el.closest('footer') && el.tagName === 'P' && el.classList.contains('copyright') ||
+            el.closest('.password-modal')
+        ) {
+            return;
+        }
         
-        option.addEventListener('click', function() {
-            console.log("Theme clicked:", theme);
-            setTheme(theme);
-        });
+        // Create a unique and reliable identifier for this element
+        let elementId = el.getAttribute('data-content-id');
+        if (!elementId) {
+            elementId = generateElementPath(el);
+            el.setAttribute('data-content-id', elementId);
+        }
+        
+        // Save content
+        savedContent[elementId] = el.innerHTML;
+        console.log(`Saving content for: ${elementId}`);
     });
+    
+    // Save teaching locations separately for more reliability
+    const teachingSections = document.querySelectorAll('.teaching-section');
+    let teachingData = {};
+    
+    teachingSections.forEach((section, sectionIndex) => {
+        const sectionId = section.id || `teaching-section-${sectionIndex}`;
+        const items = section.querySelectorAll('.teaching-item');
+        
+        let locations = [];
+        items.forEach(item => {
+            // Get only the text content (not including the "Remove" button)
+            const textContent = item.childNodes[0].nodeValue || item.textContent.replace('Remove', '').trim();
+            if (textContent) {
+                locations.push(textContent);
+            }
+        });
+        
+        teachingData[sectionId] = locations;
+    });
+    
+    // Save to localStorage
+    localStorage.setItem('editableContent', JSON.stringify(savedContent));
+    localStorage.setItem('teachingData', JSON.stringify(teachingData));
+    
+    console.log("Content saved successfully", savedContent);
+    console.log("Teaching data saved", teachingData);
+    
+    // Update content on GitHub
+    const content = document.getElementById('content-container').innerHTML;
+    await updateContent(content);
 }
 
 // Improved function to load all saved content
@@ -538,14 +324,13 @@ function loadAllSavedContent() {
     const savedContent = JSON.parse(localStorage.getItem('editableContent') || '{}');
     
     // First pass: assign data-content-id attributes to elements for future reference
-    document.querySelectorAll('h1, h2, h3, p, span, .logo p').forEach(el => {
+    document.querySelectorAll('h1, h2, p, span, .logo p').forEach(el => {
         // Skip protected elements
         if (
             el.textContent.trim() === "Developed by Portflyo" || 
             el.textContent.trim() === "Enter Admin Password" ||
             el.closest('footer') && el.tagName === 'P' && el.classList.contains('copyright') ||
-            el.closest('.password-modal') ||
-            el.classList.contains('protected-content')
+            el.closest('.password-modal')
         ) {
             return;
         }
@@ -624,14 +409,4 @@ document.addEventListener('DOMContentLoaded', function() {
     initThemeSelector();
     loadSavedTheme();
     loadAllSavedContent();
-    
-    // Set current year in copyright
-    const year = new Date().getFullYear();
-    const copyrightYearElement = document.getElementById('copyright-year');
-    if (copyrightYearElement) {
-        copyrightYearElement.textContent = year;
-    }
-    
-    // Load saved profile photo
-    loadSavedImage('profile-photo');
 });
