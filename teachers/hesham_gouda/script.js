@@ -1,4 +1,87 @@
 let isEditMode = false;
+let db;
+
+// Initialize the database
+function initDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open('portfolioData', 1);
+        
+        request.onerror = (event) => {
+            console.error("IndexedDB error:", event.target.error);
+            reject(event.target.error);
+        };
+        
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            
+            // Create object stores for different types of data
+            if (!db.objectStoreNames.contains('settings')) {
+                db.createObjectStore('settings');
+            }
+            
+            if (!db.objectStoreNames.contains('images')) {
+                db.createObjectStore('images');
+            }
+            
+            if (!db.objectStoreNames.contains('content')) {
+                db.createObjectStore('content');
+            }
+        };
+        
+        request.onsuccess = (event) => {
+            db = event.target.result;
+            console.log("IndexedDB initialized successfully");
+            resolve(db);
+        };
+    });
+}
+
+// Write data to IndexedDB
+function writeToDb(storeName, key, value) {
+    return new Promise((resolve, reject) => {
+        if (!db) {
+            reject(new Error("Database not initialized"));
+            return;
+        }
+        
+        const transaction = db.transaction([storeName], 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const request = store.put(value, key);
+        
+        request.onsuccess = () => {
+            console.log(`Data saved to ${storeName}/${key}`);
+            resolve();
+        };
+        
+        request.onerror = (event) => {
+            console.error(`Error saving to ${storeName}/${key}:`, event.target.error);
+            reject(event.target.error);
+        };
+    });
+}
+
+// Read data from IndexedDB
+function readFromDb(storeName, key) {
+    return new Promise((resolve, reject) => {
+        if (!db) {
+            reject(new Error("Database not initialized"));
+            return;
+        }
+        
+        const transaction = db.transaction([storeName], 'readonly');
+        const store = transaction.objectStore(storeName);
+        const request = store.get(key);
+        
+        request.onsuccess = () => {
+            resolve(request.result);
+        };
+        
+        request.onerror = (event) => {
+            console.error(`Error reading from ${storeName}/${key}:`, event.target.error);
+            reject(event.target.error);
+        };
+    });
+}
 
 // Function to toggle theme
 function setTheme(themeName) {
@@ -13,7 +96,8 @@ function setTheme(themeName) {
     }
     
     // Save the theme preference
-    localStorage.setItem('theme', themeName);
+    writeToDb('settings', 'theme', themeName)
+        .catch(err => console.error("Failed to save theme:", err));
     
     // Update active state in theme selector
     document.querySelectorAll('.theme-option').forEach(option => {
@@ -31,9 +115,16 @@ function setTheme(themeName) {
 
 // Function to apply saved theme on page load
 function loadSavedTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'default';
-    console.log("Loading saved theme:", savedTheme); // Debug log
-    setTheme(savedTheme);
+    readFromDb('settings', 'theme')
+        .then(savedTheme => {
+            const themeToUse = savedTheme || 'default';
+            console.log("Loading saved theme:", themeToUse); // Debug log
+            setTheme(themeToUse);
+        })
+        .catch(err => {
+            console.error("Error loading theme:", err);
+            setTheme('default');
+        });
 }
 
 // Initialize theme selector
@@ -72,14 +163,27 @@ function checkPassword() {
     const passwordError = document.getElementById('password-error');
     
     // Get the stored password or use the default
-    const storedPassword = localStorage.getItem('adminPassword') || 'admin123';
-
-    if (passwordInput.value === storedPassword) {
-        hidePasswordOverlay();
-        enableEditMode();
-    } else {
-        passwordError.textContent = 'Incorrect password. Please try again.';
-    }
+    readFromDb('settings', 'adminPassword')
+        .then(storedPassword => {
+            const password = storedPassword || 'admin123';
+            
+            if (passwordInput.value === password) {
+                hidePasswordOverlay();
+                enableEditMode();
+            } else {
+                passwordError.textContent = 'Incorrect password. Please try again.';
+            }
+        })
+        .catch(err => {
+            console.error("Error checking password:", err);
+            // Fallback to default password if database error
+            if (passwordInput.value === 'admin123') {
+                hidePasswordOverlay();
+                enableEditMode();
+            } else {
+                passwordError.textContent = 'Incorrect password. Please try again.';
+            }
+        });
 }
 
 // Add an image upload handler
@@ -90,16 +194,16 @@ function handleImageUpload(event, imageElementId) {
         reader.onload = function(e) {
             document.getElementById(imageElementId).src = e.target.result;
             
-            // Save image to localStorage (this is a simple implementation - limited by localStorage size)
-            localStorage.setItem(imageElementId, e.target.result);
-            
-            console.log(`Image "${imageElementId}" updated successfully`);
+            // Save image to IndexedDB
+            writeToDb('images', imageElementId, e.target.result)
+                .then(() => console.log(`Image "${imageElementId}" updated successfully`))
+                .catch(err => console.error(`Failed to save image "${imageElementId}":`, err));
         };
         reader.readAsDataURL(file);
     }
 }
 
-// Update this function in script.js
+// Update this function to use IndexedDB
 function loadSavedImage(imageElementId) {
     // First, find the image element - either by ID or by selector if ID not set yet
     let imageElement = document.getElementById(imageElementId);
@@ -113,15 +217,20 @@ function loadSavedImage(imageElementId) {
         }
     }
     
-    // Now try to load the saved image from localStorage
+    // Now try to load the saved image from IndexedDB
     if (imageElement) {
-        const savedImage = localStorage.getItem(imageElementId);
-        if (savedImage) {
-            imageElement.src = savedImage;
-            console.log(`Loaded saved image for "${imageElementId}"`);
-        } else {
-            console.log(`No saved image found for "${imageElementId}"`);
-        }
+        readFromDb('images', imageElementId)
+            .then(savedImage => {
+                if (savedImage) {
+                    imageElement.src = savedImage;
+                    console.log(`Loaded saved image for "${imageElementId}"`);
+                } else {
+                    console.log(`No saved image found for "${imageElementId}"`);
+                }
+            })
+            .catch(err => {
+                console.error(`Error loading image for "${imageElementId}":`, err);
+            });
     } else {
         console.log(`Could not find element with ID "${imageElementId}"`);
     }
@@ -191,9 +300,6 @@ function generateElementPath(element) {
 function saveAllContent() {
     console.log("Saving all editable content");
     
-    // Clear previous saved content
-    localStorage.removeItem('editableContent');
-    
     // Save text content of all editable elements with better identification
     const editableElements = document.querySelectorAll('[contenteditable="true"]');
     let savedContent = {};
@@ -241,20 +347,19 @@ function saveAllContent() {
         teachingData[sectionId] = locations;
     });
     
-    // Save to localStorage
-    localStorage.setItem('editableContent', JSON.stringify(savedContent));
-    localStorage.setItem('teachingData', JSON.stringify(teachingData));
+    // Save to IndexedDB
+    writeToDb('content', 'editableContent', savedContent)
+        .then(() => console.log("Content saved successfully", savedContent))
+        .catch(err => console.error("Failed to save content:", err));
     
-    console.log("Content saved successfully", savedContent);
-    console.log("Teaching data saved", teachingData);
+    writeToDb('content', 'teachingData', teachingData)
+        .then(() => console.log("Teaching data saved", teachingData))
+        .catch(err => console.error("Failed to save teaching data:", err));
 }
 
 // Improved function to load all saved content
 function loadAllSavedContent() {
     console.log("Loading all saved content");
-    
-    // Load saved text content
-    const savedContent = JSON.parse(localStorage.getItem('editableContent') || '{}');
     
     // First pass: assign data-content-id attributes to elements for future reference
     document.querySelectorAll('h1, h2, p, span, .logo p').forEach(el => {
@@ -274,65 +379,82 @@ function loadAllSavedContent() {
         }
     });
     
-    // Restore content using the saved selectors
-    Object.keys(savedContent).forEach(selector => {
-        try {
-            const element = document.querySelector(`[data-content-id="${selector}"]`);
-            if (element) {
-                element.innerHTML = savedContent[selector];
-                console.log(`Restored content for ${selector}`);
-            } else {
-                // Try direct query selector as fallback
-                const directElement = document.querySelector(selector);
-                if (directElement) {
-                    directElement.innerHTML = savedContent[selector];
-                    console.log(`Restored content using direct selector: ${selector}`);
-                } else {
-                    console.log(`Could not find element for ${selector}`);
-                }
+    // Load and restore saved content
+    readFromDb('content', 'editableContent')
+        .then(savedContent => {
+            if (!savedContent) {
+                console.log("No saved content found");
+                return;
             }
-        } catch (error) {
-            console.error(`Error restoring content for ${selector}:`, error);
-        }
-    });
+            
+            // Restore content using the saved selectors
+            Object.keys(savedContent).forEach(selector => {
+                try {
+                    const element = document.querySelector(`[data-content-id="${selector}"]`);
+                    if (element) {
+                        element.innerHTML = savedContent[selector];
+                        console.log(`Restored content for ${selector}`);
+                    } else {
+                        // Try direct query selector as fallback
+                        const directElement = document.querySelector(selector);
+                        if (directElement) {
+                            directElement.innerHTML = savedContent[selector];
+                            console.log(`Restored content using direct selector: ${selector}`);
+                        } else {
+                            console.log(`Could not find element for ${selector}`);
+                        }
+                    }
+                } catch (error) {
+                    console.error(`Error restoring content for ${selector}:`, error);
+                }
+            });
+        })
+        .catch(err => console.error("Error loading content:", err));
     
     // Load and restore teaching locations
-    const teachingData = JSON.parse(localStorage.getItem('teachingData') || '{}');
-    
-    // Process each teaching section
-    Object.keys(teachingData).forEach(sectionId => {
-        let section;
-        
-        // Try to find the section by ID first
-        if (sectionId.startsWith('teaching-section-')) {
-            const index = parseInt(sectionId.split('-').pop());
-            const allSections = document.querySelectorAll('.teaching-section');
-            if (index < allSections.length) {
-                section = allSections[index];
+    readFromDb('content', 'teachingData')
+        .then(teachingData => {
+            if (!teachingData) {
+                console.log("No saved teaching data found");
+                return;
             }
-        } else {
-            section = document.getElementById(sectionId);
-        }
-        
-        // If the section was found and it has locations to restore
-        if (section && teachingData[sectionId].length > 0) {
-            const grid = section.querySelector('.teaching-grid');
-            if (grid) {
-                // Clear existing items first
-                grid.innerHTML = '';
+            
+            // Process each teaching section
+            Object.keys(teachingData).forEach(sectionId => {
+                let section;
                 
-                // Add saved locations
-                teachingData[sectionId].forEach(locationText => {
-                    const newLocation = document.createElement('div');
-                    newLocation.classList.add('teaching-item');
-                    newLocation.textContent = locationText;
-                    grid.appendChild(newLocation);
-                });
+                // Try to find the section by ID first
+                if (sectionId.startsWith('teaching-section-')) {
+                    const index = parseInt(sectionId.split('-').pop());
+                    const allSections = document.querySelectorAll('.teaching-section');
+                    if (index < allSections.length) {
+                        section = allSections[index];
+                    }
+                } else {
+                    section = document.getElementById(sectionId);
+                }
                 
-                console.log(`Restored ${teachingData[sectionId].length} teaching locations for section ${sectionId}`);
-            }
-        }
-    });
+                // If the section was found and it has locations to restore
+                if (section && teachingData[sectionId].length > 0) {
+                    const grid = section.querySelector('.teaching-grid');
+                    if (grid) {
+                        // Clear existing items first
+                        grid.innerHTML = '';
+                        
+                        // Add saved locations
+                        teachingData[sectionId].forEach(locationText => {
+                            const newLocation = document.createElement('div');
+                            newLocation.classList.add('teaching-item');
+                            newLocation.textContent = locationText;
+                            grid.appendChild(newLocation);
+                        });
+                        
+                        console.log(`Restored ${teachingData[sectionId].length} teaching locations for section ${sectionId}`);
+                    }
+                }
+            });
+        })
+        .catch(err => console.error("Error loading teaching data:", err));
 }
 
 function showChangePasswordModal() {
@@ -377,30 +499,42 @@ function updatePassword() {
     const errorEl = document.getElementById('password-change-error');
     
     // Get the stored password or use the default
-    const storedPassword = localStorage.getItem('adminPassword') || 'admin123';
-    
-    // Validate inputs
-    if (currentPassword !== storedPassword) {
-        errorEl.textContent = 'Current password is incorrect.';
-        return;
-    }
-    
-    if (newPassword === '') {
-        errorEl.textContent = 'New password cannot be empty.';
-        return;
-    }
-    
-    if (newPassword !== confirmPassword) {
-        errorEl.textContent = 'New passwords do not match.';
-        return;
-    }
-    
-    // Update the password in localStorage
-    localStorage.setItem('adminPassword', newPassword);
-    
-    // Show success message and close modal
-    alert('Password updated successfully!');
-    hideChangePasswordModal();
+    readFromDb('settings', 'adminPassword')
+        .then(storedPassword => {
+            const password = storedPassword || 'admin123';
+            
+            // Validate inputs
+            if (currentPassword !== password) {
+                errorEl.textContent = 'Current password is incorrect.';
+                return;
+            }
+            
+            if (newPassword === '') {
+                errorEl.textContent = 'New password cannot be empty.';
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                errorEl.textContent = 'New passwords do not match.';
+                return;
+            }
+            
+            // Update the password in IndexedDB
+            writeToDb('settings', 'adminPassword', newPassword)
+                .then(() => {
+                    // Show success message and close modal
+                    alert('Password updated successfully!');
+                    hideChangePasswordModal();
+                })
+                .catch(err => {
+                    console.error("Failed to update password:", err);
+                    errorEl.textContent = 'Failed to update password. Please try again.';
+                });
+        })
+        .catch(err => {
+            console.error("Error checking current password:", err);
+            errorEl.textContent = 'An error occurred. Please try again.';
+        });
 }
 
 function enableTeachingLocationsEdit() {
@@ -612,28 +746,38 @@ function saveChanges() {
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM Content Loaded"); // Debug log
     
-    // Make sure theme options are properly initialized
-    initThemeSelector();
-    
-    // Load saved theme (if any)
-    loadSavedTheme();
-    
-    // First, ensure the profile image has an ID
-    const profileImage = document.querySelector('.about-image img');
-    if (profileImage && !profileImage.id) {
-        profileImage.id = 'profile-photo';
-    }
-    
-    // Then load the saved image
-    loadSavedImage('profile-photo');
-    
-    // Load all saved text content and teaching locations
-    loadAllSavedContent();
-    
-    // Debug log to check if theme selector elements exist
-    const themeOptions = document.querySelectorAll('.theme-option');
-    console.log("Number of theme options found:", themeOptions.length);
-    themeOptions.forEach(option => {
-        console.log("Theme option:", option.getAttribute('data-theme'));
-    });
+    // Initialize the database first
+    initDB()
+        .then(() => {
+            console.log("Database initialized, loading data");
+            
+            // Make sure theme options are properly initialized
+            initThemeSelector();
+            
+            // Load saved theme (if any)
+            loadSavedTheme();
+            
+            // First, ensure the profile image has an ID
+            const profileImage = document.querySelector('.about-image img');
+            if (profileImage && !profileImage.id) {
+                profileImage.id = 'profile-photo';
+            }
+            
+            // Then load the saved image
+            loadSavedImage('profile-photo');
+            
+            // Load all saved text content and teaching locations
+            loadAllSavedContent();
+            
+            // Debug log to check if theme selector elements exist
+            const themeOptions = document.querySelectorAll('.theme-option');
+            console.log("Number of theme options found:", themeOptions.length);
+            themeOptions.forEach(option => {
+                console.log("Theme option:", option.getAttribute('data-theme'));
+            });
+        })
+        .catch(err => {
+            console.error("Failed to initialize database:", err);
+            alert("There was an error initializing the database. Some features may not work correctly.");
+        });
 });
