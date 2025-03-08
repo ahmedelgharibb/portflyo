@@ -36,7 +36,7 @@ app.get('/fetch-content', async (req, res) => {
         
         const response = await axios.get(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
             headers: {
-                'Authorization': `token ${MY_GITHUB_TOKEN}`
+                'Authorization': `token ${GITHUB_TOKEN}`
             }
         });
         const content = Buffer.from(response.data.content, 'base64').toString('utf-8');
@@ -55,13 +55,13 @@ app.post('/update-content', async (req, res) => {
     }
     
     try {
-        if (!MY_GITHUB_TOKEN) {
+        if (!GITHUB_TOKEN) {
             return res.status(500).send('GitHub token not configured');
         }
         
         const response = await axios.get(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
             headers: {
-                'Authorization': `token ${MY_GITHUB_TOKEN}`
+                'Authorization': `token ${GITHUB_TOKEN}`
             }
         });
         const sha = response.data.sha;
@@ -72,7 +72,7 @@ app.post('/update-content', async (req, res) => {
             sha: sha
         }, {
             headers: {
-                'Authorization': `token ${MY_GITHUB_TOKEN}`
+                'Authorization': `token ${GITHUB_TOKEN}`
             }
         });
         res.send('Content updated successfully');
