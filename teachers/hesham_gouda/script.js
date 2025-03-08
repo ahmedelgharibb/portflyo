@@ -1,7 +1,20 @@
+// Initialize Firebase and IndexedDB
 let isEditMode = false;
 let db;
+let firebaseDb;
 
-// Initialize the database
+// Firebase configuration - you'll need to replace these values with your own Firebase project credentials
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+// Initialize IndexedDB
 function initDB() {
     return new Promise((resolve, reject) => {
         const request = indexedDB.open('portfolioData', 1);
@@ -26,6 +39,11 @@ function initDB() {
             if (!db.objectStoreNames.contains('content')) {
                 db.createObjectStore('content');
             }
+            
+            // Add a sync status store
+            if (!db.objectStoreNames.contains('syncStatus')) {
+                db.createObjectStore('syncStatus');
+            }
         };
         
         request.onsuccess = (event) => {
@@ -36,56 +54,324 @@ function initDB() {
     });
 }
 
-// Write data to IndexedDB
-function writeToDb(storeName, key, value) {
+// Initialize Firebase
+function initFirebase() {
     return new Promise((resolve, reject) => {
-        if (!db) {
-            reject(new Error("Database not initialized"));
-            return;
+        try {
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            
+            // Get a reference to the database
+            firebaseDb = firebase.database();
+            console.log("Firebase initialized successfully");
+            
+            // Generate a unique device ID if not exists
+            const deviceId = localStorage.getItem('device_id') || generateUniqueId();
+            localStorage.setItem('device_id', deviceId);
+            
+            resolve(firebaseDb);
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+            reject(error);
         }
-        
-        const transaction = db.transaction([storeName], 'readwrite');
-        const store = transaction.objectStore(storeName);
-        const request = store.put(value, key);
-        
-        request.onsuccess = () => {
-            console.log(`Data saved to ${storeName}/${key}`);
-            resolve();
-        };
-        
-        request.onerror = (event) => {
-            console.error(`Error saving to ${storeName}/${key}:`, event.target.error);
-            reject(event.target.error);
-        };
     });
 }
 
-// Read data from IndexedDB
-function readFromDb(storeName, key) {
-    return new Promise((resolve, reject) => {
-        if (!db) {
-            reject(new Error("Database not initialized"));
-            return;
+// Generate a unique ID for this device
+function generateUniqueId() {
+    return 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+// Enhanced write function that writes to both IndexedDB and Firebase
+function writeToDb(storeName, key, value) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // First, save to IndexedDB
+            if (!db) {
+                throw new Error("IndexedDB not initialized");
+            }
+            
+            const transaction = db.transaction([storeName, 'syncStatus'], 'readwrite');
+            const store = transaction.objectStore(storeName);
+            const syncStore = transaction.objectStore('syncStatus');
+            
+            // Save the data to IndexedDB
+            const request = store.put(value, key);
+            
+            request.onsuccess = async () => {
+                console.log(`Data saved to IndexedDB ${storeName}/${key}`);
+                
+                // If Firebase is available, try to sync
+                if (firebaseDb && navigator.onLine) {
+                    try {
+                        // Mark as syncing
+                        await syncStore.put('syncing', `${storeName}_${key}`);
+                        
+                        // Process image data separately to optimize storage
+                        let syncValue = value;
+                        if (storeName === 'images') {
+                            // Store a timestamp instead of the full image data
+                            syncValue = { lastUpdated: Date.now() };
+                        }
+                        
+                        // Create a path for Firebase based on store and key
+                        const path = `portfolioData/${storeName}/${key.replace(/\./g, '_')}`;
+                        
+                        // Store data in Firebase with device ID and timestamp
+                        await firebaseDb.ref(path).set({
+                            data: syncValue,
+                            updatedBy: localStorage.getItem('device_id'),
+                            timestamp: firebase.database.ServerValue.TIMESTAMP
+                        });
+                        
+                        // Mark as synced
+                        await syncStore.put('synced', `${storeName}_${key}`);
+                        console.log(`Data synced to Firebase ${path}`);
+                    } catch (firebaseError) {
+                        console.error(`Firebase sync error for ${storeName}/${key}:`, firebaseError);
+                        // Mark as pending sync
+                        await syncStore.put('pending', `${storeName}_${key}`);
+                    }
+                } else {
+                    // Mark as pending sync if Firebase isn't available
+                    await syncStore.put('pending', `${storeName}_${key}`);
+                    console.log(`Data marked for sync later: ${storeName}/${key}`);
+                }
+                
+                resolve();
+            };
+            
+            request.onerror = (event) => {
+                console.error(`Error saving to ${storeName}/${key}:`, event.target.error);
+                reject(event.target.error);
+            };
+        } catch (error) {
+            console.error(`Error in writeToDb for ${storeName}/${key}:`, error);
+            reject(error);
         }
-        
-        const transaction = db.transaction([storeName], 'readonly');
-        const store = transaction.objectStore(storeName);
-        const request = store.get(key);
-        
-        request.onsuccess = () => {
-            resolve(request.result);
-        };
-        
-        request.onerror = (event) => {
-            console.error(`Error reading from ${storeName}/${key}:`, event.target.error);
-            reject(event.target.error);
-        };
+    });
+}
+
+// Enhanced read function that prioritizes IndexedDB but falls back to Firebase
+function readFromDb(storeName, key) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // First check IndexedDB
+            if (!db) {
+                throw new Error("IndexedDB not initialized");
+            }
+            
+            const transaction = db.transaction([storeName], 'readonly');
+            const store = transaction.objectStore(storeName);
+            const request = store.get(key);
+            
+            request.onsuccess = async () => {
+                // If we have data in IndexedDB, use it
+                if (request.result !== undefined) {
+                    resolve(request.result);
+                } 
+                // If not, try to get it from Firebase if available
+                else if (firebaseDb && navigator.onLine) {
+                    try {
+                        const path = `portfolioData/${storeName}/${key.replace(/\./g, '_')}`;
+                        const snapshot = await firebaseDb.ref(path).once('value');
+                        
+                        if (snapshot.exists()) {
+                            const data = snapshot.val().data;
+                            
+                            // Save this data to IndexedDB for next time
+                            writeToDb(storeName, key, data)
+                                .catch(err => console.error(`Error saving Firebase data to IndexedDB: ${storeName}/${key}`, err));
+                            
+                            resolve(data);
+                        } else {
+                            resolve(undefined);
+                        }
+                    } catch (firebaseError) {
+                        console.error(`Error reading from Firebase for ${storeName}/${key}:`, firebaseError);
+                        resolve(undefined);
+                    }
+                } else {
+                    // Neither IndexedDB nor Firebase has the data
+                    resolve(undefined);
+                }
+            };
+            
+            request.onerror = (event) => {
+                console.error(`Error reading from ${storeName}/${key}:`, event.target.error);
+                reject(event.target.error);
+            };
+        } catch (error) {
+            console.error(`Error in readFromDb for ${storeName}/${key}:`, error);
+            reject(error);
+        }
+    });
+}
+
+// Try to sync any pending changes when online
+function syncPendingChanges() {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!db || !firebaseDb || !navigator.onLine) {
+                console.log("Cannot sync - database or network unavailable");
+                resolve(false);
+                return;
+            }
+            
+            const transaction = db.transaction(['syncStatus'], 'readonly');
+            const syncStore = transaction.objectStore('syncStatus');
+            const request = syncStore.openCursor();
+            
+            let pendingItems = [];
+            
+            request.onsuccess = async (event) => {
+                const cursor = event.target.result;
+                
+                if (cursor) {
+                    if (cursor.value === 'pending') {
+                        // Extract storeName and key from the sync key
+                        const [storeName, key] = cursor.key.split('_');
+                        pendingItems.push({ storeName, key });
+                    }
+                    cursor.continue();
+                } else {
+                    // Now sync all pending items
+                    console.log(`Found ${pendingItems.length} items to sync`);
+                    
+                    for (const item of pendingItems) {
+                        try {
+                            // Get the data from IndexedDB
+                            const value = await new Promise((resolve, reject) => {
+                                const tx = db.transaction([item.storeName], 'readonly');
+                                const store = tx.objectStore(item.storeName);
+                                const req = store.get(item.key);
+                                
+                                req.onsuccess = () => resolve(req.result);
+                                req.onerror = (e) => reject(e.target.error);
+                            });
+                            
+                            // Process image data separately to optimize storage
+                            let syncValue = value;
+                            if (item.storeName === 'images') {
+                                // Store a timestamp instead of the full image data
+                                syncValue = { lastUpdated: Date.now() };
+                            }
+                            
+                            // Create a path for Firebase
+                            const path = `portfolioData/${item.storeName}/${item.key.replace(/\./g, '_')}`;
+                            
+                            // Store in Firebase
+                            await firebaseDb.ref(path).set({
+                                data: syncValue,
+                                updatedBy: localStorage.getItem('device_id'),
+                                timestamp: firebase.database.ServerValue.TIMESTAMP
+                            });
+                            
+                            // Mark as synced
+                            const syncTx = db.transaction(['syncStatus'], 'readwrite');
+                            const syncSt = syncTx.objectStore('syncStatus');
+                            await syncSt.put('synced', `${item.storeName}_${item.key}`);
+                            
+                            console.log(`Synced pending item: ${item.storeName}/${item.key}`);
+                        } catch (itemError) {
+                            console.error(`Error syncing item ${item.storeName}/${item.key}:`, itemError);
+                        }
+                    }
+                    
+                    resolve(true);
+                }
+            };
+            
+            request.onerror = (event) => {
+                console.error("Error reading sync status:", event.target.error);
+                reject(event.target.error);
+            };
+        } catch (error) {
+            console.error("Error in syncPendingChanges:", error);
+            reject(error);
+        }
+    });
+}
+
+// Listen for changes from Firebase and update IndexedDB
+function setupFirebaseListeners() {
+    if (!firebaseDb) return;
+    
+    const deviceId = localStorage.getItem('device_id');
+    
+    // Listen for changes to all data types
+    firebaseDb.ref('portfolioData').on('child_changed', async (snapshot) => {
+        try {
+            const storeName = snapshot.key;
+            
+            // Get all updated items in this store
+            const storeSnapshot = await firebaseDb.ref(`portfolioData/${storeName}`).once('value');
+            const storeData = storeSnapshot.val();
+            
+            if (storeData) {
+                Object.keys(storeData).forEach(async (fbKey) => {
+                    const key = fbKey.replace(/_/g, '.');
+                    const item = storeData[fbKey];
+                    
+                    // Only process if it was updated by a different device
+                    if (item.updatedBy !== deviceId) {
+                        // For images, we need to handle specially
+                        if (storeName === 'images' && item.data.lastUpdated) {
+                            // Check if we need to fetch the actual image data
+                            try {
+                                const currentData = await readFromDb(storeName, key);
+                                // If we have no data or old data, fetch the image
+                                if (!currentData || !item.data.lastUpdated) {
+                                    // In a real app, you would fetch the actual image from a storage service
+                                    console.log(`Need to fetch image data for ${key}`);
+                                }
+                            } catch (imageError) {
+                                console.error(`Error checking image sync status for ${key}:`, imageError);
+                            }
+                        } else {
+                            // For normal data, just update IndexedDB
+                            console.log(`Updating local data from Firebase: ${storeName}/${key}`);
+                            
+                            try {
+                                // Update IndexedDB without triggering a sync back
+                                const transaction = db.transaction([storeName, 'syncStatus'], 'readwrite');
+                                const store = transaction.objectStore(storeName);
+                                const syncStore = transaction.objectStore('syncStatus');
+                                
+                                await Promise.all([
+                                    store.put(item.data, key),
+                                    syncStore.put('synced', `${storeName}_${key}`)
+                                ]);
+                                
+                                console.log(`Updated local data from Firebase: ${storeName}/${key}`);
+                                
+                                // If UI is already initialized, update it
+                                if (document.readyState === 'complete') {
+                                    // Refresh UI for this data type
+                                    if (storeName === 'settings' && key === 'theme') {
+                                        loadSavedTheme();
+                                    } else if (storeName === 'content') {
+                                        loadAllSavedContent();
+                                    } else if (storeName === 'images' && key === 'profile-photo') {
+                                        loadSavedImage('profile-photo');
+                                    }
+                                }
+                            } catch (updateError) {
+                                console.error(`Error updating IndexedDB from Firebase: ${storeName}/${key}`, updateError);
+                            }
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            console.error("Error processing Firebase update:", error);
+        }
     });
 }
 
 // Function to toggle theme
 function setTheme(themeName) {
-    console.log("Setting theme to:", themeName); // Debug log
+    console.log("Setting theme to:", themeName);
     
     // Remove all theme classes first
     document.body.classList.remove('theme-blue', 'theme-purple', 'theme-dark');
@@ -109,7 +395,7 @@ function setTheme(themeName) {
     if (selectedOption) {
         selectedOption.classList.add('active');
     } else {
-        console.log("Theme option not found for:", themeName); // Debug log
+        console.log("Theme option not found for:", themeName);
     }
 }
 
@@ -118,7 +404,7 @@ function loadSavedTheme() {
     readFromDb('settings', 'theme')
         .then(savedTheme => {
             const themeToUse = savedTheme || 'default';
-            console.log("Loading saved theme:", themeToUse); // Debug log
+            console.log("Loading saved theme:", themeToUse);
             setTheme(themeToUse);
         })
         .catch(err => {
@@ -129,13 +415,13 @@ function loadSavedTheme() {
 
 // Initialize theme selector
 function initThemeSelector() {
-    console.log("Initializing theme selector"); // Debug log
+    console.log("Initializing theme selector");
     document.querySelectorAll('.theme-option').forEach(option => {
         const theme = option.getAttribute('data-theme');
-        console.log("Found theme option:", theme); // Debug log
+        console.log("Found theme option:", theme);
         
         option.addEventListener('click', function() {
-            console.log("Theme clicked:", theme); // Debug log
+            console.log("Theme clicked:", theme);
             setTheme(theme);
         });
     });
@@ -203,7 +489,7 @@ function handleImageUpload(event, imageElementId) {
     }
 }
 
-// Update this function to use IndexedDB
+// Update this function to use the enhanced read function
 function loadSavedImage(imageElementId) {
     // First, find the image element - either by ID or by selector if ID not set yet
     let imageElement = document.getElementById(imageElementId);
@@ -217,7 +503,7 @@ function loadSavedImage(imageElementId) {
         }
     }
     
-    // Now try to load the saved image from IndexedDB
+    // Now try to load the saved image from synced storage
     if (imageElement) {
         readFromDb('images', imageElementId)
             .then(savedImage => {
@@ -347,7 +633,7 @@ function saveAllContent() {
         teachingData[sectionId] = locations;
     });
     
-    // Save to IndexedDB
+    // Save to synced storage
     writeToDb('content', 'editableContent', savedContent)
         .then(() => console.log("Content saved successfully", savedContent))
         .catch(err => console.error("Failed to save content:", err));
@@ -519,7 +805,7 @@ function updatePassword() {
                 return;
             }
             
-            // Update the password in IndexedDB
+            // Update the password in synced storage
             writeToDb('settings', 'adminPassword', newPassword)
                 .then(() => {
                     // Show success message and close modal
@@ -549,734 +835,3 @@ function enableTeachingLocationsEdit() {
         
         // Add remove button to existing locations
         const locations = grid.querySelectorAll('.teaching-item');
-        locations.forEach(location => {
-            // Only add remove button if it doesn't already exist
-            if (!location.querySelector('.remove-location')) {
-                location.setAttribute('contenteditable', 'true');
-                location.classList.add('edit-mode-input');
-                
-                const removeBtn = document.createElement('button');
-                removeBtn.textContent = 'Remove';
-                removeBtn.classList.add('remove-location');
-                removeBtn.onclick = function(e) {
-                    e.stopPropagation();
-                    location.remove();
-                };
-                location.appendChild(removeBtn);
-            }
-        });
-
-        // Add "Add New Location" button if it doesn't already exist
-        if (!section.querySelector('.add-new-location')) {
-            const addButton = document.createElement('button');
-            addButton.textContent = 'Add New Location';
-            addButton.classList.add('add-new-location');
-            addButton.onclick = function() {
-                const newLocation = document.createElement('div');
-                newLocation.classList.add('teaching-item', 'edit-mode-input');
-                newLocation.setAttribute('contenteditable', 'true');
-                newLocation.textContent = 'New Location';
-                
-                const removeBtn = document.createElement('button');
-                removeBtn.textContent = 'Remove';
-                removeBtn.classList.add('remove-location');
-                removeBtn.onclick = function(e) {
-                    e.stopPropagation();
-                    newLocation.remove();
-                };
-                
-                newLocation.appendChild(removeBtn);
-                grid.appendChild(newLocation);
-            };
-            
-            section.appendChild(addButton);
-        }
-    });
-}
-
-function enableEditMode() {
-    isEditMode = true;
-    
-    // Add edit-mode class to body for CSS hooks
-    document.body.classList.add('edit-mode');
-    
-    // Show the theme selector panel at the top of the page
-    const themeSelectorPanel = document.getElementById('theme-selector-panel');
-    themeSelectorPanel.style.display = 'block';
-    
-    // Show save changes button
-    document.getElementById('save-changes-btn').style.display = 'block';
-
-    // Add a button to toggle the theme selector if it doesn't exist
-    if (!document.getElementById('toggle-theme-btn')) {
-        const themeToggleBtn = document.createElement('button');
-        themeToggleBtn.id = 'toggle-theme-btn';
-        themeToggleBtn.className = 'toggle-theme-btn';
-        themeToggleBtn.innerHTML = 'Change Theme <i class="fas fa-palette"></i>';
-        themeToggleBtn.onclick = toggleThemeSelector;
-        
-        // Insert the button at the top of the page, right after the header
-        const header = document.querySelector('header');
-        header.parentNode.insertBefore(themeToggleBtn, header.nextSibling);
-    }
-    
-    // Add change password button if it doesn't exist
-    if (!document.getElementById('change-password-btn')) {
-        const changePasswordBtn = document.createElement('button');
-        changePasswordBtn.id = 'change-password-btn';
-        changePasswordBtn.className = 'change-password-btn';
-        changePasswordBtn.innerHTML = 'Change Password <i class="fas fa-key"></i>';
-        changePasswordBtn.onclick = showChangePasswordModal;
-        
-        // Insert the button near the theme button
-        const themeBtn = document.getElementById('toggle-theme-btn');
-        themeBtn.parentNode.insertBefore(changePasswordBtn, themeBtn.nextSibling);
-    }
-
-    // Make only specific text elements editable (exclude protected elements)
-    const editableElements = document.querySelectorAll('h1, h2, p, span, .logo p');
-    editableElements.forEach(el => {
-        // Skip protected elements
-        if (
-            el.textContent.trim() === "Developed by Portflyo" || 
-            el.textContent.trim() === "Enter Admin Password" ||
-            el.closest('footer') && el.tagName === 'P' && el.classList.contains('copyright') ||
-            el.closest('.password-modal')
-        ) {
-            return;
-        }
-        
-        // Add a unique content ID for saving/restoring if it doesn't have one
-        if (!el.getAttribute('data-content-id')) {
-            el.setAttribute('data-content-id', generateElementPath(el));
-        }
-        
-        el.setAttribute('contenteditable', 'true');
-        el.classList.add('edit-mode-input');
-    });
-
-    // Enable photo uploads - make profile image clickable for upload
-    const profileImage = document.querySelector('.about-image img');
-    if (profileImage && !document.getElementById('profile-photo-upload')) {
-        // Add an ID to the image if it doesn't have one
-        if (!profileImage.id) {
-            profileImage.id = 'profile-photo';
-        }
-        
-        // Create upload container and visual indicators
-        const uploadContainer = document.createElement('div');
-        uploadContainer.className = 'photo-upload-container';
-        
-        // Create file input
-        const fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.id = 'profile-photo-upload';
-        fileInput.accept = 'image/*';
-        fileInput.style.display = 'none';
-        fileInput.addEventListener('change', (e) => handleImageUpload(e, profileImage.id));
-        
-        // Create upload button that will trigger the file input
-        const uploadButton = document.createElement('button');
-        uploadButton.className = 'photo-upload-btn';
-        uploadButton.innerHTML = '<i class="fas fa-camera"></i> Change Photo';
-        uploadButton.onclick = () => fileInput.click();
-        
-        // Add these elements to the container
-        uploadContainer.appendChild(fileInput);
-        uploadContainer.appendChild(uploadButton);
-        
-        // Add container after the image
-        profileImage.parentNode.appendChild(uploadContainer);
-        
-        // Add edit indication to the image
-        profileImage.classList.add('editable-image');
-    }
-
-    // Enable editing for teaching locations
-    enableTeachingLocationsEdit();
-}
-// Add these functions to your script.js file
-
-// Configuration for cloud storage
-const CLOUD_STORAGE_URL = 'YOUR_API_ENDPOINT'; // Replace with your actual API endpoint
-let syncEnabled = false;
-
-// Function to initialize cloud sync
-function initCloudSync() {
-    // Check if cloud sync is enabled in settings
-    readFromDb('settings', 'cloudSyncEnabled')
-        .then(enabled => {
-            syncEnabled = enabled === true;
-            if (syncEnabled) {
-                console.log("Cloud sync is enabled");
-                // Perform initial sync on startup
-                syncFromCloud();
-            }
-        })
-        .catch(err => {
-            console.error("Error checking cloud sync setting:", err);
-        });
-}
-
-// Function to enable/disable cloud sync
-function toggleCloudSync(enabled) {
-    syncEnabled = enabled;
-    writeToDb('settings', 'cloudSyncEnabled', enabled)
-        .then(() => {
-            console.log("Cloud sync setting updated:", enabled);
-            if (enabled) {
-                // If enabling, do an immediate sync to cloud
-                syncToCloud();
-            }
-        })
-        .catch(err => {
-            console.error("Failed to update cloud sync setting:", err);
-        });
-}
-
-// Function to sync local data to cloud
-function syncToCloud() {
-    if (!syncEnabled) return;
-    
-    console.log("Syncing data to cloud...");
-    
-    // 1. Collect all data to sync
-    Promise.all([
-        readFromDb('settings', 'theme'),
-        readFromDb('settings', 'adminPassword'),
-        readFromDb('images', 'profile-photo'),
-        readFromDb('content', 'editableContent'),
-        readFromDb('content', 'teachingData')
-    ])
-    .then(([theme, adminPassword, profilePhoto, editableContent, teachingData]) => {
-        // Create payload with all data
-        const payload = {
-            lastUpdated: new Date().toISOString(),
-            data: {
-                settings: {
-                    theme: theme,
-                    adminPassword: adminPassword
-                },
-                images: {
-                    'profile-photo': profilePhoto
-                },
-                content: {
-                    editableContent: editableContent,
-                    teachingData: teachingData
-                }
-            }
-        };
-        
-        // 2. Send data to cloud storage
-        fetch(CLOUD_STORAGE_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Cloud sync failed: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log("Cloud sync successful:", data);
-            // Save the sync timestamp
-            writeToDb('settings', 'lastSyncTime', new Date().toISOString());
-        })
-        .catch(err => {
-            console.error("Cloud sync error:", err);
-        });
-    })
-    .catch(err => {
-        console.error("Error collecting data for cloud sync:", err);
-    });
-}
-
-// Function to sync from cloud to local
-function syncFromCloud() {
-    if (!syncEnabled) return;
-    
-    console.log("Syncing data from cloud...");
-    
-    // Get the last sync timestamp
-    readFromDb('settings', 'lastSyncTime')
-        .then(lastSyncTime => {
-            // Add timestamp to URL if available
-            let url = CLOUD_STORAGE_URL;
-            if (lastSyncTime) {
-                url += `?since=${encodeURIComponent(lastSyncTime)}`;
-            }
-            
-            // Fetch the latest data from cloud
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Cloud fetch failed: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(cloudData => {
-                    // Only update if cloud data is newer
-                    if (!lastSyncTime || new Date(cloudData.lastUpdated) > new Date(lastSyncTime)) {
-                        console.log("Newer data found in cloud, updating local data");
-                        
-                        // Update settings
-                        if (cloudData.data.settings) {
-                            if (cloudData.data.settings.theme) {
-                                writeToDb('settings', 'theme', cloudData.data.settings.theme)
-                                    .then(() => setTheme(cloudData.data.settings.theme))
-                                    .catch(err => console.error("Error updating theme:", err));
-                            }
-                            
-                            if (cloudData.data.settings.adminPassword) {
-                                writeToDb('settings', 'adminPassword', cloudData.data.settings.adminPassword)
-                                    .catch(err => console.error("Error updating admin password:", err));
-                            }
-                        }
-                        
-                        // Update images
-                        if (cloudData.data.images && cloudData.data.images['profile-photo']) {
-                            writeToDb('images', 'profile-photo', cloudData.data.images['profile-photo'])
-                                .then(() => {
-                                    // Update the image if it's on the page
-                                    const profileImg = document.getElementById('profile-photo');
-                                    if (profileImg) {
-                                        profileImg.src = cloudData.data.images['profile-photo'];
-                                    }
-                                })
-                                .catch(err => console.error("Error updating profile photo:", err));
-                        }
-                        
-                        // Update content
-                        if (cloudData.data.content) {
-                            if (cloudData.data.content.editableContent) {
-                                writeToDb('content', 'editableContent', cloudData.data.content.editableContent)
-                                    .then(() => {
-                                        // Update the page content
-                                        const content = cloudData.data.content.editableContent;
-                                        Object.keys(content).forEach(selector => {
-                                            try {
-                                                const element = document.querySelector(`[data-content-id="${selector}"]`);
-                                                if (element) {
-                                                    element.innerHTML = content[selector];
-                                                } else {
-                                                    // Try direct selector as fallback
-                                                    const directElement = document.querySelector(selector);
-                                                    if (directElement) {
-                                                        directElement.innerHTML = content[selector];
-                                                    }
-                                                }
-                                            } catch (error) {
-                                                console.error(`Error updating content for ${selector}:`, error);
-                                            }
-                                        });
-                                    })
-                                    .catch(err => console.error("Error updating editable content:", err));
-                            }
-                            
-                            if (cloudData.data.content.teachingData) {
-                                writeToDb('content', 'teachingData', cloudData.data.content.teachingData)
-                                    .then(() => {
-                                        // Update teaching sections
-                                        const teachingData = cloudData.data.content.teachingData;
-                                        Object.keys(teachingData).forEach(sectionId => {
-                                            let section = document.getElementById(sectionId);
-                                            
-                                            // Fall back to index-based lookup if needed
-                                            if (!section && sectionId.startsWith('teaching-section-')) {
-                                                const index = parseInt(sectionId.split('-').pop());
-                                                const allSections = document.querySelectorAll('.teaching-section');
-                                                if (index < allSections.length) {
-                                                    section = allSections[index];
-                                                }
-                                            }
-                                            
-                                            if (section) {
-                                                const grid = section.querySelector('.teaching-grid');
-                                                if (grid) {
-                                                    // Only update if in normal mode (not edit mode)
-                                                    if (!isEditMode) {
-                                                        // Clear existing items
-                                                        grid.innerHTML = '';
-                                                        
-                                                        // Add locations
-                                                        teachingData[sectionId].forEach(locationText => {
-                                                            const newLocation = document.createElement('div');
-                                                            newLocation.classList.add('teaching-item');
-                                                            newLocation.textContent = locationText;
-                                                            grid.appendChild(newLocation);
-                                                        });
-                                                    }
-                                                }
-                                            }
-                                        });
-                                    })
-                                    .catch(err => console.error("Error updating teaching data:", err));
-                            }
-                        }
-                        
-                        // Update last sync time
-                        writeToDb('settings', 'lastSyncTime', cloudData.lastUpdated);
-                    } else {
-                        console.log("Local data is up-to-date");
-                    }
-                })
-                .catch(err => {
-                    console.error("Error syncing from cloud:", err);
-                });
-        })
-        .catch(err => {
-            console.error("Error getting last sync time:", err);
-        });
-}
-
-// Modify the saveChanges() function to trigger cloud sync
-function saveChanges() {
-    if (isEditMode) {
-        // First save all content before removing edit mode
-        saveAllContent();
-        
-        // Trigger sync to cloud if enabled
-        if (syncEnabled) {
-            syncToCloud();
-        }
-        
-        // [... rest of the original function ...]
-        // Remove edit-mode class from body
-        document.body.classList.remove('edit-mode');
-        
-        // Remove edit-related elements and styling
-        const editableElements = document.querySelectorAll('[contenteditable="true"]');
-        editableElements.forEach(el => {
-            el.setAttribute('contenteditable', 'false');
-            el.classList.remove('edit-mode-input');
-        });
-
-        // Remove remove buttons and add new location buttons
-        document.querySelectorAll('.remove-location').forEach(btn => btn.remove());
-        document.querySelectorAll('.add-new-location').forEach(btn => btn.remove());
-
-        // Remove photo upload buttons but keep the uploaded images
-        document.querySelectorAll('.photo-upload-container').forEach(container => container.remove());
-        document.querySelectorAll('.editable-image').forEach(img => img.classList.remove('editable-image'));
-
-        // Hide theme selector
-        document.getElementById('theme-selector-panel').style.display = 'none';
-        
-        // Remove the theme toggle button
-        const themeToggleBtn = document.getElementById('toggle-theme-btn');
-        if (themeToggleBtn) {
-            themeToggleBtn.remove();
-        }
-        
-        // Remove the change password button
-        const changePasswordBtn = document.getElementById('change-password-btn');
-        if (changePasswordBtn) {
-            changePasswordBtn.remove();
-        }
-
-        // Hide save changes button
-        document.getElementById('save-changes-btn').style.display = 'none';
-        isEditMode = false;
-
-        alert('Changes saved successfully!');
-    }
-}
-
-// Add a cloud sync toggle to the admin UI
-function addCloudSyncToggle() {
-    if (isEditMode && !document.getElementById('cloud-sync-toggle')) {
-        // Create the toggle container
-        const toggleContainer = document.createElement('div');
-        toggleContainer.id = 'cloud-sync-container';
-        toggleContainer.className = 'cloud-sync-container';
-        
-        // Create the toggle switch
-        const toggleLabel = document.createElement('label');
-        toggleLabel.className = 'switch';
-        
-        const toggleInput = document.createElement('input');
-        toggleInput.type = 'checkbox';
-        toggleInput.id = 'cloud-sync-toggle';
-        
-        // Check current setting
-        readFromDb('settings', 'cloudSyncEnabled')
-            .then(enabled => {
-                toggleInput.checked = enabled === true;
-            })
-            .catch(() => {
-                toggleInput.checked = false;
-            });
-        
-        toggleInput.addEventListener('change', function() {
-            toggleCloudSync(this.checked);
-            if (this.checked) {
-                // If enabling, sync immediately
-                syncToCloud();
-            }
-        });
-        
-        const toggleSlider = document.createElement('span');
-        toggleSlider.className = 'slider';
-        
-        toggleLabel.appendChild(toggleInput);
-        toggleLabel.appendChild(toggleSlider);
-        
-        // Create the label text
-        const toggleText = document.createElement('span');
-        toggleText.textContent = 'Enable Cross-Browser Sync';
-        toggleText.className = 'sync-label';
-        
-        // Assemble the container
-        toggleContainer.appendChild(toggleLabel);
-        toggleContainer.appendChild(toggleText);
-        
-        // Add an info icon with explanation
-        const infoIcon = document.createElement('span');
-        infoIcon.innerHTML = '<i class="fas fa-info-circle"></i>';
-        infoIcon.className = 'sync-info';
-        infoIcon.title = 'Enable this to sync your changes across different browsers and devices. Requires server configuration.';
-        
-        toggleContainer.appendChild(infoIcon);
-        
-        // Add the container to the page
-        const changePasswordBtn = document.getElementById('change-password-btn');
-        if (changePasswordBtn) {
-            changePasswordBtn.parentNode.insertBefore(toggleContainer, changePasswordBtn.nextSibling);
-        } else {
-            const themeToggleBtn = document.getElementById('toggle-theme-btn');
-            if (themeToggleBtn) {
-                themeToggleBtn.parentNode.insertBefore(toggleContainer, themeToggleBtn.nextSibling);
-            }
-        }
-    }
-}
-
-// Add to the enableEditMode function
-function enableEditMode() {
-    // [... existing code ...]
-    isEditMode = true;
-    
-    // Add edit-mode class to body for CSS hooks
-    document.body.classList.add('edit-mode');
-    
-    // Show the theme selector panel at the top of the page
-    const themeSelectorPanel = document.getElementById('theme-selector-panel');
-    themeSelectorPanel.style.display = 'block';
-    
-    // Show save changes button
-    document.getElementById('save-changes-btn').style.display = 'block';
-
-    // [... rest of the existing function ...]
-    
-    // Add cloud sync toggle
-    addCloudSyncToggle();
-    
-    // Enable teaching locations edit
-    enableTeachingLocationsEdit();
-}
-
-// Add to the document ready function
-document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM Content Loaded"); // Debug log
-    
-    // Initialize the database first
-    initDB()
-        .then(() => {
-            console.log("Database initialized, loading data");
-            
-            // Initialize cloud sync
-            initCloudSync();
-            
-            // Add a periodic sync check (every 5 minutes)
-            setInterval(syncFromCloud, 5 * 60 * 1000);
-            
-            // Make sure theme options are properly initialized
-            initThemeSelector();
-            
-            // Load saved theme (if any)
-            loadSavedTheme();
-            
-            // First, ensure the profile image has an ID
-            const profileImage = document.querySelector('.about-image img');
-            if (profileImage && !profileImage.id) {
-                profileImage.id = 'profile-photo';
-            }
-            
-            // Then load the saved image
-            loadSavedImage('profile-photo');
-            
-            // Load all saved text content and teaching locations
-            loadAllSavedContent();
-            
-            // Debug log to check if theme selector elements exist
-            const themeOptions = document.querySelectorAll('.theme-option');
-            console.log("Number of theme options found:", themeOptions.length);
-            themeOptions.forEach(option => {
-                console.log("Theme option:", option.getAttribute('data-theme'));
-            });
-        })
-        .catch(err => {
-            console.error("Failed to initialize database:", err);
-            alert("There was an error initializing the database. Some features may not work correctly.");
-        });
-});
-
-// Add some CSS for the cloud sync toggle
-document.head.insertAdjacentHTML('beforeend', `
-<style>
-.cloud-sync-container {
-    display: flex;
-    align-items: center;
-    margin: 10px 0;
-    padding: 8px;
-    background-color: #f0f0f0;
-    border-radius: 4px;
-}
-
-.sync-label {
-    margin-left: 10px;
-    font-weight: bold;
-}
-
-.sync-info {
-    margin-left: 8px;
-    color: #666;
-    cursor: help;
-}
-
-/* Toggle switch styles */
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 24px;
-}
-
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-    border-radius: 24px;
-}
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 16px;
-    width: 16px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
-}
-
-input:checked + .slider {
-    background-color: #2196F3;
-}
-
-input:checked + .slider:before {
-    transform: translateX(26px);
-}
-</style>
-`);
-function saveChanges() {
-    if (isEditMode) {
-        // First save all content before removing edit mode
-        saveAllContent();
-        
-        // Remove edit-mode class from body
-        document.body.classList.remove('edit-mode');
-        
-        // Remove edit-related elements and styling
-        const editableElements = document.querySelectorAll('[contenteditable="true"]');
-        editableElements.forEach(el => {
-            el.setAttribute('contenteditable', 'false');
-            el.classList.remove('edit-mode-input');
-        });
-
-        // Remove remove buttons and add new location buttons
-        document.querySelectorAll('.remove-location').forEach(btn => btn.remove());
-        document.querySelectorAll('.add-new-location').forEach(btn => btn.remove());
-
-        // Remove photo upload buttons but keep the uploaded images
-        document.querySelectorAll('.photo-upload-container').forEach(container => container.remove());
-        document.querySelectorAll('.editable-image').forEach(img => img.classList.remove('editable-image'));
-
-        // Hide theme selector
-        document.getElementById('theme-selector-panel').style.display = 'none';
-        
-        // Remove the theme toggle button
-        const themeToggleBtn = document.getElementById('toggle-theme-btn');
-        if (themeToggleBtn) {
-            themeToggleBtn.remove();
-        }
-        
-        // Remove the change password button
-        const changePasswordBtn = document.getElementById('change-password-btn');
-        if (changePasswordBtn) {
-            changePasswordBtn.remove();
-        }
-
-        // Hide save changes button
-        document.getElementById('save-changes-btn').style.display = 'none';
-        isEditMode = false;
-
-        alert('Changes saved successfully!');
-    }
-}
-
-// Initialize everything when the page loads
-document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM Content Loaded"); // Debug log
-    
-    // Initialize the database first
-    initDB()
-        .then(() => {
-            console.log("Database initialized, loading data");
-            
-            // Make sure theme options are properly initialized
-            initThemeSelector();
-            
-            // Load saved theme (if any)
-            loadSavedTheme();
-            
-            // First, ensure the profile image has an ID
-            const profileImage = document.querySelector('.about-image img');
-            if (profileImage && !profileImage.id) {
-                profileImage.id = 'profile-photo';
-            }
-            
-            // Then load the saved image
-            loadSavedImage('profile-photo');
-            
-            // Load all saved text content and teaching locations
-            loadAllSavedContent();
-            
-            // Debug log to check if theme selector elements exist
-            const themeOptions = document.querySelectorAll('.theme-option');
-            console.log("Number of theme options found:", themeOptions.length);
-            themeOptions.forEach(option => {
-                console.log("Theme option:", option.getAttribute('data-theme'));
-            });
-        })
-        .catch(err => {
-            console.error("Failed to initialize database:", err);
-            alert("There was an error initializing the database. Some features may not work correctly.");
-        });
-});
