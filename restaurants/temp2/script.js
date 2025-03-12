@@ -29,8 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Open menu modal
     menuBtn.addEventListener('click', () => {
-        menuModal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
+        window.open('https://drive.google.com/file/d/1Jc-HxtKP0N1K_0wRJpcitGxeHRTBbYka/view', '_blank');
     });
     
     // Close modals when clicking close button
