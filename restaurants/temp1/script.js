@@ -6,10 +6,10 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('scroll', () => {
         if (window.scrollY > 50) {
             header.style.padding = '1rem 10%';
-            header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+            header.style.boxShadow = '0 2px 10px rgba(26, 71, 42, 0.1)';
         } else {
             header.style.padding = '1.5rem 10%';
-            header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+            header.style.boxShadow = '0 2px 5px rgba(26, 71, 42, 0.05)';
         }
     });
 
@@ -29,8 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Open menu modal
     menuBtn.addEventListener('click', () => {
-        menuModal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
+        window.open('https://drive.google.com/file/d/1Jc-HxtKP0N1K_0wRJpcitGxeHRTBbYka/view', '_blank');
     });
     
     // Close modals when clicking close button
@@ -59,9 +58,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const cards = document.querySelectorAll('.location-card');
         cards.forEach((card, index) => {
             card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
+            card.style.transform = 'translateY(10px)';
             setTimeout(() => {
-                card.style.transition = 'all 0.5s ease';
+                card.style.transition = 'all 0.4s ease';
                 card.style.opacity = '1';
                 card.style.transform = 'translateY(0)';
             }, 100 * index);
@@ -88,8 +87,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add fade-in class and initial styles
     observeElements.forEach(el => {
         el.style.opacity = '0';
-        el.style.transform = 'translateY(30px)';
-        el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
         observer.observe(el);
     });
     
@@ -107,8 +106,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const galleryItems = document.querySelectorAll('.gallery-item');
     galleryItems.forEach(item => {
         item.addEventListener('mouseenter', () => {
-            item.style.transform = 'scale(1.03)';
-            item.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.15)';
+            item.style.transform = 'translateY(-5px)';
+            item.style.boxShadow = '0 5px 15px rgba(26, 71, 42, 0.1)';
         });
         
         item.addEventListener('mouseleave', () => {
@@ -131,4 +130,4 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-});
+}); 
