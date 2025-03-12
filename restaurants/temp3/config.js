@@ -21,6 +21,24 @@ const restaurantConfig = {
         twitter: "#"
     },
     
+    // Images
+    images: {
+        hero: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80", // Elegant restaurant interior
+        about: "https://images.unsplash.com/photo-1581299894007-aaa50297cf16?auto=format&fit=crop&w=1200&q=80", // Chef preparing food
+        gallery: [
+            "https://images.unsplash.com/photo-1514326640560-7d063ef2aed5?auto=format&fit=crop&w=800&q=80", // Gourmet dish 1
+            "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800&q=80", // Gourmet dish 2
+            "https://images.unsplash.com/photo-1525610553991-2bede1a236e2?auto=format&fit=crop&w=800&q=80", // Gourmet dish 3
+            "https://images.unsplash.com/photo-1570037276380-c3ad95f7c427?auto=format&fit=crop&w=800&q=80"  // Gourmet dish 4
+        ],
+        locations: [
+            "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=600&q=80", // Downtown location
+            "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=600&q=80", // Riverside location
+            "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80"  // Uptown location
+        ],
+        menuPreview: "https://images.unsplash.com/photo-1570037276380-c3ad95f7c427?auto=format&fit=crop&w=800&q=80" // Signature dish for menu preview
+    },
+    
     // Branding Colors
     colors: {
         primary: "#1a472a",    // Dark Forest Green
@@ -30,24 +48,6 @@ const restaurantConfig = {
         dark: "#1a1a1a",       // Dark Gray
         text: "#333",          // Dark Gray
         gold: "#d4af37"        // Classic Gold
-    },
-    
-    // Images
-    images: {
-        hero: "/api/placeholder/800/800",
-        about: "/api/placeholder/800/800",
-        gallery: [
-            "/api/placeholder/500/300",
-            "/api/placeholder/500/300",
-            "/api/placeholder/500/300",
-            "/api/placeholder/500/300"
-        ],
-        locations: [
-            "/api/placeholder/300/200",
-            "/api/placeholder/300/200",
-            "/api/placeholder/300/200"
-        ],
-        menuPreview: "/api/placeholder/600/800"
     },
     
     // Particles Animation Settings
