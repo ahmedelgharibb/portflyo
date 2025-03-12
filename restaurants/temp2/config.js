@@ -72,8 +72,8 @@ const restaurantConfig = {
     
     // Menu Settings
     menu: {
-        pdfPath: "menu.pdf",
-        downloadFileName: "Gusto_Restaurant_Menu.pdf"
+        pdfPath: "https://drive.google.com/file/d/1Jc-HxtKP0N1K_0wRJpcitGxeHRTBbYka/view",
+        downloadFileName: "Restaurant_Menu.pdf"
     },
     
     // Copyright Information
