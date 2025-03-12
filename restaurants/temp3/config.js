@@ -32,6 +32,24 @@ const restaurantConfig = {
         gold: "#d4af37"        // Classic Gold
     },
     
+    // Images
+    images: {
+        hero: "/api/placeholder/800/800",
+        about: "/api/placeholder/800/800",
+        gallery: [
+            "/api/placeholder/500/300",
+            "/api/placeholder/500/300",
+            "/api/placeholder/500/300",
+            "/api/placeholder/500/300"
+        ],
+        locations: [
+            "/api/placeholder/300/200",
+            "/api/placeholder/300/200",
+            "/api/placeholder/300/200"
+        ],
+        menuPreview: "/api/placeholder/600/800"
+    },
+    
     // Particles Animation Settings
     particles: {
         color: "#1a472a",      // Dark Forest Green
@@ -133,14 +151,32 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.copyright p').textContent = 
         `© ${restaurantConfig.copyright.year} ${restaurantConfig.copyright.text}`;
     
+    // Apply images
+    // Hero image
+    document.querySelector('.hero-image .chef-image').style.backgroundImage = 
+        `url('${restaurantConfig.images.hero}')`;
+    
+    // About image
+    document.querySelector('.about-image .chef-image').style.backgroundImage = 
+        `url('${restaurantConfig.images.about}')`;
+    
+    // Gallery images
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    galleryItems.forEach((item, index) => {
+        item.style.backgroundImage = `url('${restaurantConfig.images.gallery[index]}')`;
+    });
+    
+    // Menu preview image
+    document.querySelector('.menu-preview-img').src = restaurantConfig.images.menuPreview;
+    
     // Apply locations
     const locationsContainer = document.querySelector('.locations-container');
     locationsContainer.innerHTML = '';
-    restaurantConfig.locations.forEach(location => {
+    restaurantConfig.locations.forEach((location, index) => {
         const div = document.createElement('div');
         div.className = 'location-card';
         div.innerHTML = `
-            <div class="location-image" style="background-image: url('/api/placeholder/300/200')"></div>
+            <div class="location-image" style="background-image: url('${restaurantConfig.images.locations[index]}')"></div>
             <h3>${location.name}</h3>
             <p>${location.address}</p>
             <p>${location.hours}</p>
@@ -153,16 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const downloadMenuBtn = document.getElementById('download-menu');
     downloadMenuBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        const dummyPdfPath = restaurantConfig.menu.pdfPath;
-        createNotification('Menu downloaded successfully!');
-        
-        // Uncomment for actual implementation
-        /*
-        const link = document.createElement('a');
-        link.href = dummyPdfPath;
-        link.download = restaurantConfig.menu.downloadFileName;
-        link.click();
-        */
+        window.open(restaurantConfig.menu.pdfPath, '_blank');
     });
     
     // Apply color scheme
