@@ -21,6 +21,24 @@ const restaurantConfig = {
         twitter: "#"
     },
     
+    // Images
+    images: {
+        hero: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80", // Elegant restaurant interior
+        about: "https://images.unsplash.com/photo-1581299894007-aaa50297cf16?auto=format&fit=crop&w=1200&q=80", // Chef preparing food
+        gallery: [
+            "https://images.unsplash.com/photo-1514326640560-7d063ef2aed5?auto=format&fit=crop&w=800&q=80", // Gourmet dish 1
+            "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800&q=80", // Gourmet dish 2
+            "https://images.unsplash.com/photo-1525610553991-2bede1a236e2?auto=format&fit=crop&w=800&q=80", // Gourmet dish 3
+            "https://images.unsplash.com/photo-1570037276380-c3ad95f7c427?auto=format&fit=crop&w=800&q=80"  // Gourmet dish 4
+        ],
+        locations: [
+            "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=600&q=80", // Downtown location
+            "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=600&q=80", // Riverside location
+            "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80"  // Uptown location
+        ],
+        menuPreview: "https://images.unsplash.com/photo-1570037276380-c3ad95f7c427?auto=format&fit=crop&w=800&q=80" // Signature dish for menu preview
+    },
+    
     // Branding Colors
     colors: {
         primary: "#1a472a",    // Dark Forest Green
@@ -133,14 +151,32 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.copyright p').textContent = 
         `© ${restaurantConfig.copyright.year} ${restaurantConfig.copyright.text}`;
     
+    // Apply images
+    // Hero image
+    document.querySelector('.hero-image .chef-image').style.backgroundImage = 
+        `url('${restaurantConfig.images.hero}')`;
+    
+    // About image
+    document.querySelector('.about-image .chef-image').style.backgroundImage = 
+        `url('${restaurantConfig.images.about}')`;
+    
+    // Gallery images
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    galleryItems.forEach((item, index) => {
+        item.style.backgroundImage = `url('${restaurantConfig.images.gallery[index]}')`;
+    });
+    
+    // Menu preview image
+    document.querySelector('.menu-preview-img').src = restaurantConfig.images.menuPreview;
+    
     // Apply locations
     const locationsContainer = document.querySelector('.locations-container');
     locationsContainer.innerHTML = '';
-    restaurantConfig.locations.forEach(location => {
+    restaurantConfig.locations.forEach((location, index) => {
         const div = document.createElement('div');
         div.className = 'location-card';
         div.innerHTML = `
-            <div class="location-image" style="background-image: url('/api/placeholder/300/200')"></div>
+            <div class="location-image" style="background-image: url('${restaurantConfig.images.locations[index]}')"></div>
             <h3>${location.name}</h3>
             <p>${location.address}</p>
             <p>${location.hours}</p>
@@ -153,16 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const downloadMenuBtn = document.getElementById('download-menu');
     downloadMenuBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        const dummyPdfPath = restaurantConfig.menu.pdfPath;
-        createNotification('Menu downloaded successfully!');
-        
-        // Uncomment for actual implementation
-        /*
-        const link = document.createElement('a');
-        link.href = dummyPdfPath;
-        link.download = restaurantConfig.menu.downloadFileName;
-        link.click();
-        */
+        window.open(restaurantConfig.menu.pdfPath, '_blank');
     });
     
     // Apply color scheme
