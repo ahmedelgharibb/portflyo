@@ -23,19 +23,19 @@ const restaurantConfig = {
     
     // Branding Colors
     colors: {
-        primary: "#e63946",    // Red accent
-        secondary: "#1d3557",  // Dark blue
-        light: "#f1faee",      // Off-white
-        accent: "#457b9d",     // Medium blue
-        dark: "#1d3557",       // Dark blue
-        text: "#333",          // Dark gray
-        gold: "#d4af37"        // Gold accent
+        primary: "#1a472a",    // Dark Forest Green
+        secondary: "#2d5a27",  // Deep Emerald
+        light: "#f5f5f5",      // Light Gray
+        accent: "#8b4513",     // Saddle Brown
+        dark: "#1a1a1a",       // Dark Gray
+        text: "#333",          // Dark Gray
+        gold: "#d4af37"        // Classic Gold
     },
     
     // Particles Animation Settings
     particles: {
-        color: "#e63946",      // Particle color
-        linkColor: "#d4af37",  // Link color between particles
+        color: "#1a472a",      // Dark Forest Green
+        linkColor: "#d4af37",  // Gold
         number: 80,            // Number of particles
         speed: 2,              // Movement speed
         opacity: 0.2           // Opacity of particles
@@ -72,8 +72,8 @@ const restaurantConfig = {
     
     // Menu Settings
     menu: {
-        pdfPath: "menu.pdf",
-        downloadFileName: "Gusto_Restaurant_Menu.pdf"
+        pdfPath: "https://drive.google.com/file/d/1Jc-HxtKP0N1K_0wRJpcitGxeHRTBbYka/view",
+        downloadFileName: "Restaurant_Menu.pdf"
     },
     
     // Copyright Information
@@ -254,25 +254,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     "grab": {
                         "distance": 140,
                         "line_linked": {
-                            "opacity": 0.8
+                            "opacity": 0.5
                         }
-                    },
-                    "bubble": {
-                        "distance": 400,
-                        "size": 40,
-                        "duration": 2,
-                        "opacity": 8,
-                        "speed": 3
-                    },
-                    "repulse": {
-                        "distance": 200,
-                        "duration": 0.4
                     },
                     "push": {
                         "particles_nb": 4
-                    },
-                    "remove": {
-                        "particles_nb": 2
                     }
                 }
             },
@@ -281,56 +267,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Helper functions
+// Utility function for notifications
 function createNotification(message) {
     const notification = document.createElement('div');
     notification.className = 'notification';
-    notification.innerHTML = `
-        <div class="notification-content">
-            <i class="fas fa-check-circle"></i>
-            <p>${message}</p>
-        </div>
-    `;
-    
-    // Add styles dynamically
-    notification.style.position = 'fixed';
-    notification.style.bottom = '20px';
-    notification.style.right = '20px';
-    notification.style.backgroundColor = '#4CAF50';
-    notification.style.color = 'white';
-    notification.style.padding = '15px 20px';
-    notification.style.borderRadius = '5px';
-    notification.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
-    notification.style.zIndex = '1000';
-    notification.style.transform = 'translateY(100px)';
-    notification.style.opacity = '0';
-    notification.style.transition = 'all 0.5s ease';
-    
-    // Style the content
-    const notificationContent = notification.querySelector('.notification-content');
-    notificationContent.style.display = 'flex';
-    notificationContent.style.alignItems = 'center';
-    
-    // Style the icon
-    const icon = notification.querySelector('i');
-    icon.style.marginRight = '10px';
-    icon.style.fontSize = '1.5rem';
-    
+    notification.textContent = message;
     document.body.appendChild(notification);
     
-    // Animate in
     setTimeout(() => {
-        notification.style.transform = 'translateY(0)';
-        notification.style.opacity = '1';
-    }, 10);
+        notification.classList.add('show');
+    }, 100);
     
-    // Animate out and remove
     setTimeout(() => {
-        notification.style.transform = 'translateY(100px)';
-        notification.style.opacity = '0';
-        
+        notification.classList.remove('show');
         setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 500);
+            notification.remove();
+        }, 300);
     }, 3000);
-}
+} 
