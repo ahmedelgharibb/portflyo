@@ -713,53 +713,9 @@ footer {
         font-size: 0.9rem;
     }
 
-    .menu-page {
-        padding: 6rem 0 0;
-        height: 100vh;
-        overflow: hidden;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-    }
-
-    .menu-container {
-        border-radius: 0;
-        box-shadow: none;
-        margin: 0;
-        max-width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-    }
-
-    #pdfViewer {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        -webkit-tap-highlight-color: transparent;
-    }
-
-    header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1000;
-    }
-
     footer {
-        display: none;
+        padding: 3rem 5% 1.5rem;
+        margin-top: 2rem;
     }
 
     .footer-content {
