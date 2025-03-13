@@ -107,6 +107,40 @@
             }
             setViewportHeight();
             window.addEventListener('resize', setViewportHeight);
+
+            // Handle touch events for better mobile scrolling
+            let touchStartY = 0;
+            let touchEndY = 0;
+            let isScrolling = false;
+
+            pdfViewer.addEventListener('touchstart', function(e) {
+                touchStartY = e.touches[0].clientY;
+                isScrolling = true;
+            }, { passive: true });
+
+            pdfViewer.addEventListener('touchmove', function(e) {
+                if (!isScrolling) return;
+                touchEndY = e.touches[0].clientY;
+            }, { passive: true });
+
+            pdfViewer.addEventListener('touchend', function() {
+                isScrolling = false;
+            }, { passive: true });
+
+            // Prevent default touch behavior on header
+            document.querySelector('header').addEventListener('touchmove', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+
+            // Handle orientation change
+            window.addEventListener('orientationchange', function() {
+                setTimeout(setViewportHeight, 100);
+            });
+
+            // Ensure iframe is properly sized on load
+            pdfViewer.addEventListener('load', function() {
+                setViewportHeight();
+            });
         });
     </script>
 </body>
