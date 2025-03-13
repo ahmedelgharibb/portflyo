@@ -277,6 +277,7 @@ nav a:hover {
     padding: 8rem 5% 5rem;
     min-height: 100vh;
     background: var(--gray-color);
+    overflow-x: hidden;
 }
 
 .menu-container {
@@ -295,6 +296,8 @@ nav a:hover {
     border: none;
     display: block;
     background: var(--light-color);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Footer */
@@ -703,7 +706,9 @@ footer {
     }
 
     .menu-page {
-        padding: 6rem 5% 3rem;
+        padding: 6rem 0 0;
+        height: 100vh;
+        overflow: hidden;
     }
 
     .menu-container {
@@ -711,12 +716,18 @@ footer {
         box-shadow: none;
         margin: 0;
         max-width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }
 
     #pdfViewer {
-        height: calc(100vh - 200px);
-        min-height: 500px;
+        flex: 1;
+        height: 100%;
         width: 100%;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     footer {
