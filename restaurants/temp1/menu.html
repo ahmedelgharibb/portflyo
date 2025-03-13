@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu | Restaurant Name</title>
+    <title>Menu | Modern Dining Experience</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -11,14 +11,17 @@
 <body>
     <header>
         <div class="logo">
-            <span class="logo-icon"><i class="fas fa-utensils"></i></span>
-            <h1>RESTAURANT NAME</h1>
+            <a href="index.html">
+                <span class="logo-icon"><i class="fas fa-utensils"></i></span>
+                <h1>RESTAURANT NAME</h1>
+            </a>
         </div>
         <nav>
             <ul>
-                <li><a href="index.html">Home</a></li>
                 <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#offers">Offers</a></li>
                 <li><a href="index.html#gallery">Gallery</a></li>
+                <li><a href="index.html#reviews">Reviews</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
             </ul>
         </nav>
@@ -26,23 +29,41 @@
 
     <main class="menu-page">
         <div class="menu-container">
-            <iframe id="menu-iframe" src="" frameborder="0"></iframe>
+            <iframe id="menu-iframe" src=""></iframe>
         </div>
     </main>
 
-    <footer>
+    <footer id="contact">
         <div class="footer-content">
             <div class="footer-logo">
-                <span class="logo-icon"><i class="fas fa-utensils"></i></span>
-                <h2>RESTAURANT NAME</h2>
+                <a href="index.html">
+                    <span class="logo-icon"><i class="fas fa-utensils"></i></span>
+                    <h2>RESTAURANT NAME</h2>
+                </a>
             </div>
+            <div class="footer-info">
+                <div class="contact-info">
+                    <h3>Contact Us</h3>
+                    <p><i class="fas fa-phone"></i> Contact phone</p>
+                    <p><i class="fas fa-envelope"></i> Contact email</p>
+                    <a href="#" id="whatsapp-btn" class="btn btn-whatsapp">
+                        <i class="fab fa-whatsapp"></i> Chat with us
+                    </a>
+                </div>
+                <div class="social-links">
+                    <!-- Social links will be populated from config -->
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; Year Restaurant Name. All rights reserved.</p>
         </div>
     </footer>
 
     <script src="config.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Apply restaurant name
+            // Set restaurant name
             document.title = `Menu | ${restaurantConfig.name}`;
             document.querySelectorAll('.logo h1, .footer-logo h2').forEach(el => {
                 el.textContent = restaurantConfig.name;
@@ -51,6 +72,31 @@
             // Set menu iframe source
             const menuIframe = document.getElementById('menu-iframe');
             menuIframe.src = restaurantConfig.menu.pdfPath;
+
+            // Apply contact info
+            document.querySelector('.contact-info p:nth-child(2)').innerHTML = 
+                `<i class="fas fa-phone"></i> ${restaurantConfig.phone}`;
+            document.querySelector('.contact-info p:nth-child(3)').innerHTML = 
+                `<i class="fas fa-envelope"></i> ${restaurantConfig.email}`;
+
+            // Apply WhatsApp button
+            const whatsappBtn = document.getElementById('whatsapp-btn');
+            whatsappBtn.href = restaurantConfig.whatsapp;
+
+            // Apply social links
+            const socialLinks = document.querySelector('.social-links');
+            socialLinks.innerHTML = '';
+            Object.entries(restaurantConfig.social).forEach(([platform, link]) => {
+                const a = document.createElement('a');
+                a.href = link;
+                a.className = 'social-icon';
+                a.innerHTML = `<i class="fab fa-${platform}"></i>`;
+                socialLinks.appendChild(a);
+            });
+
+            // Apply copyright
+            document.querySelector('.copyright p').textContent = 
+                `© ${restaurantConfig.copyright.year} ${restaurantConfig.copyright.text}`;
         });
     </script>
 </body>
