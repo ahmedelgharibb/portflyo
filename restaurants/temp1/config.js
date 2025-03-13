@@ -4,8 +4,8 @@
 const restaurantConfig = {
     // Basic Info
     name: "GUSTO",
-    tagline: "Exceptional Cuisine, Unforgettable Experience",
-    description: "Indulge in a culinary journey through flavors from around the world",
+    tagline: "Modern Dining Experience",
+    description: "Experience the perfect blend of flavors and ambiance",
     foundedYear: 2010,
     story: "Founded in 2010, Gusto has been delighting patrons with exceptional cuisine and impeccable service. Our chefs combine traditional techniques with innovative approaches to create dishes that surprise and delight.",
     sourcingInfo: "Every ingredient is carefully sourced from local farmers and premium suppliers to ensure the highest quality dining experience.",
@@ -13,6 +13,7 @@ const restaurantConfig = {
     // Contact Information
     phone: "(555) 123-4567",
     email: "info@gusto-restaurant.com",
+    whatsapp: "https://wa.me/1234567890", // Replace with actual WhatsApp number
     
     // Social Media
     social: {
@@ -23,31 +24,31 @@ const restaurantConfig = {
     
     // Images
     images: {
-        hero: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80", // Elegant restaurant interior
-        about: "https://images.unsplash.com/photo-1581299894007-aaa50297cf16?auto=format&fit=crop&w=1200&q=80", // Chef preparing food
+        hero: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
+        about: "https://images.unsplash.com/photo-1581299894007-aaa50297cf16?auto=format&fit=crop&w=1200&q=80",
         gallery: [
-            "https://images.unsplash.com/photo-1514326640560-7d063ef2aed5?auto=format&fit=crop&w=800&q=80", // Gourmet dish 1
-            "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800&q=80", // Gourmet dish 2
-            "https://berriesandspice.com/wp-content/uploads/2018/08/Berries-and-Spice-How-to-plate-dishes-worthy-of-a-fine-dining-restaurant-the-complete-guide-23-scaled.jpg", // Gourmet dish 3
-            "https://media.istockphoto.com/id/1081422898/photo/pan-fried-duck.jpg?s=612x612&w=0&k=20&c=kzlrX7KJivvufQx9mLd-gMiMHR6lC2cgX009k9XO6VA="  // Gourmet dish 4
+            "https://images.unsplash.com/photo-1514326640560-7d063ef2aed5?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800&q=80",
+            "https://berriesandspice.com/wp-content/uploads/2018/08/Berries-and-Spice-How-to-plate-dishes-worthy-of-a-fine-dining-restaurant-the-complete-guide-23-scaled.jpg",
+            "https://media.istockphoto.com/id/1081422898/photo/pan-fried-duck.jpg?s=612x612&w=0&k=20&c=kzlrX7KJivvufQx9mLd-gMiMHR6lC2cgX009k9XO6VA="
         ],
         locations: [
-            "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=600&q=80", // Downtown location
-            "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=600&q=80", // Riverside location
-            "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80"  // Uptown location
+            "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=600&q=80",
+            "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=600&q=80",
+            "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80"
         ],
         menuPreview: "https://images.unsplash.com/photo-1570037276380-c3ad95f7c427?auto=format&fit=crop&w=800&q=80" // Signature dish for menu preview
     },
     
     // Branding Colors
     colors: {
-        primary: "#1a472a",    // Dark Forest Green
-        secondary: "#2d5a27",  // Deep Emerald
-        light: "#f5f5f5",      // Light Gray
-        accent: "#8b4513",     // Saddle Brown
-        dark: "#1a1a1a",       // Dark Gray
-        text: "#333",          // Dark Gray
-        gold: "#d4af37"        // Classic Gold
+        primary: "#FF4B2B",    // Modern Red
+        secondary: "#2B2B2B",  // Dark Gray
+        accent: "#FFD700",     // Gold
+        text: "#333333",       // Dark Gray
+        light: "#FFFFFF",      // White
+        gray: "#F5F5F5",       // Light Gray
+        dark: "#1A1A1A"        // Dark Gray
     },
     
     // Particles Animation Settings
@@ -62,7 +63,9 @@ const restaurantConfig = {
     // Header Navigation
     navigation: [
         { name: "About", link: "#about" },
+        { name: "Offers", link: "#offers" },
         { name: "Gallery", link: "#gallery" },
+        { name: "Reviews", link: "#reviews" },
         { name: "Contact", link: "#contact" }
     ],
     
@@ -94,9 +97,38 @@ const restaurantConfig = {
         downloadFileName: "Restaurant_Menu.pdf"
     },
     
+    // Special Offers
+    offers: [
+        {
+            title: "Weekend Brunch Special",
+            description: "Enjoy our signature brunch menu with bottomless mimosas",
+            image: "https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&fit=crop&w=800&q=80",
+            validUntil: "Every Weekend"
+        },
+        {
+            title: "Happy Hour",
+            description: "50% off appetizers and special drink prices",
+            image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80",
+            validUntil: "Mon-Fri, 4-7 PM"
+        },
+        {
+            title: "Date Night Special",
+            description: "3-course meal for two with a bottle of wine",
+            image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
+            validUntil: "Every Thursday"
+        }
+    ],
+    
+    // Google Reviews Settings
+    googleReviews: {
+        placeId: "YOUR_GOOGLE_PLACE_ID", // Replace with actual Google Place ID
+        apiKey: "YOUR_GOOGLE_API_KEY",    // Replace with actual Google API Key
+        maxReviews: 3
+    },
+    
     // Copyright Information
     copyright: {
-        year: 2025,
+        year: 2024,
         text: "Gusto Restaurant. All rights reserved."
     }
 };
@@ -104,7 +136,7 @@ const restaurantConfig = {
 // Apply configuration to the website
 document.addEventListener('DOMContentLoaded', function() {
     // Apply restaurant name
-    document.title = `${restaurantConfig.name} | Fine Dining Experience`;
+    document.title = `${restaurantConfig.name} | Modern Dining Experience`;
     document.querySelectorAll('.logo h1, .footer-logo h2').forEach(el => {
         el.textContent = restaurantConfig.name;
     });
@@ -136,6 +168,10 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.contact-info p:nth-child(3)').innerHTML = 
         `<i class="fas fa-envelope"></i> ${restaurantConfig.email}`;
     
+    // Apply WhatsApp button
+    const whatsappBtn = document.getElementById('whatsapp-btn');
+    whatsappBtn.href = restaurantConfig.whatsapp;
+    
     // Apply social links
     const socialLinks = document.querySelector('.social-links');
     socialLinks.innerHTML = '';
@@ -152,22 +188,34 @@ document.addEventListener('DOMContentLoaded', function() {
         `© ${restaurantConfig.copyright.year} ${restaurantConfig.copyright.text}`;
     
     // Apply images
-    // Hero image
     document.querySelector('.hero-image .chef-image').style.backgroundImage = 
         `url('${restaurantConfig.images.hero}')`;
     
-    // About image
     document.querySelector('.about-image .chef-image').style.backgroundImage = 
         `url('${restaurantConfig.images.about}')`;
     
-    // Gallery images
+    // Apply gallery images
     const galleryItems = document.querySelectorAll('.gallery-item');
     galleryItems.forEach((item, index) => {
         item.style.backgroundImage = `url('${restaurantConfig.images.gallery[index]}')`;
     });
     
-    // Menu preview image
-    document.querySelector('.menu-preview-img').src = restaurantConfig.images.menuPreview;
+    // Apply offers
+    const offersGrid = document.querySelector('.offers-grid');
+    offersGrid.innerHTML = '';
+    restaurantConfig.offers.forEach(offer => {
+        const offerCard = document.createElement('div');
+        offerCard.className = 'offer-card';
+        offerCard.innerHTML = `
+            <div class="offer-image" style="background-image: url('${offer.image}')"></div>
+            <div class="offer-content">
+                <h3>${offer.title}</h3>
+                <p>${offer.description}</p>
+                <p class="offer-validity">Valid: ${offer.validUntil}</p>
+            </div>
+        `;
+        offersGrid.appendChild(offerCard);
+    });
     
     // Apply locations
     const locationsContainer = document.querySelector('.locations-container');
@@ -293,6 +341,49 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Function to load Google Reviews
+async function loadGoogleReviews() {
+    if (!restaurantConfig.googleReviews.placeId || !restaurantConfig.googleReviews.apiKey) {
+        console.warn('Google Reviews configuration is missing');
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            `https://maps.googleapis.com/maps/api/place/details/json?place_id=${restaurantConfig.googleReviews.placeId}&fields=reviews&key=${restaurantConfig.googleReviews.apiKey}`
+        );
+        const data = await response.json();
+
+        if (data.result && data.result.reviews) {
+            const reviewsContainer = document.getElementById('google-reviews');
+            reviewsContainer.innerHTML = '';
+
+            data.result.reviews
+                .slice(0, restaurantConfig.googleReviews.maxReviews)
+                .forEach(review => {
+                    const reviewCard = document.createElement('div');
+                    reviewCard.className = 'review-card';
+                    reviewCard.innerHTML = `
+                        <div class="review-header">
+                            <div class="reviewer-image" style="background-image: url('${review.profile_photo_url}')"></div>
+                            <div class="reviewer-name">${review.author_name}</div>
+                        </div>
+                        <div class="review-stars">
+                            ${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}
+                        </div>
+                        <div class="review-text">${review.text}</div>
+                    `;
+                    reviewsContainer.appendChild(reviewCard);
+                });
+        }
+    } catch (error) {
+        console.error('Error loading Google Reviews:', error);
+    }
+}
+
+// Load Google Reviews when the page loads
+document.addEventListener('DOMContentLoaded', loadGoogleReviews);
 
 // Utility function for notifications
 function createNotification(message) {
