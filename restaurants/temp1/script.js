@@ -5,9 +5,12 @@ const locationsModal = document.getElementById('locations-modal');
 const locationsBtn = document.getElementById('locations-btn');
 const closeBtns = document.querySelectorAll('.close-btn');
 const writeReviewBtn = document.getElementById('write-review');
+const locationsContainer = document.querySelector('.locations-container');
 
 // Event Listeners
 locationsBtn.addEventListener('click', () => {
+    // Populate locations before showing modal
+    populateLocations();
     locationsModal.style.display = 'block';
 });
 
@@ -23,6 +26,30 @@ window.addEventListener('click', (e) => {
         locationsModal.style.display = 'none';
     }
 });
+
+// Function to populate locations
+function populateLocations() {
+    if (!restaurantConfig.locations || !restaurantConfig.images.locations) {
+        console.error('Locations data is missing in config');
+        return;
+    }
+
+    locationsContainer.innerHTML = '';
+    restaurantConfig.locations.forEach((location, index) => {
+        const locationCard = document.createElement('div');
+        locationCard.className = 'location-card';
+        locationCard.innerHTML = `
+            <div class="location-image" style="background-image: url('${restaurantConfig.images.locations[index]}')"></div>
+            <h3>${location.name}</h3>
+            <p><i class="fas fa-map-marker-alt"></i> ${location.address}</p>
+            <p><i class="fas fa-clock"></i> ${location.hours}</p>
+            <a href="${location.mapLink}" target="_blank" class="location-link">
+                <i class="fas fa-directions"></i> Get Directions
+            </a>
+        `;
+        locationsContainer.appendChild(locationCard);
+    });
+}
 
 // Handle review button click
 writeReviewBtn.addEventListener('click', () => {
