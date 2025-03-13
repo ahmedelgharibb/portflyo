@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu | Restaurant Name</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <span class="logo-icon"><i class="fas fa-utensils"></i></span>
+            <h1>RESTAURANT NAME</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#gallery">Gallery</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="menu-page">
+        <div class="menu-container">
+            <iframe id="menu-iframe" src="" frameborder="0"></iframe>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <span class="logo-icon"><i class="fas fa-utensils"></i></span>
+                <h2>RESTAURANT NAME</h2>
+            </div>
+        </div>
+    </footer>
+
+    <script src="config.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Apply restaurant name
+            document.title = `Menu | ${restaurantConfig.name}`;
+            document.querySelectorAll('.logo h1, .footer-logo h2').forEach(el => {
+                el.textContent = restaurantConfig.name;
+            });
+
+            // Set menu iframe source
+            const menuIframe = document.getElementById('menu-iframe');
+            menuIframe.src = restaurantConfig.menu.pdfPath;
+        });
+    </script>
+</body>
+</html> 
