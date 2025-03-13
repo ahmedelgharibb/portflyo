@@ -6,6 +6,17 @@ const locationsBtn = document.getElementById('locations-btn');
 const closeBtns = document.querySelectorAll('.close-btn');
 const writeReviewBtn = document.getElementById('write-review');
 const locationsContainer = document.querySelector('.locations-container');
+const galleryGrid = document.querySelector('.gallery-grid');
+
+// Gallery Images with Descriptions
+const galleryImages = [
+    { title: "Restaurant Ambiance", description: "Elegant dining area with modern decor" },
+    { title: "Signature Dishes", description: "Our chef's special creations" },
+    { title: "Fresh Ingredients", description: "Premium quality ingredients" },
+    { title: "Outdoor Seating", description: "Beautiful outdoor dining experience" },
+    { title: "Bar Area", description: "Stylish bar with craft cocktails" },
+    { title: "Private Events", description: "Perfect space for special occasions" }
+];
 
 // Event Listeners
 locationsBtn.addEventListener('click', () => {
@@ -50,6 +61,34 @@ function populateLocations() {
         locationsContainer.appendChild(locationCard);
     });
 }
+
+// Function to populate gallery
+function populateGallery() {
+    if (!restaurantConfig.images.gallery) {
+        console.error('Gallery images are missing in config');
+        return;
+    }
+
+    galleryGrid.innerHTML = '';
+    restaurantConfig.images.gallery.forEach((image, index) => {
+        const galleryItem = document.createElement('div');
+        galleryItem.className = 'gallery-item';
+        galleryItem.innerHTML = `
+            <div class="gallery-image" style="background-image: url('${image}')"></div>
+            <div class="gallery-overlay">
+                <h3>${galleryImages[index].title}</h3>
+                <p>${galleryImages[index].description}</p>
+            </div>
+        `;
+        galleryGrid.appendChild(galleryItem);
+    });
+}
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+    populateGallery();
+    // ... existing event listeners ...
+});
 
 // Handle review button click
 writeReviewBtn.addEventListener('click', () => {
