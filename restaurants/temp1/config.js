@@ -38,8 +38,7 @@ const restaurantConfig = {
             "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=600&q=80",
             "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=600&q=80",
             "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80"
-        ],
-        menuPreview: "https://images.unsplash.com/photo-1570037276380-c3ad95f7c427?auto=format&fit=crop&w=800&q=80" // Signature dish for menu preview
+        ]
     },
     
     // Branding Colors
@@ -92,12 +91,6 @@ const restaurantConfig = {
             mapLink: "https://maps.google.com"
         }
     ],
-    
-    // Menu Settings
-    menu: {
-        pdfPath: "https://portflyo-kappa.vercel.app/restaurants/temp1/Menu-Tobys-Estate-Hublife.pdf",
-        downloadFileName: "Restaurant_Menu.pdf"
-    },
     
     // Special Offers
     offers: [
@@ -233,13 +226,6 @@ document.addEventListener('DOMContentLoaded', function() {
             <a href="${location.mapLink}" target="_blank" class="location-link">Get Directions</a>
         `;
         locationsContainer.appendChild(div);
-    });
-    
-    // Apply menu information
-    const downloadMenuBtn = document.getElementById('download-menu');
-    downloadMenuBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.open(restaurantConfig.menu.pdfPath, '_blank');
     });
     
     // Apply color scheme
