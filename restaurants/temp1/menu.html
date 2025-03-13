@@ -29,7 +29,7 @@
 
     <main class="menu-page">
         <div class="menu-container">
-            <iframe id="menu-iframe" src=""></iframe>
+            <iframe id="menu-iframe" src="" frameborder="0" type="application/pdf"></iframe>
         </div>
     </main>
 
@@ -69,9 +69,11 @@
                 el.textContent = restaurantConfig.name;
             });
 
-            // Set menu iframe source
+            // Set menu iframe source with proper parameters
             const menuIframe = document.getElementById('menu-iframe');
-            menuIframe.src = restaurantConfig.menu.pdfPath;
+            const pdfUrl = restaurantConfig.menu.pdfPath;
+            // Add parameters to force PDF display instead of preview
+            menuIframe.src = `${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`;
 
             // Apply contact info
             document.querySelector('.contact-info p:nth-child(2)').innerHTML = 
