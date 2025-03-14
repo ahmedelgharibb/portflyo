@@ -25,7 +25,7 @@ const restaurantConfig = {
     // Images
     images: {
         hero: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&q=80",
-        about: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=80",
+        about: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80",
         gallery: [
             "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80",
@@ -73,7 +73,7 @@ const restaurantConfig = {
     // Locations
     locations: [
         {
-            name: "Dainties Coffee",
+            name: "Stella Compound Branch",
             address: "Stella Compound, Cairo",
             hours: "Open daily: 7:00 AM - 11:00 PM",
             mapLink: "https://maps.app.goo.gl/8ZptZ9aHaiSmbKf39?g_st=iw"
