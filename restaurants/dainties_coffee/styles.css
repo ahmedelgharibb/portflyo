@@ -381,7 +381,7 @@ footer::before {
 .contact-info h3 {
     font-size: 1.2rem;
     margin-bottom: 1rem;
-    color: var(--accent-color);
+    color: var(--light-color);
 }
 
 .contact-info p {
@@ -393,7 +393,7 @@ footer::before {
 }
 
 .contact-info p i {
-    color: var(--accent-color);
+    color: var(--light-color);
 }
 
 .social-links {
@@ -406,10 +406,12 @@ footer::before {
     color: var(--light-color);
     font-size: 1.5rem;
     transition: color 0.3s ease;
+    opacity: 1;
 }
 
 .social-icon:hover {
-    color: var(--accent-color);
+    color: var(--light-color);
+    opacity: 0.8;
 }
 
 .copyright {
