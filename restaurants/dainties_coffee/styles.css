@@ -105,6 +105,23 @@ nav a:hover {
     gap: 4rem;
     align-items: center;
     background: var(--gray-color);
+    min-height: 80vh;
+}
+
+.hero-image {
+    position: relative;
+    height: 500px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.hero-image .chef-image {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.3s ease;
 }
 
 .hero-content h2 {
@@ -475,17 +492,16 @@ footer::before {
     z-index: 1;
 }
 
-.about-image .image-frame {
+.about-image .chef-image {
     width: 100%;
     height: 100%;
     background-size: cover;
     background-position: center;
-    transform: scale(1.05);
     transition: transform 0.3s ease;
 }
 
-.about-image:hover .image-frame {
-    transform: scale(1);
+.about-image:hover .chef-image {
+    transform: scale(1.05);
 }
 
 /* Modal Styles */
