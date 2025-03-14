@@ -52,13 +52,6 @@ const restaurantConfig = {
         dark: "#1A1A1A"        // Dark Gray
     },
     
-    // Logo
-    logo: {
-        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkl5Jyom7y0YrScB5KYA-LwbyTmfIdS8Z_ig&s",
-        width: "150px",
-        height: "auto"
-    },
-    
     // Particles Animation Settings
     particles: {
         color: "#8B4513",      // Coffee Brown
@@ -125,22 +118,11 @@ const restaurantConfig = {
 
 // Apply configuration to the website
 document.addEventListener('DOMContentLoaded', function() {
-    // Apply restaurant name and logo
+    // Apply restaurant name
     document.title = `${restaurantConfig.name} | Modern Dining Experience`;
-    
-    // Update logo in header
-    const headerLogo = document.querySelector('.logo');
-    headerLogo.innerHTML = `
-        <img src="${restaurantConfig.logo.image}" alt="${restaurantConfig.name}" style="width: ${restaurantConfig.logo.width}; height: ${restaurantConfig.logo.height};">
-        <h1>${restaurantConfig.name}</h1>
-    `;
-    
-    // Update logo in footer
-    const footerLogo = document.querySelector('.footer-logo');
-    footerLogo.innerHTML = `
-        <img src="${restaurantConfig.logo.image}" alt="${restaurantConfig.name}" style="width: ${restaurantConfig.logo.width}; height: ${restaurantConfig.logo.height};">
-        <h2>${restaurantConfig.name}</h2>
-    `;
+    document.querySelectorAll('.logo h1, .footer-logo h2').forEach(el => {
+        el.textContent = restaurantConfig.name;
+    });
     
     // Apply hero content
     document.querySelector('.hero-content h2').innerHTML = restaurantConfig.tagline;

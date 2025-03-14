@@ -69,10 +69,9 @@ header {
     gap: 1rem;
 }
 
-.logo img {
-    height: 50px;
-    width: auto;
-    object-fit: contain;
+.logo-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
 }
 
 .logo h1 {
@@ -344,10 +343,22 @@ footer::before {
     gap: 1rem;
 }
 
-.footer-logo img {
-    height: 50px;
-    width: auto;
-    object-fit: contain;
+.footer-logo a {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    color: var(--light-color);
+    transition: color 0.3s ease;
+}
+
+.footer-logo a:hover {
+    color: var(--accent-color);
+}
+
+.footer-logo .logo-icon {
+    font-size: 2rem;
+    color: var(--accent-color);
 }
 
 .footer-logo h2 {
