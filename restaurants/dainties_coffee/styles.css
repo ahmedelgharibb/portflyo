@@ -310,13 +310,27 @@ nav a:hover {
 
 /* Footer */
 footer {
-    background: var(--secondary-color);
+    background: var(--primary-color);
     color: var(--light-color);
     padding: 4rem 5% 2rem;
     margin-top: 4rem;
+    position: relative;
+}
+
+footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(139, 69, 19, 0.9), rgba(139, 69, 19, 0.7));
+    z-index: 1;
 }
 
 .footer-content {
+    position: relative;
+    z-index: 2;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 3rem;
@@ -350,6 +364,7 @@ footer {
 .footer-logo h2 {
     font-size: 1.5rem;
     font-weight: 700;
+    color: var(--light-color);
 }
 
 .contact-info h3 {
@@ -363,6 +378,7 @@ footer {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    color: var(--light-color);
 }
 
 .contact-info p i {
@@ -386,6 +402,8 @@ footer {
 }
 
 .copyright {
+    position: relative;
+    z-index: 2;
     text-align: center;
     padding-top: 2rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
