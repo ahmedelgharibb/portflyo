@@ -15,6 +15,14 @@ const restaurantConfig = {
     email: "info@daintiescoffee.com",
     whatsapp: "https://wa.me/966500000000", // Replace with actual WhatsApp number
     
+    /* Social Media Configuration (Commented Out)
+    social: {
+        instagram: "https://instagram.com/daintiescoffee",
+        facebook: "https://facebook.com/daintiescoffee",
+        twitter: "https://twitter.com/daintiescoffee"
+    },
+    */
+    
     // Images
     images: {
         about: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=1200&q=80",
