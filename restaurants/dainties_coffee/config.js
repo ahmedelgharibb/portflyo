@@ -15,13 +15,6 @@ const restaurantConfig = {
     email: "info@daintiescoffee.com",
     whatsapp: "https://wa.me/966500000000", // Replace with actual WhatsApp number
     
-    // Social Media
-    social: {
-        instagram: "https://www.instagram.com/daintiescoffee_?igsh=MWh0enZvMzNldzBtYg==",
-        facebook: "#",
-        twitter: "#"
-    },
-    
     // Images
     images: {
         about: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=1200&q=80",
@@ -153,17 +146,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Apply WhatsApp button
     const whatsappBtn = document.getElementById('whatsapp-btn');
     whatsappBtn.href = restaurantConfig.whatsapp;
-    
-    // Apply social links
-    const socialLinks = document.querySelector('.social-links');
-    socialLinks.innerHTML = '';
-    Object.entries(restaurantConfig.social).forEach(([platform, link]) => {
-        const a = document.createElement('a');
-        a.href = link;
-        a.className = 'social-icon';
-        a.innerHTML = `<i class="fab fa-${platform}"></i>`;
-        socialLinks.appendChild(a);
-    });
     
     // Apply copyright
     document.querySelector('.copyright p').textContent = 
