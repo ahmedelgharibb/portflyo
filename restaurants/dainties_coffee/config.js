@@ -43,9 +43,9 @@ const restaurantConfig = {
     
     // Branding Colors
     colors: {
-        primary: "#8B4513",    // Coffee Brown
+        primary: "#2E7D32",    // Forest Green
         secondary: "#2B2B2B",  // Dark Gray
-        accent: "#D4AF37",     // Gold
+        accent: "#4CAF50",     // Light Green
         text: "#333333",       // Dark Gray
         light: "#FFFFFF",      // White
         gray: "#F5F5F5",       // Light Gray
@@ -54,8 +54,8 @@ const restaurantConfig = {
     
     // Particles Animation Settings
     particles: {
-        color: "#8B4513",      // Coffee Brown
-        linkColor: "#D4AF37",  // Gold
+        color: "#2E7D32",      // Forest Green
+        linkColor: "#4CAF50",  // Light Green
         number: 80,            // Number of particles
         speed: 2,              // Movement speed
         opacity: 0.2           // Opacity of particles
