@@ -73,22 +73,10 @@ const restaurantConfig = {
     // Locations
     locations: [
         {
-            name: "Main Branch",
-            address: "123 Coffee Street, City Center",
+            name: "Dainties Coffee",
+            address: "Stella Compound, Cairo",
             hours: "Open daily: 7:00 AM - 11:00 PM",
-            mapLink: "https://maps.google.com"
-        },
-        {
-            name: "Downtown Branch",
-            address: "456 Brew Avenue, Downtown",
-            hours: "Open daily: 7:00 AM - 11:00 PM",
-            mapLink: "https://maps.google.com"
-        },
-        {
-            name: "Mall Branch",
-            address: "789 Coffee Lane, Mall Area",
-            hours: "Open daily: 8:00 AM - 12:00 AM",
-            mapLink: "https://maps.google.com"
+            mapLink: "https://maps.app.goo.gl/8ZptZ9aHaiSmbKf39?g_st=iw"
         }
     ],
     
