@@ -171,10 +171,10 @@ document.addEventListener('DOMContentLoaded', function() {
         `© ${restaurantConfig.copyright.year} ${restaurantConfig.copyright.text}`;
     
     // Apply images
-    document.querySelector('.hero-image .chef-image').style.backgroundImage = 
+    document.querySelector('.hero-image').style.backgroundImage = 
         `url('${restaurantConfig.images.hero}')`;
     
-    document.querySelector('.about-image .chef-image').style.backgroundImage = 
+    document.querySelector('.about-image').style.backgroundImage = 
         `url('${restaurantConfig.images.about}')`;
     
     // Apply gallery images
