@@ -24,7 +24,6 @@ const restaurantConfig = {
     
     // Images
     images: {
-        hero: "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?auto=format&fit=crop&w=1200&q=80",
         about: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=1200&q=80",
         gallery: [
             "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?auto=format&fit=crop&w=800&q=80",
@@ -171,9 +170,6 @@ document.addEventListener('DOMContentLoaded', function() {
         `© ${restaurantConfig.copyright.year} ${restaurantConfig.copyright.text}`;
     
     // Apply images
-    document.querySelector('.hero-image').style.backgroundImage = 
-        `url('${restaurantConfig.images.hero}')`;
-    
     document.querySelector('.about-image').style.backgroundImage = 
         `url('${restaurantConfig.images.about}')`;
     

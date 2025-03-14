@@ -100,52 +100,40 @@ nav a:hover {
 /* Hero Section */
 .hero {
     padding: 8rem 5% 5rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
+    display: flex;
+    justify-content: center;
     align-items: center;
+    text-align: center;
     background: var(--gray-color);
     min-height: 80vh;
 }
 
-.hero-image {
-    position: relative;
-    height: 500px;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.hero-image .chef-image,
-.hero-image {
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    transition: transform 0.3s ease;
-}
-
-.hero-image:hover .chef-image,
-.hero-image:hover {
-    transform: scale(1.05);
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .hero-content h2 {
-    font-size: 3rem;
+    font-size: 3.5rem;
     font-weight: 700;
     color: var(--secondary-color);
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
 }
 
 .hero-content p {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     color: var(--text-color);
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .cta-buttons {
     display: flex;
     gap: 1rem;
+    justify-content: center;
 }
 
 .btn {
