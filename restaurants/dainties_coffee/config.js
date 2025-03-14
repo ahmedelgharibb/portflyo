@@ -43,9 +43,9 @@ const restaurantConfig = {
     
     // Branding Colors
     colors: {
-        primary: "#2E7D32",    // Forest Green
+        primary: "#3c4b3b",    // Dark Sage Green
         secondary: "#2B2B2B",  // Dark Gray
-        accent: "#4CAF50",     // Light Green
+        accent: "#5a7158",     // Lighter Sage Green
         text: "#333333",       // Dark Gray
         light: "#FFFFFF",      // White
         gray: "#F5F5F5",       // Light Gray
@@ -54,8 +54,8 @@ const restaurantConfig = {
     
     // Particles Animation Settings
     particles: {
-        color: "#2E7D32",      // Forest Green
-        linkColor: "#4CAF50",  // Light Green
+        color: "#3c4b3b",      // Dark Sage Green
+        linkColor: "#5a7158",  // Lighter Sage Green
         number: 80,            // Number of particles
         speed: 2,              // Movement speed
         opacity: 0.2           // Opacity of particles
