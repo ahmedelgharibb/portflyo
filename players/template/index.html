@@ -54,15 +54,18 @@
             document.querySelector('.hero-player img').src = config.images.hero;
             document.querySelector('.about-image img').src = config.images.about;
 
-            // Update gallery
-            const galleryItems = document.querySelectorAll('.gallery-item');
-            config.images.gallery.forEach((item, index) => {
-                if (galleryItems[index]) {
-                    galleryItems[index].querySelector('img').src = item.image;
-                    galleryItems[index].querySelector('.gallery-title').textContent = item.title;
-                    galleryItems[index].querySelector('.gallery-subtitle').textContent = item.subtitle;
-                }
-            });
+            // Update achievements
+            const achievementsContainer = document.querySelector('.achievements-grid');
+            achievementsContainer.innerHTML = config.achievements.map(achievement => `
+                <div class="achievement-card">
+                    <span class="achievement-icon">${achievement.icon}</span>
+                    <div class="achievement-content">
+                        <h3>${achievement.title}</h3>
+                        <span class="achievement-year">${achievement.year}</span>
+                        <p>${achievement.description}</p>
+                    </div>
+                </div>
+            `).join('');
 
             // Update timeline
             const timelineContainer = document.querySelector('.timeline');
@@ -87,8 +90,7 @@
             // Update social media links
             const socialLinks = document.querySelectorAll('.social-icon');
             socialLinks[0].href = config.socialMedia.facebook;
-            socialLinks[1].href = config.socialMedia.instagram;
-            socialLinks[2].href = config.socialMedia.twitter;
+            socialLinks[1].href = config.socialMedia.twitter;
         });
     </script>
     <!-- Preloader -->
@@ -104,7 +106,7 @@
                 <li><a href="#hero">Home</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#stats">Stats</a></li>
-                <li><a href="#gallery">Gallery</a></li>
+                <li><a href="#achievements">Achievements</a></li>
                 <li><a href="#timeline">Timeline</a></li>
                 <li><a href="#testimonials">Testimonials</a></li>
                 <li><a href="#contact">Contact</a></li>
@@ -119,7 +121,7 @@
             <li><a href="#hero">Home</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#stats">Stats</a></li>
-            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#achievements">Achievements</a></li>
             <li><a href="#timeline">Timeline</a></li>
             <li><a href="#testimonials">Testimonials</a></li>
             <li><a href="#contact">Contact</a></li>
@@ -211,32 +213,12 @@
         </div>
     </section>
 
-    <!-- Gallery Section -->
-    <section id="gallery" class="gallery-section">
+    <!-- Achievements Section -->
+    <section id="achievements" class="achievements-section">
         <div class="container">
-            <h2 class="section-title">Gallery</h2>
-            <div class="gallery-grid">
-                <div class="gallery-item">
-                    <img src="https://via.placeholder.com/300x300" alt="Gallery Image 1">
-                    <div class="gallery-overlay">
-                        <h3 class="gallery-title">Championship Win</h3>
-                        <p class="gallery-subtitle">2022 Finals</p>
-                    </div>
-                </div>
-                <div class="gallery-item">
-                    <img src="https://via.placeholder.com/300x300" alt="Gallery Image 2">
-                    <div class="gallery-overlay">
-                        <h3 class="gallery-title">Training Session</h3>
-                        <p class="gallery-subtitle">2021</p>
-                    </div>
-                </div>
-                <div class="gallery-item">
-                    <img src="https://via.placeholder.com/300x300" alt="Gallery Image 3">
-                    <div class="gallery-overlay">
-                        <h3 class="gallery-title">Award Ceremony</h3>
-                        <p class="gallery-subtitle">2020</p>
-                    </div>
-                </div>
+            <h2 class="section-title">Achievements</h2>
+            <div class="achievements-grid">
+                <!-- Achievements will be populated by JavaScript -->
             </div>
         </div>
     </section>
@@ -246,27 +228,7 @@
         <div class="container">
             <h2 class="section-title">My Journey</h2>
             <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <span class="timeline-year">2010</span>
-                        <h3>Started Professional Career</h3>
-                        <p>Began my journey as a professional athlete, competing in local tournaments.</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <span class="timeline-year">2015</span>
-                        <h3>First Major Win</h3>
-                        <p>Won my first major tournament, marking a turning point in my career.</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <span class="timeline-year">2020</span>
-                        <h3>International Recognition</h3>
-                        <p>Gained international recognition after winning a global championship.</p>
-                    </div>
-                </div>
+                <!-- Timeline items will be populated by JavaScript -->
             </div>
         </div>
     </section>
@@ -275,22 +237,8 @@
     <section id="testimonials" class="testimonials-section">
         <div class="container">
             <h2 class="section-title">Testimonials</h2>
-            <div class="testimonial-slider">
-                <div class="testimonial-item">
-                    <p class="testimonial-text">John is one of the most dedicated athletes I have ever worked with. His commitment to excellence is unparalleled.</p>
-                    <p class="testimonial-author">- Coach Smith</p>
-                </div>
-            </div>
-            <div class="sponsors-grid">
-                <div class="sponsor-item">
-                    <img src="https://via.placeholder.com/150x60" alt="Sponsor 1">
-                </div>
-                <div class="sponsor-item">
-                    <img src="https://via.placeholder.com/150x60" alt="Sponsor 2">
-                </div>
-                <div class="sponsor-item">
-                    <img src="https://via.placeholder.com/150x60" alt="Sponsor 3">
-                </div>
+            <div class="testimonial-item">
+                <!-- Testimonial content will be populated by JavaScript -->
             </div>
         </div>
     </section>
@@ -302,80 +250,107 @@
             <div class="contact-grid">
                 <div class="contact-info">
                     <div class="contact-method">
-                        <div class="contact-icon">&#9742;</div>
-                        <div class="contact-details">
-                            <h4>Phone</h4>
-                            <p>+1 234 567 890</p>
-                        </div>
+                        <i class="fas fa-phone"></i>
+                        <p>+1 234 567 890</p>
                     </div>
                     <div class="contact-method">
-                        <div class="contact-icon">&#9993;</div>
-                        <div class="contact-details">
-                            <h4>Email</h4>
-                            <p>john.doe@sportspro.com</p>
-                        </div>
+                        <i class="fas fa-envelope"></i>
+                        <p>john.doe@sportscout.com</p>
                     </div>
                     <div class="contact-method">
-                        <div class="contact-icon">&#8962;</div>
-                        <div class="contact-details">
-                            <h4>Address</h4>
-                            <p>123 Sports Ave, Champion City</p>
-                        </div>
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p>123 Sports Ave, Champion City</p>
                     </div>
                 </div>
-                <div class="contact-form">
-                    <form id="contactForm">
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Your Name" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="email" class="form-control" placeholder="Your Email" required>
-                        </div>
-                        <div class="form-group">
-                            <textarea class="form-control" placeholder="Your Message" rows="5" required></textarea>
-                        </div>
-                        <button type="submit" class="submit-btn">Send Message</button>
-                    </form>
-                </div>
+                <form id="contactForm" class="contact-form" onsubmit="sendEmail(event)">
+                    <input type="text" name="name" placeholder="Your Name" required>
+                    <input type="email" name="email" placeholder="Your Email" required>
+                    <textarea name="message" placeholder="Your Message" required></textarea>
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer>
+    <footer class="footer">
         <div class="container">
-            <div class="footer-grid">
-                <div>
-                    <h3 class="footer-title">SportsPro</h3>
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3 id="brandName">Sports<span>Scout</span></h3>
                     <p>Your ultimate destination for sports excellence.</p>
                 </div>
-                <div>
-                    <h3 class="footer-title">Quick Links</h3>
-                    <ul class="footer-links">
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
                         <li><a href="#hero">Home</a></li>
                         <li><a href="#about">About</a></li>
                         <li><a href="#stats">Stats</a></li>
-                        <li><a href="#gallery">Gallery</a></li>
+                        <li><a href="#achievements">Achievements</a></li>
                         <li><a href="#timeline">Timeline</a></li>
                         <li><a href="#testimonials">Testimonials</a></li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
                 </div>
-                <div>
-                    <h3 class="footer-title">Follow Me</h3>
+                <div class="footer-social">
+                    <h4>Follow Me</h4>
                     <div class="social-icons">
-                        <a href="#" class="social-icon">&#xf09a;</a>
-                        <a href="#" class="social-icon">&#xf16d;</a>
-                        <a href="#" class="social-icon">&#xf099;</a>
+                        <a href="#" class="social-icon" target="_blank"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="social-icon" target="_blank"><i class="fab fa-twitter"></i></a>
                     </div>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2023 SportsPro. All rights reserved.</p>
+                <p>&copy; 2023 SportScout. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script>
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            document.querySelector('.mobile-menu').classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.mobile-nav-links a').forEach(link => {
+            link.addEventListener('click', function() {
+                document.querySelector('.mobile-menu').classList.remove('active');
+            });
+        });
+
+        // Email sending function
+        async function sendEmail(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                message: formData.get('message'),
+                to: window.playerConfig.personalInfo.contact.email
+            };
+
+            try {
+                const response = await fetch('https://formspree.io/f/xbjnbkrj', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert('Message sent successfully!');
+                    form.reset();
+                } else {
+                    throw new Error('Failed to send message');
+                }
+            } catch (error) {
+                alert('Error sending message. Please try again.');
+                console.error('Error:', error);
+            }
+        }
+    </script>
 </body>
 </html>

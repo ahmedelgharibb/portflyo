@@ -33,6 +33,34 @@ const config = {
         yearsExperience: "10+"
     },
 
+    // Achievements
+    achievements: [
+        {
+            title: "National Championship",
+            year: "2023",
+            description: "Won the national championship with record-breaking performance",
+            icon: "🏆"
+        },
+        {
+            title: "MVP Award",
+            year: "2022",
+            description: "Named Most Valuable Player in the regional league",
+            icon: "⭐"
+        },
+        {
+            title: "Golden Boot",
+            year: "2021",
+            description: "Top scorer in the national league with 30 goals",
+            icon: "⚽"
+        },
+        {
+            title: "Team Captain",
+            year: "2020",
+            description: "Appointed as the youngest team captain in club history",
+            icon: "©"
+        }
+    ],
+
     // Career Timeline
     timeline: [
         {
@@ -51,28 +79,11 @@ const config = {
             description: "Gained international recognition after winning a global championship."
         }
     ],
-
+ 
     // Images
     images: {
         hero: "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=2069&auto=format&fit=crop",
-        about: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=2033&auto=format&fit=crop",
-        gallery: [
-            {
-                image: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=1935&auto=format&fit=crop",
-                title: "Championship Win",
-                subtitle: "2022 Finals"
-            },
-            {
-                image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1936&auto=format&fit=crop",
-                title: "Training Session",
-                subtitle: "2021"
-            },
-            {
-                image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?q=80&w=2070&auto=format&fit=crop",
-                title: "Award Ceremony",
-                subtitle: "2020"
-            }
-        ]
+        about: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=2033&auto=format&fit=crop"
     },
 
     // Testimonials
