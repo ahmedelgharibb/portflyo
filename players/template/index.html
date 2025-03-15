@@ -6,9 +6,86 @@
     <title>Sports Player Portfolio</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Roboto&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <!-- Config Script -->
+    <script type="module">
+        import config from './config.js';
+        window.playerConfig = config;
+
+        // Apply configuration when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Update theme colors
+            const root = document.documentElement;
+            Object.entries(config.theme).forEach(([key, value]) => {
+                root.style.setProperty(`--${key}`, value);
+            });
+
+            // Update personal information
+            document.querySelector('.about-content h3').textContent = config.personalInfo.name;
+            document.querySelector('.about-content p:first-of-type').textContent = config.personalInfo.title;
+            document.querySelector('.about-content p:last-of-type').textContent = config.personalInfo.bio;
+
+            // Update contact information
+            document.querySelector('.contact-method:nth-child(1) p').textContent = config.personalInfo.contact.phone;
+            document.querySelector('.contact-method:nth-child(2) p').textContent = config.personalInfo.contact.email;
+            document.querySelector('.contact-method:nth-child(3) p').textContent = config.personalInfo.contact.address;
+
+            // Update statistics
+            const statValues = document.querySelectorAll('.stat-value');
+            statValues[0].textContent = config.stats.matchesPlayed;
+            statValues[1].textContent = config.stats.tournamentsWon;
+            statValues[2].textContent = config.stats.trainingSessions;
+            statValues[3].textContent = config.stats.yearsExperience;
+
+            // Update physical information
+            const infoValues = document.querySelectorAll('.info-value');
+            infoValues[0].textContent = config.physicalInfo.height;
+            infoValues[1].textContent = config.physicalInfo.age;
+            infoValues[2].textContent = config.physicalInfo.weight;
+            infoValues[3].textContent = config.physicalInfo.position;
+
+            // Update images
+            document.querySelector('.hero-player img').src = config.images.hero;
+            document.querySelector('.about-image img').src = config.images.about;
+
+            // Update gallery
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            config.images.gallery.forEach((item, index) => {
+                if (galleryItems[index]) {
+                    galleryItems[index].querySelector('img').src = item.image;
+                    galleryItems[index].querySelector('.gallery-title').textContent = item.title;
+                    galleryItems[index].querySelector('.gallery-subtitle').textContent = item.subtitle;
+                }
+            });
+
+            // Update timeline
+            const timelineContainer = document.querySelector('.timeline');
+            timelineContainer.innerHTML = config.timeline.map(item => `
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">${item.year}</span>
+                        <h3>${item.title}</h3>
+                        <p>${item.description}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            // Update testimonials
+            const testimonialContainer = document.querySelector('.testimonial-item');
+            const testimonial = config.testimonials[0];
+            testimonialContainer.innerHTML = `
+                <p class="testimonial-text">${testimonial.text}</p>
+                <p class="testimonial-author">- ${testimonial.author}</p>
+            `;
+
+            // Update social media links
+            const socialLinks = document.querySelectorAll('.social-icon');
+            socialLinks[0].href = config.socialMedia.facebook;
+            socialLinks[1].href = config.socialMedia.instagram;
+            socialLinks[2].href = config.socialMedia.twitter;
+        });
+    </script>
     <!-- Preloader -->
     <div class="preloader">
         <div class="loader"></div>
@@ -26,12 +103,6 @@
                 <li><a href="#timeline">Timeline</a></li>
                 <li><a href="#testimonials">Testimonials</a></li>
                 <li><a href="#contact">Contact</a></li>
-                <li>
-                    <button id="editModeBtn" class="edit-mode-btn">
-                        <i class="fas fa-lock"></i>
-                        <span>Edit Mode</span>
-                    </button>
-                </li>
             </ul>
             <button class="mobile-menu-btn">&#9776;</button>
         </div>
@@ -294,18 +365,6 @@
             </div>
         </div>
     </footer>
-
-    <!-- Password Modal -->
-    <div id="passwordModal" class="password-modal">
-        <div class="modal-content">
-            <h2>Enter Password</h2>
-            <input type="password" id="passwordInput" placeholder="Enter password">
-            <div class="modal-buttons">
-                <button id="submitPassword">Submit</button>
-                <button id="cancelPassword">Cancel</button>
-            </div>
-        </div>
-    </div>
 
     <script src="script.js"></script>
 </body>
