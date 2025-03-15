@@ -13,7 +13,8 @@ const config = {
 
     // Site Branding
     branding: {
-        name: "Sports<span>Scout</span>"
+        name: "Sports<span>Scout</span>",
+        instagram: "https://www.instagram.com/portflyo/"
     },
 
     // Physical Information
@@ -48,42 +49,42 @@ const config = {
             year: "2020",
             title: "International Recognition",
             description: "Gained international recognition after winning a global championship."
+        },
+        {
+            year: "2020",
+            title: "International Recognition",
+            description: "Gained international recognition after winning a global championship."
         }
     ],
  
     // Images
     images: {
         hero: "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=2069&auto=format&fit=crop",
-        about: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=2033&auto=format&fit=crop"
+        about: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=2033&auto=format&fit=crop",
+        gallery: [
+            {
+                image: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=1935&auto=format&fit=crop",
+                title: "Championship Win",
+                subtitle: "2022 Finals"
+            },
+            {
+                image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1936&auto=format&fit=crop",
+                title: "Training Session",
+                subtitle: "2021"
+            },
+            {
+                image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?q=80&w=2070&auto=format&fit=crop",
+                title: "Award Ceremony",
+                subtitle: "2020"
+            },
+            {
+                image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1936&auto=format&fit=crop",
+                title: "Training Session",
+                subtitle: "2021"
+            }
+            
+        ]
     },
-
-    // Achievements
-    achievements: [
-        {
-            icon: "fas fa-trophy",
-            title: "National Championship",
-            description: "Won the National Championship with record-breaking performance",
-            date: "2022"
-        },
-        {
-            icon: "fas fa-medal",
-            title: "MVP Award",
-            description: "Named Most Valuable Player in the Premier League",
-            date: "2021"
-        },
-        {
-            icon: "fas fa-star",
-            title: "Golden Boot",
-            description: "Top scorer in the International Cup with 15 goals",
-            date: "2020"
-        },
-        {
-            icon: "fas fa-award",
-            title: "Team of the Year",
-            description: "Selected for the World XI Team of the Year",
-            date: "2019"
-        }
-    ],
 
     // Testimonials
     testimonials: [
@@ -96,6 +97,7 @@ const config = {
     // Social Media Links
     socialMedia: {
         facebook: "#",
+        instagram: "https://www.instagram.com/portflyo/",
         twitter: "#"
     },
 

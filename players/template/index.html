@@ -54,18 +54,14 @@
             document.querySelector('.hero-player img').src = config.images.hero;
             document.querySelector('.about-image img').src = config.images.about;
 
-            // Update achievements
-            const achievementsContainer = document.querySelector('.achievements-grid');
-            config.achievements.forEach(achievement => {
-                const achievementElement = document.createElement('div');
-                achievementElement.className = 'achievement-card';
-                achievementElement.innerHTML = `
-                    <div class="achievement-icon"><i class="${achievement.icon}"></i></div>
-                    <h3>${achievement.title}</h3>
-                    <p>${achievement.description}</p>
-                    <span class="achievement-date">${achievement.date}</span>
-                `;
-                achievementsContainer.appendChild(achievementElement);
+            // Update gallery
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            config.images.gallery.forEach((item, index) => {
+                if (galleryItems[index]) {
+                    galleryItems[index].querySelector('img').src = item.image;
+                    galleryItems[index].querySelector('.gallery-title').textContent = item.title;
+                    galleryItems[index].querySelector('.gallery-subtitle').textContent = item.subtitle;
+                }
             });
 
             // Update timeline
@@ -91,7 +87,8 @@
             // Update social media links
             const socialLinks = document.querySelectorAll('.social-icon');
             socialLinks[0].href = config.socialMedia.facebook;
-            socialLinks[1].href = config.socialMedia.twitter;
+            socialLinks[1].href = config.socialMedia.instagram;
+            socialLinks[2].href = config.socialMedia.twitter;
         });
     </script>
     <!-- Preloader -->
@@ -132,7 +129,7 @@
     <!-- Hero Section -->
     <section id="hero" class="hero">
         <div class="hero-content">
-            <h1>Welcome to <span class="highlight">SportsScout</span></h1>
+            <h1><span class="highlight">SportsScout</span></h1>
             <p>Your ultimate destination for sports excellence. Explore my journey, achievements, and training routines.</p>
             <div class="cta-buttons">
                 <a href="#about" class="cta-btn">Explore More</a>
@@ -216,7 +213,26 @@
         <div class="container">
             <h2 class="section-title">Achievements</h2>
             <div class="achievements-grid">
-                <!-- Achievements will be populated from config -->
+                <div class="achievement-card">
+                    <div class="achievement-icon">🏆</div>
+                    <h3 class="achievement-title">Championship Title</h3>
+                    <p class="achievement-description">Won the National Championship in 2022</p>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">🥇</div>
+                    <h3 class="achievement-title">MVP Award</h3>
+                    <p class="achievement-description">Most Valuable Player 2021 Season</p>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">🌟</div>
+                    <h3 class="achievement-title">All-Star Selection</h3>
+                    <p class="achievement-description">Selected for All-Star Team 3 consecutive years</p>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">📈</div>
+                    <h3 class="achievement-title">Record Holder</h3>
+                    <p class="achievement-description">Set new league record for most points in a season</p>
+                </div>
             </div>
         </div>
     </section>
@@ -226,7 +242,27 @@
         <div class="container">
             <h2 class="section-title">My Journey</h2>
             <div class="timeline">
-                <!-- Timeline items will be populated from config -->
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">2010</span>
+                        <h3>Started Professional Career</h3>
+                        <p>Began my journey as a professional athlete, competing in local tournaments.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">2015</span>
+                        <h3>First Major Win</h3>
+                        <p>Won my first major tournament, marking a turning point in my career.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">2020</span>
+                        <h3>International Recognition</h3>
+                        <p>Gained international recognition after winning a global championship.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -237,7 +273,8 @@
             <h2 class="section-title">Testimonials</h2>
             <div class="testimonial-slider">
                 <div class="testimonial-item">
-                    <!-- Testimonial content will be populated from config -->
+                    <p class="testimonial-text">John is one of the most dedicated athletes I have ever worked with. His commitment to excellence is unparalleled.</p>
+                    <p class="testimonial-author">- Coach Smith</p>
                 </div>
             </div>
             <div class="sponsors-grid">
@@ -261,41 +298,24 @@
             <div class="contact-grid">
                 <div class="contact-info">
                     <div class="contact-method">
-                        <div class="contact-icon">&#9742;</div>
-                        <div class="contact-details">
-                            <h4>Phone</h4>
-                            <p>+1 234 567 890</p>
-                        </div>
+                        <i class="fas fa-phone"></i>
+                        <p>+1 234 567 890</p>
                     </div>
                     <div class="contact-method">
-                        <div class="contact-icon">&#9993;</div>
-                        <div class="contact-details">
-                            <h4>Email</h4>
-                            <p>john.doe@sportspro.com</p>
-                        </div>
+                        <i class="fas fa-envelope"></i>
+                        <p>john.doe@sportscout.com</p>
                     </div>
                     <div class="contact-method">
-                        <div class="contact-icon">&#8962;</div>
-                        <div class="contact-details">
-                            <h4>Address</h4>
-                            <p>123 Sports Ave, Champion City</p>
-                        </div>
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p>123 Sports Ave, Champion City</p>
                     </div>
                 </div>
-                <div class="contact-form">
-                    <form id="contactForm" onsubmit="sendEmail(event)">
-                        <div class="form-group">
-                            <input type="text" name="name" class="form-control" placeholder="Your Name" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="email" name="email" class="form-control" placeholder="Your Email" required>
-                        </div>
-                        <div class="form-group">
-                            <textarea name="message" class="form-control" placeholder="Your Message" rows="5" required></textarea>
-                        </div>
-                        <button type="submit" class="submit-btn">Send Message</button>
-                    </form>
-                </div>
+                <form id="contactForm" class="contact-form" onsubmit="sendEmail(event)">
+                    <input type="text" name="name" placeholder="Your Name" required>
+                    <input type="email" name="email" placeholder="Your Email" required>
+                    <textarea name="message" placeholder="Your Message" required></textarea>
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
             </div>
         </div>
     </section>
@@ -323,8 +343,9 @@
                 <div>
                     <h3 class="footer-title">Follow Me</h3>
                     <div class="social-icons">
-                        <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon">&#xf09a;</a>
+                        <a href="#" class="social-icon">&#xf16d;</a>
+                        <a href="#" class="social-icon">&#xf099;</a>
                     </div>
                 </div>
             </div>
@@ -336,36 +357,30 @@
 
     <script src="script.js"></script>
     <script>
-        async function sendEmail(event) {
+        function sendEmail(event) {
             event.preventDefault();
             const form = event.target;
             const formData = new FormData(form);
             const data = {
                 name: formData.get('name'),
                 email: formData.get('email'),
-                message: formData.get('message'),
-                to: window.playerConfig.personalInfo.contact.email
+                message: formData.get('message')
             };
 
-            try {
-                const response = await fetch('/send-email', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (response.ok) {
-                    alert('Message sent successfully!');
-                    form.reset();
-                } else {
-                    throw new Error('Failed to send message');
-                }
-            } catch (error) {
-                alert('Error sending message. Please try again later.');
-                console.error('Error:', error);
-            }
+            // Get the owner's email from config
+            const ownerEmail = window.playerConfig.personalInfo.contact.email;
+            
+            // Create mailto link with form data
+            const subject = `Contact from ${data.name} via SportsScout`;
+            const body = `Name: ${data.name}\nEmail: ${data.email}\n\nMessage:\n${data.message}`;
+            const mailtoLink = `mailto:${ownerEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            
+            // Open default email client
+            window.location.href = mailtoLink;
+            
+            // Clear form
+            form.reset();
+            alert('Thank you for your message! Your default email client will open to send the email.');
         }
     </script>
 </body>
