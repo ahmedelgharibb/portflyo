@@ -21,12 +21,13 @@
     <script>
         async function createPlayerProfile() {
             const playerName = document.getElementById('playerName').value.trim();
+            const resultDiv = document.getElementById('result');
+            
             if (!playerName) {
-                alert('Please enter a player name');
+                resultDiv.innerHTML = '<p class="error">Please enter a player name</p>';
                 return;
             }
 
-            const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = '<p>Creating profile...</p>';
 
             try {
@@ -34,28 +35,35 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({ playerName })
                 });
 
-                const data = await response.json();
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    throw new Error('Server response was not valid JSON');
+                }
                 
                 if (response.ok) {
                     const folderName = playerName.toLowerCase().replace(/[^a-z0-9]/g, '-');
                     resultDiv.innerHTML = `
                         <p class="success">${data.message}</p>
                         <p>Access your website at:</p>
-                        <a href="https://portflyo-kappa.vercel.app/players/${folderName}/index.html" target="_blank">
+                        <a href="/players/${folderName}/index.html" target="_blank">
                             https://portflyo-kappa.vercel.app/players/${folderName}/index.html
                         </a>
                     `;
                 } else {
-                    throw new Error(data.message);
+                    throw new Error(data.message || 'Failed to create profile');
                 }
             } catch (error) {
                 resultDiv.innerHTML = `
-                    <p class="error">Error: ${error.message || 'Something went wrong'}</p>
+                    <p class="error">Error: ${error.message || 'Something went wrong. Please try again.'}</p>
                 `;
+                console.error('Error details:', error);
             }
         }
     </script>
