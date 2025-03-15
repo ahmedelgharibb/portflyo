@@ -1,7 +1,47 @@
 // config.js - Configuration file for restaurant website template
 
+// Supabase Configuration
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = 'YOUR_SUPABASE_URL';
+const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Function to load configuration from Supabase
+async function loadConfigFromSupabase() {
+    const { data, error } = await supabase
+        .from('restaurant_configs')
+        .select('*')
+        .eq('template_name', 'temp1')
+        .single();
+    
+    if (error) {
+        console.error('Error loading config:', error);
+        return null;
+    }
+    
+    return data?.config || null;
+}
+
+// Function to save configuration to Supabase
+async function saveConfigToSupabase(config) {
+    const { error } = await supabase
+        .from('restaurant_configs')
+        .upsert({
+            template_name: 'temp1',
+            config: config
+        });
+    
+    if (error) {
+        console.error('Error saving config:', error);
+        return false;
+    }
+    
+    return true;
+}
+
 // Restaurant Information
-const restaurantConfig = {
+let restaurantConfig = {
     // Basic Info
     name: "GUSTO",
     tagline: "Modern Dining Experience",
@@ -24,8 +64,8 @@ const restaurantConfig = {
     
     // Images
     images: {
-        hero: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
-        about: "https://images.unsplash.com/photo-1581299894007-aaa50297cf16?auto=format&fit=crop&w=1200&q=80",
+        hero: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
+        about: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
         gallery: [
             "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800&q=80",
@@ -125,11 +165,36 @@ const restaurantConfig = {
     copyright: {
         year: 2024,
         text: "Gusto Restaurant. All rights reserved."
+    },
+
+    // Edit Button Configuration
+    editButton: {
+        text: "Edit Information",
+        position: "bottom-right"
     }
 };
 
 // Apply configuration to the website
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    // Try to load configuration from Supabase
+    const savedConfig = await loadConfigFromSupabase();
+    if (savedConfig) {
+        restaurantConfig = { ...restaurantConfig, ...savedConfig };
+    }
+    
+    // Add edit button
+    const editButton = document.createElement('button');
+    editButton.className = 'edit-button';
+    editButton.textContent = restaurantConfig.editButton.text;
+    editButton.onclick = showEditModal;
+    document.body.appendChild(editButton);
+    
+    // Apply configuration
+    applyConfiguration();
+});
+
+// Function to apply configuration
+function applyConfiguration() {
     // Apply restaurant name
     document.title = `${restaurantConfig.name} | Modern Dining Experience`;
     document.querySelectorAll('.logo h1, .footer-logo h2').forEach(el => {
@@ -328,7 +393,7 @@ document.addEventListener('DOMContentLoaded', function() {
             "retina_detect": true
         });
     }
-});
+}
 
 // Function to load Google Reviews
 async function loadGoogleReviews() {
@@ -390,4 +455,101 @@ function createNotification(message) {
             notification.remove();
         }, 300);
     }, 3000);
+}
+
+// Function to create and show edit modal
+function showEditModal() {
+    const modal = document.createElement('div');
+    modal.className = 'edit-modal';
+    modal.innerHTML = `
+        <div class="edit-modal-content">
+            <h2>Edit Restaurant Information</h2>
+            <form id="editForm">
+                <div class="form-section">
+                    <h3>Basic Information</h3>
+                    <input type="text" name="name" placeholder="Restaurant Name" value="${restaurantConfig.name}">
+                    <input type="text" name="tagline" placeholder="Tagline" value="${restaurantConfig.tagline}">
+                    <textarea name="description" placeholder="Description">${restaurantConfig.description}</textarea>
+                    <textarea name="story" placeholder="Restaurant Story">${restaurantConfig.story}</textarea>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Contact Information</h3>
+                    <input type="text" name="phone" placeholder="Phone Number" value="${restaurantConfig.phone}">
+                    <input type="email" name="email" placeholder="Email" value="${restaurantConfig.email}">
+                    <input type="text" name="whatsapp" placeholder="WhatsApp Link" value="${restaurantConfig.whatsapp}">
+                </div>
+                
+                <div class="form-section">
+                    <h3>Social Media</h3>
+                    <input type="url" name="instagram" placeholder="Instagram Link" value="${restaurantConfig.social.instagram}">
+                    <input type="url" name="facebook" placeholder="Facebook Link" value="${restaurantConfig.social.facebook}">
+                    <input type="url" name="twitter" placeholder="Twitter Link" value="${restaurantConfig.social.twitter}">
+                </div>
+                
+                <div class="form-section">
+                    <h3>Images</h3>
+                    <input type="url" name="heroImage" placeholder="Hero Image URL" value="${restaurantConfig.images.hero}">
+                    <input type="url" name="aboutImage" placeholder="About Image URL" value="${restaurantConfig.images.about}">
+                </div>
+                
+                <div class="form-section">
+                    <h3>Colors</h3>
+                    <div class="color-inputs">
+                        <input type="color" name="primaryColor" value="${restaurantConfig.colors.primary}">
+                        <label>Primary Color</label>
+                        <input type="color" name="accentColor" value="${restaurantConfig.colors.accent}">
+                        <label>Accent Color</label>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Add form submit handler
+    document.getElementById('editForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        
+        // Update config object with form values
+        restaurantConfig.name = formData.get('name');
+        restaurantConfig.tagline = formData.get('tagline');
+        restaurantConfig.description = formData.get('description');
+        restaurantConfig.story = formData.get('story');
+        restaurantConfig.phone = formData.get('phone');
+        restaurantConfig.email = formData.get('email');
+        restaurantConfig.whatsapp = formData.get('whatsapp');
+        restaurantConfig.social.instagram = formData.get('instagram');
+        restaurantConfig.social.facebook = formData.get('facebook');
+        restaurantConfig.social.twitter = formData.get('twitter');
+        restaurantConfig.images.hero = formData.get('heroImage');
+        restaurantConfig.images.about = formData.get('aboutImage');
+        restaurantConfig.colors.primary = formData.get('primaryColor');
+        restaurantConfig.colors.accent = formData.get('accentColor');
+        
+        // Save to Supabase
+        const saved = await saveConfigToSupabase(restaurantConfig);
+        if (saved) {
+            // Refresh the page content
+            applyConfiguration();
+            closeEditModal();
+            createNotification('Changes saved successfully!');
+        } else {
+            createNotification('Error saving changes. Please try again.');
+        }
+    });
+}
+
+function closeEditModal() {
+    const modal = document.querySelector('.edit-modal');
+    if (modal) {
+        modal.remove();
+    }
 } 
