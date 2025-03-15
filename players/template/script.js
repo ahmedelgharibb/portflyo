@@ -166,3 +166,155 @@ window.addEventListener('scroll', () => {
 // Dynamic Year in Footer
 const year = new Date().getFullYear();
 document.querySelector('.footer-bottom').innerHTML = `&copy; ${year} SportsPro. All rights reserved.`;
+
+// Edit Mode Functionality
+const editModeBtn = document.getElementById('editModeBtn');
+const passwordModal = document.getElementById('passwordModal');
+const passwordInput = document.getElementById('passwordInput');
+const submitPassword = document.getElementById('submitPassword');
+const cancelPassword = document.getElementById('cancelPassword');
+
+let isEditMode = false;
+const editableElements = [
+    ...document.querySelectorAll('.info-value'),
+    ...document.querySelectorAll('.stat-value'),
+    ...document.querySelectorAll('.about-content p'),
+    document.querySelector('.about-content h3'),
+];
+
+// Add editable class to elements
+editableElements.forEach(el => {
+    el.classList.add('editable');
+});
+
+// Show password modal
+editModeBtn.addEventListener('click', () => {
+    passwordModal.classList.add('active');
+});
+
+// Hide password modal
+cancelPassword.addEventListener('click', () => {
+    passwordModal.classList.remove('active');
+    passwordInput.value = '';
+});
+
+// Handle password submission
+submitPassword.addEventListener('click', async () => {
+    const password = passwordInput.value;
+    
+    try {
+        const response = await fetch('/api/auth', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ password }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            enableEditMode();
+            passwordModal.classList.remove('active');
+            passwordInput.value = '';
+        } else {
+            alert('Invalid password');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred');
+    }
+});
+
+function enableEditMode() {
+    isEditMode = true;
+    editModeBtn.textContent = 'Save Changes';
+    editModeBtn.style.backgroundColor = 'var(--accent)';
+    
+    editableElements.forEach(el => {
+        el.contentEditable = true;
+        el.dataset.originalContent = el.textContent;
+    });
+
+    // Change button click handler
+    editModeBtn.removeEventListener('click', showPasswordModal);
+    editModeBtn.addEventListener('click', saveChanges);
+}
+
+async function saveChanges() {
+    const updates = [];
+    editableElements.forEach(el => {
+        if (el.textContent !== el.dataset.originalContent) {
+            updates.push({
+                element: el,
+                newContent: el.textContent,
+                originalContent: el.dataset.originalContent
+            });
+        }
+    });
+
+    if (updates.length === 0) {
+        disableEditMode();
+        return;
+    }
+
+    try {
+        // Get the current HTML content
+        const response = await fetch('/api/fetch-content');
+        let htmlContent = await response.text();
+
+        // Apply updates to the HTML content
+        updates.forEach(update => {
+            htmlContent = htmlContent.replace(
+                update.originalContent,
+                update.newContent
+            );
+        });
+
+        // Save the updated content
+        const saveResponse = await fetch('/api/update-content', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                filePath: 'players/template/index.html',
+                content: htmlContent
+            }),
+        });
+
+        const saveData = await saveResponse.json();
+
+        if (saveData.success) {
+            alert('Changes saved successfully!');
+            disableEditMode();
+        } else {
+            alert('Error saving changes');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while saving changes');
+    }
+}
+
+function disableEditMode() {
+    isEditMode = false;
+    editModeBtn.textContent = 'Edit Information';
+    editModeBtn.style.backgroundColor = 'var(--primary)';
+    
+    editableElements.forEach(el => {
+        el.contentEditable = false;
+        delete el.dataset.originalContent;
+    });
+
+    // Reset button click handler
+    editModeBtn.removeEventListener('click', saveChanges);
+    editModeBtn.addEventListener('click', showPasswordModal);
+}
+
+function showPasswordModal() {
+    passwordModal.classList.add('active');
+}
+
+// Initialize button click handler
+editModeBtn.addEventListener('click', showPasswordModal);
