@@ -1136,19 +1136,49 @@
      EDIT MODE STYLES
      =============================================== */
   .edit-mode-btn {
-    background-color: var(--primary);
+    background-color: var(--secondary);
     color: var(--light);
     border: none;
     padding: 8px 16px;
-    border-radius: 4px;
+    border-radius: 25px;
     cursor: pointer;
     font-weight: 600;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .edit-mode-btn i {
+    font-size: 14px;
+    transition: transform 0.3s ease;
+  }
+
+  .edit-mode-btn span {
+    font-size: 14px;
   }
 
   .edit-mode-btn:hover {
-    background-color: var(--accent);
+    background-color: var(--primary);
     transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .edit-mode-btn:hover i {
+    transform: scale(1.1);
+  }
+
+  .edit-mode-btn.active {
+    background-color: var(--accent);
+  }
+
+  .edit-mode-btn.active i {
+    transform: rotate(-10deg);
+  }
+
+  .edit-mode-btn.active i::before {
+    content: '\f09c';  /* unlocked icon */
   }
 
   .password-modal {

@@ -184,19 +184,24 @@ const editableElements = [
 
 // Add editable class to elements
 editableElements.forEach(el => {
-    el.classList.add('editable');
+    if (el) el.classList.add('editable');
 });
 
 // Show password modal
-editModeBtn.addEventListener('click', () => {
+function showPasswordModal() {
     passwordModal.classList.add('active');
-});
+    // Clear any previous password
+    passwordInput.value = '';
+}
 
 // Hide password modal
-cancelPassword.addEventListener('click', () => {
+function hidePasswordModal() {
     passwordModal.classList.remove('active');
     passwordInput.value = '';
-});
+}
+
+editModeBtn.addEventListener('click', showPasswordModal);
+cancelPassword.addEventListener('click', hidePasswordModal);
 
 // Handle password submission
 submitPassword.addEventListener('click', async () => {
@@ -215,8 +220,7 @@ submitPassword.addEventListener('click', async () => {
 
         if (data.success) {
             enableEditMode();
-            passwordModal.classList.remove('active');
-            passwordInput.value = '';
+            hidePasswordModal();
         } else {
             alert('Invalid password');
         }
@@ -226,14 +230,23 @@ submitPassword.addEventListener('click', async () => {
     }
 });
 
+// Allow Enter key to submit password
+passwordInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        submitPassword.click();
+    }
+});
+
 function enableEditMode() {
     isEditMode = true;
-    editModeBtn.textContent = 'Save Changes';
-    editModeBtn.style.backgroundColor = 'var(--accent)';
+    editModeBtn.classList.add('active');
+    editModeBtn.querySelector('span').textContent = 'Save Changes';
     
     editableElements.forEach(el => {
-        el.contentEditable = true;
-        el.dataset.originalContent = el.textContent;
+        if (el) {
+            el.contentEditable = true;
+            el.dataset.originalContent = el.textContent;
+        }
     });
 
     // Change button click handler
@@ -244,7 +257,7 @@ function enableEditMode() {
 async function saveChanges() {
     const updates = [];
     editableElements.forEach(el => {
-        if (el.textContent !== el.dataset.originalContent) {
+        if (el && el.textContent !== el.dataset.originalContent) {
             updates.push({
                 element: el,
                 newContent: el.textContent,
@@ -299,22 +312,17 @@ async function saveChanges() {
 
 function disableEditMode() {
     isEditMode = false;
-    editModeBtn.textContent = 'Edit Information';
-    editModeBtn.style.backgroundColor = 'var(--primary)';
+    editModeBtn.classList.remove('active');
+    editModeBtn.querySelector('span').textContent = 'Edit Mode';
     
     editableElements.forEach(el => {
-        el.contentEditable = false;
-        delete el.dataset.originalContent;
+        if (el) {
+            el.contentEditable = false;
+            delete el.dataset.originalContent;
+        }
     });
 
     // Reset button click handler
     editModeBtn.removeEventListener('click', saveChanges);
     editModeBtn.addEventListener('click', showPasswordModal);
 }
-
-function showPasswordModal() {
-    passwordModal.classList.add('active');
-}
-
-// Initialize button click handler
-editModeBtn.addEventListener('click', showPasswordModal);
