@@ -54,14 +54,18 @@
             document.querySelector('.hero-player img').src = config.images.hero;
             document.querySelector('.about-image img').src = config.images.about;
 
-            // Update gallery
-            const galleryItems = document.querySelectorAll('.gallery-item');
-            config.images.gallery.forEach((item, index) => {
-                if (galleryItems[index]) {
-                    galleryItems[index].querySelector('img').src = item.image;
-                    galleryItems[index].querySelector('.gallery-title').textContent = item.title;
-                    galleryItems[index].querySelector('.gallery-subtitle').textContent = item.subtitle;
-                }
+            // Update achievements
+            const achievementsContainer = document.querySelector('.achievements-grid');
+            config.achievements.forEach(achievement => {
+                const achievementElement = document.createElement('div');
+                achievementElement.className = 'achievement-card';
+                achievementElement.innerHTML = `
+                    <div class="achievement-icon"><i class="${achievement.icon}"></i></div>
+                    <h3>${achievement.title}</h3>
+                    <p>${achievement.description}</p>
+                    <span class="achievement-date">${achievement.date}</span>
+                `;
+                achievementsContainer.appendChild(achievementElement);
             });
 
             // Update timeline
@@ -87,8 +91,7 @@
             // Update social media links
             const socialLinks = document.querySelectorAll('.social-icon');
             socialLinks[0].href = config.socialMedia.facebook;
-            socialLinks[1].href = config.socialMedia.instagram;
-            socialLinks[2].href = config.socialMedia.twitter;
+            socialLinks[1].href = config.socialMedia.twitter;
         });
     </script>
     <!-- Preloader -->
@@ -104,7 +107,7 @@
                 <li><a href="#hero">Home</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#stats">Stats</a></li>
-                <li><a href="#gallery">Gallery</a></li>
+                <li><a href="#achievements">Achievements</a></li>
                 <li><a href="#timeline">Timeline</a></li>
                 <li><a href="#testimonials">Testimonials</a></li>
                 <li><a href="#contact">Contact</a></li>
@@ -119,7 +122,7 @@
             <li><a href="#hero">Home</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#stats">Stats</a></li>
-            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#achievements">Achievements</a></li>
             <li><a href="#timeline">Timeline</a></li>
             <li><a href="#testimonials">Testimonials</a></li>
             <li><a href="#contact">Contact</a></li>
@@ -134,9 +137,6 @@
             <div class="cta-buttons">
                 <a href="#about" class="cta-btn">Explore More</a>
                 <a href="#contact" class="cta-btn outline">Contact Me</a>
-                <a href="https://www.instagram.com/portflyo/" target="_blank" class="cta-btn instagram">
-                    <i class="fab fa-instagram"></i> Follow on Instagram
-                </a>
             </div>
         </div>
         <div class="hero-player">
@@ -211,32 +211,12 @@
         </div>
     </section>
 
-    <!-- Gallery Section -->
-    <section id="gallery" class="gallery-section">
+    <!-- Achievements Section -->
+    <section id="achievements" class="achievements-section">
         <div class="container">
-            <h2 class="section-title">Gallery</h2>
-            <div class="gallery-grid">
-                <div class="gallery-item">
-                    <img src="https://via.placeholder.com/300x300" alt="Gallery Image 1">
-                    <div class="gallery-overlay">
-                        <h3 class="gallery-title">Championship Win</h3>
-                        <p class="gallery-subtitle">2022 Finals</p>
-                    </div>
-                </div>
-                <div class="gallery-item">
-                    <img src="https://via.placeholder.com/300x300" alt="Gallery Image 2">
-                    <div class="gallery-overlay">
-                        <h3 class="gallery-title">Training Session</h3>
-                        <p class="gallery-subtitle">2021</p>
-                    </div>
-                </div>
-                <div class="gallery-item">
-                    <img src="https://via.placeholder.com/300x300" alt="Gallery Image 3">
-                    <div class="gallery-overlay">
-                        <h3 class="gallery-title">Award Ceremony</h3>
-                        <p class="gallery-subtitle">2020</p>
-                    </div>
-                </div>
+            <h2 class="section-title">Achievements</h2>
+            <div class="achievements-grid">
+                <!-- Achievements will be populated from config -->
             </div>
         </div>
     </section>
@@ -246,27 +226,7 @@
         <div class="container">
             <h2 class="section-title">My Journey</h2>
             <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <span class="timeline-year">2010</span>
-                        <h3>Started Professional Career</h3>
-                        <p>Began my journey as a professional athlete, competing in local tournaments.</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <span class="timeline-year">2015</span>
-                        <h3>First Major Win</h3>
-                        <p>Won my first major tournament, marking a turning point in my career.</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <span class="timeline-year">2020</span>
-                        <h3>International Recognition</h3>
-                        <p>Gained international recognition after winning a global championship.</p>
-                    </div>
-                </div>
+                <!-- Timeline items will be populated from config -->
             </div>
         </div>
     </section>
@@ -277,8 +237,7 @@
             <h2 class="section-title">Testimonials</h2>
             <div class="testimonial-slider">
                 <div class="testimonial-item">
-                    <p class="testimonial-text">John is one of the most dedicated athletes I have ever worked with. His commitment to excellence is unparalleled.</p>
-                    <p class="testimonial-author">- Coach Smith</p>
+                    <!-- Testimonial content will be populated from config -->
                 </div>
             </div>
             <div class="sponsors-grid">
@@ -324,15 +283,15 @@
                     </div>
                 </div>
                 <div class="contact-form">
-                    <form id="contactForm">
+                    <form id="contactForm" onsubmit="sendEmail(event)">
                         <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Your Name" required>
+                            <input type="text" name="name" class="form-control" placeholder="Your Name" required>
                         </div>
                         <div class="form-group">
-                            <input type="email" class="form-control" placeholder="Your Email" required>
+                            <input type="email" name="email" class="form-control" placeholder="Your Email" required>
                         </div>
                         <div class="form-group">
-                            <textarea class="form-control" placeholder="Your Message" rows="5" required></textarea>
+                            <textarea name="message" class="form-control" placeholder="Your Message" rows="5" required></textarea>
                         </div>
                         <button type="submit" class="submit-btn">Send Message</button>
                     </form>
@@ -355,7 +314,7 @@
                         <li><a href="#hero">Home</a></li>
                         <li><a href="#about">About</a></li>
                         <li><a href="#stats">Stats</a></li>
-                        <li><a href="#gallery">Gallery</a></li>
+                        <li><a href="#achievements">Achievements</a></li>
                         <li><a href="#timeline">Timeline</a></li>
                         <li><a href="#testimonials">Testimonials</a></li>
                         <li><a href="#contact">Contact</a></li>
@@ -364,9 +323,8 @@
                 <div>
                     <h3 class="footer-title">Follow Me</h3>
                     <div class="social-icons">
-                        <a href="#" class="social-icon">&#xf09a;</a>
-                        <a href="#" class="social-icon">&#xf16d;</a>
-                        <a href="#" class="social-icon">&#xf099;</a>
+                        <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
                     </div>
                 </div>
             </div>
@@ -377,5 +335,38 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        async function sendEmail(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                message: formData.get('message'),
+                to: window.playerConfig.personalInfo.contact.email
+            };
+
+            try {
+                const response = await fetch('/send-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert('Message sent successfully!');
+                    form.reset();
+                } else {
+                    throw new Error('Failed to send message');
+                }
+            } catch (error) {
+                alert('Error sending message. Please try again later.');
+                console.error('Error:', error);
+            }
+        }
+    </script>
 </body>
 </html>
