@@ -13,6 +13,12 @@ const REPO_OWNER = 'ahmedelgharibb';
 const REPO_NAME = 'portflyo';
 const FILE_PATH = 'teachers/template/index.html';
 
+// Error handler middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ message: 'Internal Server Error' });
+});
+
 // Fetch HTML content from GitHub
 app.get('/fetch-content', async (req, res) => {
     try {
@@ -22,9 +28,9 @@ app.get('/fetch-content', async (req, res) => {
             }
         });
         const content = Buffer.from(response.data.content, 'base64').toString('utf-8');
-        res.send(content);
+        res.json({ content });
     } catch (error) {
-        res.status(500).send('Error fetching content from GitHub');
+        res.status(500).json({ message: 'Error fetching content from GitHub' });
     }
 });
 
@@ -48,9 +54,9 @@ app.post('/update-content', async (req, res) => {
                 'Authorization': `token ${GITHUB_TOKEN}`
             }
         });
-        res.send('Content updated successfully');
+        res.json({ message: 'Content updated successfully' });
     } catch (error) {
-        res.status(500).send('Error updating content on GitHub');
+        res.status(500).json({ message: 'Error updating content on GitHub' });
     }
 });
 

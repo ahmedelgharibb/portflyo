@@ -26,6 +26,9 @@
                 return;
             }
 
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Creating profile...</p>';
+
             try {
                 const response = await fetch('/create-player', {
                     method: 'POST',
@@ -38,20 +41,20 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    const resultDiv = document.getElementById('result');
+                    const folderName = playerName.toLowerCase().replace(/[^a-z0-9]/g, '-');
                     resultDiv.innerHTML = `
-                        <p class="success">Website created successfully!</p>
+                        <p class="success">${data.message}</p>
                         <p>Access your website at:</p>
-                        <a href="https://portflyo-kappa.vercel.app/players/${playerName}/index.html" target="_blank">
-                            https://portflyo-kappa.vercel.app/players/${playerName}/index.html
+                        <a href="https://portflyo-kappa.vercel.app/players/${folderName}/index.html" target="_blank">
+                            https://portflyo-kappa.vercel.app/players/${folderName}/index.html
                         </a>
                     `;
                 } else {
-                    throw new Error(data.message || 'Failed to create player profile');
+                    throw new Error(data.message);
                 }
             } catch (error) {
-                document.getElementById('result').innerHTML = `
-                    <p class="error">Error: ${error.message}</p>
+                resultDiv.innerHTML = `
+                    <p class="error">Error: ${error.message || 'Something went wrong'}</p>
                 `;
             }
         }
