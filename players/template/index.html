@@ -6,6 +6,7 @@
     <title>Sports Player Portfolio</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <!-- Config Script -->
@@ -20,6 +21,10 @@
             Object.entries(config.theme).forEach(([key, value]) => {
                 root.style.setProperty(`--${key}`, value);
             });
+
+            // Update branding
+            document.getElementById('brandName').innerHTML = config.branding.name;
+            document.querySelector('.hero h1 .highlight').textContent = config.branding.name.replace(/<\/?span>/g, '');
 
             // Update personal information
             document.querySelector('.about-content h3').textContent = config.personalInfo.name;
@@ -94,7 +99,7 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
-            <a href="#" class="logo">Sports<span>Pro</span></a>
+            <a href="/" class="logo" id="brandName">Sports<span>Scout</span></a>
             <ul class="nav-links">
                 <li><a href="#hero">Home</a></li>
                 <li><a href="#about">About</a></li>
@@ -124,13 +129,18 @@
     <!-- Hero Section -->
     <section id="hero" class="hero">
         <div class="hero-content">
-            <h1>Welcome to <span class="highlight">SportsPro</span></h1>
+            <h1>Welcome to <span class="highlight">SportsScout</span></h1>
             <p>Your ultimate destination for sports excellence. Explore my journey, achievements, and training routines.</p>
-            <a href="#about" class="cta-btn">Explore More</a>
-            <a href="#contact" class="cta-btn outline">Contact Me</a>
+            <div class="cta-buttons">
+                <a href="#about" class="cta-btn">Explore More</a>
+                <a href="#contact" class="cta-btn outline">Contact Me</a>
+                <a href="https://www.instagram.com/portflyo/" target="_blank" class="cta-btn instagram">
+                    <i class="fab fa-instagram"></i> Follow on Instagram
+                </a>
+            </div>
         </div>
         <div class="hero-player">
-            <img src="https://via.placeholder.com/600x800" alt="Player Image">
+            <img src="https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=2069&auto=format&fit=crop" alt="Player Image">
         </div>
     </section>
 
