@@ -46,7 +46,7 @@ window.addEventListener('scroll', () => {
 
 // Hero Section Typing Effect
 const heroText = document.querySelector('.hero h1');
-const text = "Welcome to SportsPro";
+const text = "Welcome to Sportscout";
 let index = 0;
 
 function typeWriter() {
@@ -165,4 +165,4 @@ window.addEventListener('scroll', () => {
 
 // Dynamic Year in Footer
 const year = new Date().getFullYear();
-document.querySelector('.footer-bottom').innerHTML = `&copy; ${year} SportsPro. All rights reserved.`;
+document.querySelector('.footer-bottom').innerHTML = `&copy; ${year} Sportscout. All rights reserved.`;
