@@ -16,7 +16,14 @@ class EditHandler {
         editBtn.className = 'edit-btn';
         editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit Portfolio';
         editBtn.onclick = () => this.handleEditClick();
-        document.body.appendChild(editBtn);
+        
+        // Add button to the navigation
+        const navContainer = document.querySelector('.navbar .container');
+        if (navContainer) {
+            navContainer.appendChild(editBtn);
+        } else {
+            document.body.appendChild(editBtn);
+        }
     }
 
     setupPasswordModal() {
