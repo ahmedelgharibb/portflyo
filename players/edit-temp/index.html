@@ -11,98 +11,107 @@
 <body>
     <!-- Config Script -->
     <script type="module">
-        import config from './config.js';
-        import EditHandler from './edit-handler.js';
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Import modules
+                const { default: config, saveConfig } = await import('./config.js');
+                const { default: EditHandler } = await import('./edit-handler.js');
 
-        // Initialize edit functionality immediately
-        new EditHandler();
-        
-        // Rest of your initialization code
-        document.addEventListener('DOMContentLoaded', () => {
-            // Apply theme colors
-            const root = document.documentElement;
-            Object.entries(config.theme).forEach(([key, value]) => {
-                root.style.setProperty(`--${key}`, value);
-            });
+                // Initialize edit functionality
+                window.editHandler = new EditHandler();
+                
+                // Apply theme colors
+                const root = document.documentElement;
+                Object.entries(config.theme).forEach(([key, value]) => {
+                    root.style.setProperty(`--${key}`, value);
+                });
 
-            // Update content from config
-            const updateContent = {
-                '#brandName': config.branding.name,
-                '.hero-title': config.branding.name,
-                '.about-name': config.personalInfo.name,
-                '.about-title': config.personalInfo.title,
-                '.about-bio': config.personalInfo.bio,
-                '.phone-value': config.personalInfo.contact.phone,
-                '.email-value': config.personalInfo.contact.email,
-                '.address-value': config.personalInfo.contact.address,
-                '.hero-image': config.images.hero,
-                '.about-image img': config.images.about
-            };
+                // Update content from config
+                const updateContent = {
+                    '#brandName': config.branding.name,
+                    '.hero-title': config.branding.name,
+                    '.about-name': config.personalInfo.name,
+                    '.about-title': config.personalInfo.title,
+                    '.about-bio': config.personalInfo.bio,
+                    '.phone-value': config.personalInfo.contact.phone,
+                    '.email-value': config.personalInfo.contact.email,
+                    '.address-value': config.personalInfo.contact.address,
+                    '.hero-image': config.images.hero,
+                    '.about-image img': config.images.about
+                };
 
-            Object.entries(updateContent).forEach(([selector, value]) => {
-                const element = document.querySelector(selector);
-                if (element) {
-                    if (element.tagName === 'IMG') {
-                        element.src = value;
-                    } else {
-                        element.innerHTML = value;
+                Object.entries(updateContent).forEach(([selector, value]) => {
+                    const element = document.querySelector(selector);
+                    if (element) {
+                        if (element.tagName === 'IMG') {
+                            element.src = value;
+                        } else {
+                            element.innerHTML = value;
+                        }
                     }
-                }
-            });
+                });
 
-            // Update statistics
-            const stats = ['matchesPlayed', 'tournamentsWon', 'trainingSessions', 'yearsExperience'];
-            stats.forEach((stat, index) => {
-                document.querySelector(`.stat-value:nth-child(${index + 1})`).textContent = config.stats[stat];
-            });
+                // Update statistics
+                const stats = ['matchesPlayed', 'tournamentsWon', 'trainingSessions', 'yearsExperience'];
+                stats.forEach((stat, index) => {
+                    document.querySelector(`.stat-value:nth-child(${index + 1})`).textContent = config.stats[stat];
+                });
 
-            // Update physical information
-            const physicalInfo = ['height', 'age', 'weight', 'position'];
-            physicalInfo.forEach((info, index) => {
-                document.querySelector(`.info-value:nth-child(${index + 1})`).textContent = config.physicalInfo[info];
-            });
+                // Update physical information
+                const physicalInfo = ['height', 'age', 'weight', 'position'];
+                physicalInfo.forEach((info, index) => {
+                    document.querySelector(`.info-value:nth-child(${index + 1})`).textContent = config.physicalInfo[info];
+                });
 
-            // Update achievements
-            const achievementsContainer = document.querySelector('.achievements-grid');
-            achievementsContainer.innerHTML = config.achievements.map(achievement => `
-                <div class="achievement-card">
-                    <div class="achievement-icon">${achievement.icon}</div>
-                    <h3 class="achievement-title">${achievement.title}</h3>
-                    <p class="achievement-description">${achievement.description}</p>
-                </div>
-            `).join('');
-
-            // Update timeline
-            const timelineContainer = document.querySelector('.timeline');
-            timelineContainer.innerHTML = config.timeline.map(item => `
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <span class="timeline-year">${item.year}</span>
-                        <h3>${item.title}</h3>
-                        <p>${item.description}</p>
+                // Update achievements
+                const achievementsContainer = document.querySelector('.achievements-grid');
+                achievementsContainer.innerHTML = config.achievements.map(achievement => `
+                    <div class="achievement-card">
+                        <div class="achievement-icon">${achievement.icon}</div>
+                        <h3 class="achievement-title">${achievement.title}</h3>
+                        <p class="achievement-description">${achievement.description}</p>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
 
-            // Update testimonials
-            const testimonialContainer = document.querySelector('.testimonial-content');
-            const testimonial = config.testimonials[0];
-            testimonialContainer.innerHTML = `
-                <p class="testimonial-text">${testimonial.text}</p>
-                <p class="testimonial-author">- ${testimonial.author}</p>
-            `;
+                // Update timeline
+                const timelineContainer = document.querySelector('.timeline');
+                timelineContainer.innerHTML = config.timeline.map(item => `
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <span class="timeline-year">${item.year}</span>
+                            <h3>${item.title}</h3>
+                            <p>${item.description}</p>
+                        </div>
+                    </div>
+                `).join('');
 
-            // Update social links
-            const socialLinks = {
-                '.social-facebook': config.socialMedia.facebook,
-                '.social-instagram': config.socialMedia.instagram,
-                '.social-twitter': config.socialMedia.twitter
-            };
+                // Update testimonials
+                const testimonialContainer = document.querySelector('.testimonial-content');
+                const testimonial = config.testimonials[0];
+                testimonialContainer.innerHTML = `
+                    <p class="testimonial-text">${testimonial.text}</p>
+                    <p class="testimonial-author">- ${testimonial.author}</p>
+                `;
 
-            Object.entries(socialLinks).forEach(([selector, link]) => {
-                const element = document.querySelector(selector);
-                if (element) element.href = link;
-            });
+                // Update social links
+                const socialLinks = {
+                    '.social-facebook': config.socialMedia.facebook,
+                    '.social-instagram': config.socialMedia.instagram,
+                    '.social-twitter': config.socialMedia.twitter
+                };
+
+                Object.entries(socialLinks).forEach(([selector, link]) => {
+                    const element = document.querySelector(selector);
+                    if (element) element.href = link;
+                });
+
+                // Make config available globally for the contact form
+                window.playerConfig = config;
+
+            } catch (error) {
+                console.error('Error initializing:', error);
+            }
         });
     </script>
     <!-- Preloader -->
