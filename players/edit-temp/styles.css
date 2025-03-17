@@ -99,6 +99,23 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 1rem 2rem;
+  }
+  
+  .nav-left {
+    display: flex;
+    align-items: center;
+  }
+  
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+  
+  .nav-actions {
+    display: flex;
+    align-items: center;
   }
   
   .logo {
@@ -1026,17 +1043,22 @@
       font-size: 2rem;
     }
     
+    .nav-right {
+        gap: 1rem;
+    }
+    
     .nav-links {
-      display: none;
+        display: none;
+    }
+    
+    .edit-btn {
+        font-size: 0.8rem;
+        padding: 8px 15px;
     }
     
     .mobile-menu-btn {
-      display: block;
-    }
-    
-    .cta-btn {
-      padding: 12px 25px;
-      font-size: 0.9rem;
+        display: block;
+        margin-left: 1rem;
     }
     
     .training-item {
@@ -1217,6 +1239,7 @@
     z-index: 1000;
     font-size: 0.9rem;
     margin-left: 15px;
+    white-space: nowrap;
 }
 
 .edit-btn:hover {

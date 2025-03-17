@@ -17,10 +17,10 @@ class EditHandler {
         editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit Portfolio';
         editBtn.onclick = () => this.handleEditClick();
         
-        // Add button to the navigation
-        const navContainer = document.querySelector('.navbar .container');
-        if (navContainer) {
-            navContainer.appendChild(editBtn);
+        // Add button to the navigation actions container
+        const navActions = document.querySelector('.navbar .nav-actions');
+        if (navActions) {
+            navActions.appendChild(editBtn);
         } else {
             document.body.appendChild(editBtn);
         }
