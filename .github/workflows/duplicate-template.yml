@@ -1,0 +1,48 @@
+name: Duplicate Template
+
+on:
+  workflow_dispatch:
+    inputs:
+      new_folder_name:
+        description: 'Name for the new folder'
+        required: true
+        type: string
+
+jobs:
+  duplicate-template:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Git
+        run: |
+          git config --global user.name 'GitHub Actions Bot'
+          git config --global user.email 'actions@github.com'
+
+      - name: Duplicate template folder
+        run: |
+          # Check if new folder already exists
+          if [ -d "${{ github.event.inputs.new_folder_name }}" ]; then
+            echo "Error: Folder ${{ github.event.inputs.new_folder_name }} already exists"
+            exit 1
+          fi
+
+          # Check if template1 folder exists
+          if [ ! -d "template1" ]; then
+            echo "Error: Source template folder 'template1' not found"
+            exit 1
+          fi
+
+          # Create new folder and copy contents
+          cp -r template1 "${{ github.event.inputs.new_folder_name }}"
+          
+          # Stage changes
+          git add "${{ github.event.inputs.new_folder_name }}"
+          
+          # Commit and push changes
+          git commit -m "Create new template folder: ${{ github.event.inputs.new_folder_name }}"
+          git push origin HEAD:${GITHUB_REF#refs/heads/} 
