@@ -33,23 +33,24 @@ jobs:
           fi
 
           # Check if new folder already exists
-          if [ -d "$NEW_FOLDER" ]; then
-            echo "Error: Folder $NEW_FOLDER already exists"
+          if [ -d "players/$NEW_FOLDER" ]; then
+            echo "Error: Folder players/$NEW_FOLDER already exists"
             exit 1
           fi
 
-          # Check if template1 folder exists
-          if [ ! -d "template1" ]; then
-            echo "Error: Source template folder 'template1' not found"
+          # Check if template folder exists
+          TEMPLATE_FOLDER="players/template1"
+          if [ ! -d "$TEMPLATE_FOLDER" ]; then
+            echo "Error: Source template folder '$TEMPLATE_FOLDER' not found"
             exit 1
           fi
 
           # Create new folder and copy contents
-          cp -r template1 "$NEW_FOLDER"
+          cp -r "$TEMPLATE_FOLDER" "players/$NEW_FOLDER"
           
           # Stage changes
-          git add "$NEW_FOLDER"
+          git add "players/$NEW_FOLDER"
           
           # Commit and push changes
-          git commit -m "Create new template folder: $NEW_FOLDER"
+          git commit -m "Create new template folder: players/$NEW_FOLDER"
           git push origin HEAD:${GITHUB_REF#refs/heads/}
