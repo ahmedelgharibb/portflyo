@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       new_folder_name:
-        description: 'Name for the new folder'
+        description: "Name for the new folder"
         required: true
         type: string
 
@@ -25,9 +25,16 @@ jobs:
 
       - name: Duplicate template folder
         run: |
+          NEW_FOLDER="${{ github.event.inputs.new_folder_name }}"
+
+          if [ -z "$NEW_FOLDER" ]; then
+            echo "Error: new_folder_name input is required."
+            exit 1
+          fi
+
           # Check if new folder already exists
-          if [ -d "${{ github.event.inputs.new_folder_name }}" ]; then
-            echo "Error: Folder ${{ github.event.inputs.new_folder_name }} already exists"
+          if [ -d "$NEW_FOLDER" ]; then
+            echo "Error: Folder $NEW_FOLDER already exists"
             exit 1
           fi
 
@@ -38,11 +45,11 @@ jobs:
           fi
 
           # Create new folder and copy contents
-          cp -r template1 "${{ github.event.inputs.new_folder_name }}"
+          cp -r template1 "$NEW_FOLDER"
           
           # Stage changes
-          git add "${{ github.event.inputs.new_folder_name }}"
+          git add "$NEW_FOLDER"
           
           # Commit and push changes
-          git commit -m "Create new template folder: ${{ github.event.inputs.new_folder_name }}"
+          git commit -m "Create new template folder: $NEW_FOLDER"
           git push origin HEAD:${GITHUB_REF#refs/heads/}
