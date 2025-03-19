@@ -1,27 +1,25 @@
 const config = {
     // Personal Information
     personalInfo: {
-        name: "John Doe",
-        title: "Professional Athlete | Champion | Motivational Speaker",
+        name: "Yassin Abdelwahab",
+        title: "Professional Athlete | Champion ",
         bio: "With over 10 years of experience in the sports industry, I have achieved numerous accolades and continue to push the boundaries of excellence. My journey is a testament to hard work, dedication, and passion.",
         contact: {
-            phone: "+1 234 567 890",
             email: "john.doe@sportscout.com",
-            address: "123 Sports Ave, Champion City"
         }
     },
 
     // Site Branding
     branding: {
         name: "Sports<span>Scout</span>",
-        instagram: "https://www.instagram.com/portflyo/"
+        instagram: "https://www.instagram.com/sportscout/"
     },
 
     // Physical Information
     physicalInfo: {
         height: "6'2\" (188 cm)",
         weight: "180 lbs (82 kg)",
-        age: "25",
+        age: "20",
         position: "Forward"
     },
 
@@ -37,8 +35,7 @@ const config = {
     timeline: [
         {
             year: "2010",
-            title: "Started Professional Career",
-            description: "Began my journey as a professional athlete, competing in local tournaments."
+            title: "Aast & Nasser SC (UAE)",
         },
         {
             year: "2015",
