@@ -36,6 +36,7 @@ const config = {
         {
             year: "2010",
             title: "Aast & Nasser SC (UAE)",
+            description: ""
         },
         {
             year: "2015",
