@@ -59,8 +59,8 @@ const config = {
  
     // Images
     images: {
-        hero: "https://e0.365dm.com/21/10/1600x900/skysports-mohamed-mo-salah_5555663.jpg?20211022175542",
-        about: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=2033&auto=format&fit=crop",
+        hero: "https://raw.githubusercontent.com/ahmedelgharibb/portflyo/main/pictures/IMG_8790.jpeg5555663.jpg?20211022175542",
+        about: "https://raw.githubusercontent.com/ahmedelgharibb/portflyo/main/pictures/IMG_8790.jpegq=80&w=2033&auto=format&fit=crop",
         gallery: [
             {
                 image: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=1935&auto=format&fit=crop",
