@@ -103,18 +103,18 @@ const config = {
 
     // Theme Colors (CSS Variables)
     theme: {
-    primary: "#974fff",
-    secondary: "#000000",
-    accent: "#ffffff",
-    light: "#ffffff",
-    dark: "#000000"
-}
+        primary: "#974fff",
+        secondary: "#000000",
+        accent: "#ffffff",
+        light: "#ffffff",
+        dark: "#000000"
+    },
 
     // Islamic Message Configuration
     islamicMessage: {
         hadith: "كَلِمَتَانِ خَفِيفَتَانِ عَلَى اللِّسَانِ ثَقِيلَتَانِ فِي الْمِيزَانِ حَبِيبَتَانِ إِلَى الرَّحْمَنِ سُبْحَانَ اللَّهِ وَبِحَمْدِهِ سُبْحَانَ اللَّهِ الْعَظِيمِ",
         attribution: "حديث شريف",
-        displayDelay: 30000, // 30 seconds in milliseconds
+        displayDelay: 3000, // 3 seconds in milliseconds
     },
 };
 
