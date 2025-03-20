@@ -355,8 +355,47 @@
         </div>
     </footer>
 
+    <!-- Islamic Message Modal -->
+    <div class="islamic-modal-overlay"></div>
+    <div class="islamic-modal">
+        <button class="close-btn">&times;</button>
+        <p class="hadith-text"></p>
+        <p class="hadith-attribution"></p>
+    </div>
+
     <script src="script.js"></script>
     <script>
+        // Islamic Message Modal functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.querySelector('.islamic-modal');
+            const overlay = document.querySelector('.islamic-modal-overlay');
+            const closeBtn = modal.querySelector('.close-btn');
+            const hadithText = modal.querySelector('.hadith-text');
+            const hadithAttribution = modal.querySelector('.hadith-attribution');
+
+            // Set hadith text from config
+            hadithText.textContent = window.playerConfig.islamicMessage.hadith;
+            hadithAttribution.textContent = window.playerConfig.islamicMessage.attribution;
+
+            // Show modal after 30 seconds
+            setTimeout(() => {
+                modal.classList.add('show');
+                overlay.classList.add('show');
+            }, window.playerConfig.islamicMessage.displayDelay);
+
+            // Close modal when clicking close button or overlay
+            closeBtn.addEventListener('click', () => {
+                modal.classList.remove('show');
+                overlay.classList.remove('show');
+            });
+
+            overlay.addEventListener('click', () => {
+                modal.classList.remove('show');
+                overlay.classList.remove('show');
+            });
+        });
+
+        // Email functionality
         function sendEmail(event) {
             event.preventDefault();
             const form = event.target;
