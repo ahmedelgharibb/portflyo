@@ -43,7 +43,7 @@ jobs:
       - name: Generate public link
         run: |
           repo_url="${{ github.server_url }}/${{ github.repository }}"
-          image_url="$repo_url/raw/main/pictures/${{ env.IMAGE_FILENAME }}"
+          image_url="$repo_url/pictures/${{ env.IMAGE_FILENAME }}"
           echo "Public image URL: $image_url"
           echo "IMAGE_URL=$image_url" >> $GITHUB_ENV
 
