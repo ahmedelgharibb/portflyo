@@ -1,8 +1,8 @@
 const config = {
     // Personal Information
     personalInfo: {
-        name: "John Doe",
-        title: "Professional Athlete | Champion | Motivational Speaker",
+        name: "Yassin Abdelwahab",
+        title: "Professional Athlete | Champion ",
         bio: "With over 10 years of experience in the sports industry, I have achieved numerous accolades and continue to push the boundaries of excellence. My journey is a testament to hard work, dedication, and passion.",
         contact: {
             phone: "+1 234 567 890",
