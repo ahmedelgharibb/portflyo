@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .upload-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .preview-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #imagePreview {
+            max-width: 100%;
+            max-height: 300px;
+            display: none;
+            margin: 0 auto;
+        }
+        .button {
+            background-color: #974fff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #7a3fcc;
+        }
+        #uploadStatus {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <h1>Upload Image</h1>
+        <form class="upload-form" id="uploadForm">
+            <input type="file" id="imageInput" accept="image/*" required>
+            <div class="preview-container">
+                <img id="imagePreview" alt="Preview">
+            </div>
+            <button type="submit" class="button">Upload Image</button>
+        </form>
+        <div id="uploadStatus"></div>
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const uploadForm = document.getElementById('uploadForm');
+        const uploadStatus = document.getElementById('uploadStatus');
+
+        // Preview image before upload
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle form submission
+        uploadForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const file = imageInput.files[0];
+            
+            if (!file) {
+                showStatus('Please select an image to upload', 'error');
+                return;
+            }
+
+            // Create FormData object
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                // Here you would typically send the image to your server
+                // For now, we'll just simulate a successful upload
+                showStatus('Image uploaded successfully! Check the pictures directory.', 'success');
+                
+                // Reset form
+                uploadForm.reset();
+                imagePreview.style.display = 'none';
+            } catch (error) {
+                showStatus('Error uploading image: ' + error.message, 'error');
+            }
+        });
+
+        function showStatus(message, type) {
+            uploadStatus.textContent = message;
+            uploadStatus.className = type;
+            uploadStatus.style.display = 'block';
+        }
+    </script>
+</body>
+</html> 

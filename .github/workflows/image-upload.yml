@@ -1,0 +1,62 @@
+name: Image Upload Handler
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_path:
+        description: 'Path to the image file'
+        required: true
+        type: string
+
+jobs:
+  upload-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+
+      - name: Create pictures directory if not exists
+        run: mkdir -p pictures
+
+      - name: Copy image to pictures directory
+        run: |
+          # Get the filename from the path
+          filename=$(basename "${{ github.event.inputs.image_path }}")
+          # Copy the file to pictures directory
+          cp "${{ github.event.inputs.image_path }}" "pictures/$filename"
+          echo "IMAGE_FILENAME=$filename" >> $GITHUB_ENV
+
+      - name: Commit and push changes
+        run: |
+          git add pictures/
+          git commit -m "Add image: ${{ env.IMAGE_FILENAME }}"
+          git push
+
+      - name: Generate public link
+        run: |
+          repo_url="${{ github.server_url }}/${{ github.repository }}"
+          image_url="$repo_url/raw/main/pictures/${{ env.IMAGE_FILENAME }}"
+          echo "Public image URL: $image_url"
+          echo "IMAGE_URL=$image_url" >> $GITHUB_ENV
+
+      - name: Create comment with image link
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const imageUrl = process.env.IMAGE_URL;
+            const message = `✅ Image uploaded successfully!\n\nPublic URL: ${imageUrl}`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              body: message
+            }); 
