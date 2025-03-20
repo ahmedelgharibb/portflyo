@@ -1,8 +1,8 @@
 const config = {
     // Personal Information
     personalInfo: {
-        name: "John Doe",
-        title: "Professional Athlete | Champion | Motivational Speaker",
+        name: "Yassin Abdelwahab",
+        title: "Professional Athlete | Champion ",
         bio: "With over 10 years of experience in the sports industry, I have achieved numerous accolades and continue to push the boundaries of excellence. My journey is a testament to hard work, dedication, and passion.",
         contact: {
             phone: "+1 234 567 890",
@@ -19,7 +19,7 @@ const config = {
 
     // Physical Information
     physicalInfo: {
-        height: "6'2\" (188 cm)",
+        height: "6'3\" (188 cm)",
         weight: "180 lbs (82 kg)",
         age: "25",
         position: "Forward"
@@ -59,8 +59,8 @@ const config = {
  
     // Images
     images: {
-        hero: "https://raw.githubusercontent.com/ahmedelgharibb/portflyo/main/pictures/IMG_8790.jpeg",
-        about: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=2033&auto=format&fit=crop",
+        hero: "https://portflyo-kappa.vercel.app/pictures/IMG_8790.jpeg",
+        about: "https://raw.githubusercontent.com/ahmedelgharibb/portflyo/main/pictures/IMG_8790.jpegq=80&w=2033&auto=format&fit=crop",
         gallery: [
             {
                 image: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=1935&auto=format&fit=crop",

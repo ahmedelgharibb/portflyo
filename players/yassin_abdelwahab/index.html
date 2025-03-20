@@ -11,98 +11,84 @@
 <body>
     <!-- Config Script -->
     <script type="module">
-        // Add timestamp to prevent caching
-        const timestamp = new Date().getTime();
-        const configUrl = `./config.js?t=${timestamp}`;
-        
-        import(configUrl).then(config => {
-            window.playerConfig = config;
+        import config from './config.js';
+        window.playerConfig = config;
 
-            // Apply configuration when DOM is loaded
-            document.addEventListener('DOMContentLoaded', () => {
-                // Update theme colors
-                const root = document.documentElement;
-                Object.entries(config.theme).forEach(([key, value]) => {
-                    root.style.setProperty(`--${key}`, value);
-                });
+        // Apply configuration when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Update theme colors
+            const root = document.documentElement;
+            Object.entries(config.theme).forEach(([key, value]) => {
+                root.style.setProperty(`--${key}`, value);
+            });
 
-                // Update branding
-                document.getElementById('brandName').innerHTML = config.branding.name;
-                document.querySelector('.hero h1 .highlight').textContent = config.branding.name.replace(/<\/?span>/g, '');
+            // Update branding
+            document.getElementById('brandName').innerHTML = 'sports<span>scout</span>';
+            document.querySelector('.hero h1 .highlight').textContent = config.branding.name.replace(/<\/?span>/g, '');
 
-                // Update personal information
-                document.querySelector('.about-content h3').textContent = config.personalInfo.name;
-                document.querySelector('.about-content p:first-of-type').textContent = config.personalInfo.title;
-                document.querySelector('.about-content p:last-of-type').textContent = config.personalInfo.bio;
+            // Update personal information
+            document.querySelector('.about-content h3').textContent = config.personalInfo.name;
+            document.querySelector('.about-content p:first-of-type').textContent = config.personalInfo.title;
+            document.querySelector('.about-content p:last-of-type').textContent = config.personalInfo.bio;
 
-                // Update contact information
-                document.querySelector('.contact-method:nth-child(1) p').textContent = config.personalInfo.contact.phone;
-                document.querySelector('.contact-method:nth-child(2) p').textContent = config.personalInfo.contact.email;
-                document.querySelector('.contact-method:nth-child(3) p').textContent = config.personalInfo.contact.address;
+            // Update contact information
+            document.querySelector('.contact-method:nth-child(1) p').textContent = config.personalInfo.contact.phone;
+            document.querySelector('.contact-method:nth-child(2) p').textContent = config.personalInfo.contact.email;
+            document.querySelector('.contact-method:nth-child(3) p').textContent = config.personalInfo.contact.address;
 
-                // Update statistics
-                const statValues = document.querySelectorAll('.stat-value');
-                statValues[0].textContent = config.stats.matchesPlayed;
-                statValues[1].textContent = config.stats.tournamentsWon;
-                statValues[2].textContent = config.stats.trainingSessions;
-                statValues[3].textContent = config.stats.yearsExperience;
+            // Update statistics
+            const statValues = document.querySelectorAll('.stat-value');
+            statValues[0].textContent = config.stats.matchesPlayed;
+            statValues[1].textContent = config.stats.tournamentsWon;
+            statValues[2].textContent = config.stats.trainingSessions;
+            statValues[3].textContent = config.stats.yearsExperience;
 
-                // Update physical information
-                const infoValues = document.querySelectorAll('.info-value');
-                infoValues[0].textContent = config.physicalInfo.height;
-                infoValues[1].textContent = config.physicalInfo.age;
-                infoValues[2].textContent = config.physicalInfo.weight;
-                infoValues[3].textContent = config.physicalInfo.position;
+            // Update physical information
+            const infoValues = document.querySelectorAll('.info-value');
+            infoValues[0].textContent = config.physicalInfo.height;
+            infoValues[1].textContent = config.physicalInfo.age;
+            infoValues[2].textContent = config.physicalInfo.weight;
+            infoValues[3].textContent = config.physicalInfo.position;
 
-                // Update images
-                document.querySelector('.hero-player img').src = config.images.hero;
-                document.querySelector('.about-image img').src = config.images.about;
+            // Update images
+            document.querySelector('.hero-player img').src = config.images.hero;
+            document.querySelector('.about-image img').src = config.images.about;
 
-                // Update gallery
-                const galleryItems = document.querySelectorAll('.gallery-item');
-                config.images.gallery.forEach((item, index) => {
-                    if (galleryItems[index]) {
-                        galleryItems[index].querySelector('img').src = item.image;
-                        galleryItems[index].querySelector('.gallery-title').textContent = item.title;
-                        galleryItems[index].querySelector('.gallery-subtitle').textContent = item.subtitle;
-                    }
-                });
-
-                // Update timeline
-                const timelineContainer = document.querySelector('.timeline');
-                timelineContainer.innerHTML = config.timeline.map(item => `
-                    <div class="timeline-item">
-                        <div class="timeline-content">
-                            <span class="timeline-year">${item.year}</span>
-                            <h3>${item.title}</h3>
-                            <p>${item.description}</p>
-                        </div>
-                    </div>
-                `).join('');
-
-                // Update testimonials
-                const testimonialContainer = document.querySelector('.testimonial-item');
-                const testimonial = config.testimonials[0];
-                testimonialContainer.innerHTML = `
-                    <p class="testimonial-text">${testimonial.text}</p>
-                    <p class="testimonial-author">- ${testimonial.author}</p>
-                `;
-
-                // Update social media links
-                const socialLinks = document.querySelectorAll('.social-icon');
-                socialLinks[0].href = config.socialMedia.facebook;
-                socialLinks[1].href = config.socialMedia.instagram;
-                socialLinks[2].href = config.socialMedia.twitter;
-
-                // Update Islamic message
-                const islamicMessage = document.getElementById('islamicMessage');
-                if (islamicMessage) {
-                    islamicMessage.querySelector('.message-text').textContent = config.islamicMessage.hadith;
-                    islamicMessage.querySelector('.message-attribution').textContent = config.islamicMessage.attribution;
+            // Update gallery
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            config.images.gallery.forEach((item, index) => {
+                if (galleryItems[index]) {
+                    galleryItems[index].querySelector('img').src = item.image;
+                    galleryItems[index].querySelector('.gallery-title').textContent = item.title;
+                    galleryItems[index].querySelector('.gallery-subtitle').textContent = item.subtitle;
                 }
             });
-        }).catch(error => {
-            console.error('Error loading config:', error);
+
+            // Update timeline
+            const timelineContainer = document.querySelector('.timeline');
+            timelineContainer.innerHTML = config.timeline.map(item => `
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">${item.year}</span>
+                        <h3>${item.title}</h3>
+                        <p>${item.description}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            // Update testimonials
+            const testimonialContainer = document.querySelector('.testimonial-item');
+            const testimonial = config.testimonials[0];
+            testimonialContainer.innerHTML = `
+                <p class="testimonial-text">${testimonial.text}</p>
+                <p class="testimonial-author">- ${testimonial.author}</p>
+            `;
+
+            // Update social media links
+            const socialLinks = document.querySelectorAll('.social-icon');
+            socialLinks[0].href = config.socialMedia.facebook;
+            socialLinks[1].href = config.socialMedia.instagram;
+            socialLinks[2].href = config.socialMedia.twitter;
         });
     </script>
     <!-- Preloader -->
@@ -164,7 +150,7 @@
                     <img src="https://media.istockphoto.com/id/1368151370/photo/portrait-of-happy-male-soccer-player.jpg?s=612x612&w=0&k=20&c=4yJHKcKeR7uGgBeBrF1WlGBpX4pXP7znzm0xkr5J-Yk=" alt="About Image">
                 </div>
                 <div class="about-content">
-                    <h3>John Doe</h3>
+                    <h3>Yassin</h3>
                     <p>Professional Athlete | Champion | Motivational Speaker</p>
                     <p>With over 10 years of experience in the sports industry, I have achieved numerous accolades and continue to push the boundaries of excellence. My journey is a testament to hard work, dedication, and passion.</p>
                 </div>
