@@ -1,26 +1,56 @@
-name: Duplicate Folder with Custom Name
+name: Duplicate Template
 
 on:
   workflow_dispatch:
     inputs:
-      folder_name:
-        description: "Enter the new folder name"
+      new_folder_name:
+        description: "Name for the new folder"
         required: true
         type: string
 
 jobs:
-  duplicate-folder:
+  duplicate-template:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      - name: Duplicate Folder
+      - name: Set up Git
         run: |
-          cp -r existing-folder ${{ github.event.inputs.folder_name }}
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-          git add .
-          git commit -m "Duplicated folder as ${{ github.event.inputs.folder_name }}"
-          git push
+          git config --global user.name 'GitHub Actions Bot'
+          git config --global user.email 'actions@github.com'
+
+      - name: Duplicate template folder
+        run: |
+          NEW_FOLDER="${{ github.event.inputs.new_folder_name }}"
+
+          if [ -z "$NEW_FOLDER" ]; then
+            echo "Error: new_folder_name input is required."
+            exit 1
+          fi
+
+          # Check if new folder already exists
+          if [ -d "players/$NEW_FOLDER" ]; then
+            echo "Error: Folder players/$NEW_FOLDER already exists"
+            exit 1
+          fi
+
+          # Check if template folder exists
+          TEMPLATE_FOLDER="players/template1"
+          if [ ! -d "$TEMPLATE_FOLDER" ]; then
+            echo "Error: Source template folder '$TEMPLATE_FOLDER' not found"
+            exit 1
+          fi
+
+          # Create new folder and copy contents
+          cp -r "$TEMPLATE_FOLDER" "players/$NEW_FOLDER"
+          
+          # Stage changes
+          git add "players/$NEW_FOLDER"
+          
+          # Commit and push changes
+          git commit -m "Create new template folder: players/$NEW_FOLDER"
+          git push origin HEAD:${GITHUB_REF#refs/heads/}
