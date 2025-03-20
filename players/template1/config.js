@@ -114,7 +114,7 @@ const config = {
     islamicMessage: {
         hadith: "كَلِمَتَانِ خَفِيفَتَانِ عَلَى اللِّسَانِ ثَقِيلَتَانِ فِي الْمِيزَانِ حَبِيبَتَانِ إِلَى الرَّحْمَنِ سُبْحَانَ اللَّهِ وَبِحَمْدِهِ سُبْحَانَ اللَّهِ الْعَظِيمِ",
         attribution: "حديث شريف",
-        displayDelay: 3000, // 3 seconds in milliseconds
+        displayDelay: 10000, // 10 seconds in milliseconds
     },
 };
 
