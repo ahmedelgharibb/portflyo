@@ -59,7 +59,7 @@ const config = {
  
     // Images
     images: {
-        hero: "https://e0.365dm.com/21/10/1600x900/skysports-mohamed-mo-salah_5555663.jpg?20211022175542",
+        hero: "https://raw.githubusercontent.com/ahmedelgharibb/portflyo/main/pictures/IMG_8790.jpeg",
         about: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=2033&auto=format&fit=crop",
         gallery: [
             {
