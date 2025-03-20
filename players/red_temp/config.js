@@ -103,12 +103,12 @@ const config = {
 
     // Theme Colors (CSS Variables)
     theme: {
-    primary: "#974fff",
-    secondary: "#000000",
-    accent: "#ffffff",
-    light: "#ffffff",
-    dark: "#000000"
-}
+        primary: "#ff3a3a",
+        secondary: "#2c3e50",
+        accent: "#ffd700",
+        light: "#f8f9fa",
+        dark: "#121212"
+    }
 };
 
 // Export the config object
