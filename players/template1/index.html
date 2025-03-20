@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sports Player Portfolio</title>
+    <title>sportscout</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Roboto&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -23,7 +23,7 @@
             });
 
             // Update branding
-            document.getElementById('brandName').innerHTML = config.branding.name;
+            document.getElementById('brandName').innerHTML = 'sports<span>scout</span>';
             document.querySelector('.hero h1 .highlight').textContent = config.branding.name.replace(/<\/?span>/g, '');
 
             // Update personal information
@@ -99,7 +99,7 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
-            <a href="/" class="logo" id="brandName">Sports<span>Scout</span></a>
+            <a href="index.html" class="logo" id="brandName">sports<span>scout</span></a>
             <ul class="nav-links">
                 <li><a href="#hero">Home</a></li>
                 <li><a href="#about">About</a></li>
@@ -350,7 +350,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2023 SportsPro. All rights reserved.</p>
+                <p>&copy; 2025 sportscout. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -371,7 +371,7 @@
             const ownerEmail = window.playerConfig.personalInfo.contact.email;
             
             // Create mailto link with form data
-            const subject = `Contact from ${data.name} via SportsScout`;
+            const subject = `Contact from ${data.name} via sportscout`;
             const body = `Name: ${data.name}\nEmail: ${data.email}\n\nMessage:\n${data.message}`;
             const mailtoLink = `mailto:${ownerEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             
