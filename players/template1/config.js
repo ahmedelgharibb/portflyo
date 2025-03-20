@@ -13,7 +13,7 @@ const config = {
 
     // Site Branding
     branding: {
-        name: "Sports<span>Scout</span>",
+        name: "Sport<span>Scout</span>",
         instagram: "https://www.instagram.com/portflyo/"
     },
 
