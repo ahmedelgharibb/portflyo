@@ -41,6 +41,10 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         .button:hover {
             background-color: #7a3fcc;
@@ -59,6 +63,53 @@
             background-color: #f8d7da;
             color: #721c24;
         }
+        .url-container {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+        .url-container.visible {
+            display: block;
+        }
+        .url-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .url-title {
+            font-weight: bold;
+            color: #333;
+        }
+        .url-display {
+            font-family: monospace;
+            padding: 10px;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            word-break: break-all;
+            margin-bottom: 10px;
+        }
+        .copy-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            display: none;
+            animation: fadeInOut 2s ease;
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
     </style>
 </head>
 <body>
@@ -72,6 +123,20 @@
             <button type="submit" class="button">Upload Image</button>
         </form>
         <div id="uploadStatus"></div>
+        
+        <div id="urlContainer" class="url-container">
+            <div class="url-header">
+                <span class="url-title">Image URL:</span>
+                <button class="button" id="copyButton">
+                    <span>Copy URL</span>
+                </button>
+            </div>
+            <div id="urlDisplay" class="url-display"></div>
+        </div>
+    </div>
+    
+    <div id="copyNotification" class="copy-notification">
+        URL copied to clipboard!
     </div>
 
     <script>
@@ -79,6 +144,10 @@
         const imagePreview = document.getElementById('imagePreview');
         const uploadForm = document.getElementById('uploadForm');
         const uploadStatus = document.getElementById('uploadStatus');
+        const urlContainer = document.getElementById('urlContainer');
+        const urlDisplay = document.getElementById('urlDisplay');
+        const copyButton = document.getElementById('copyButton');
+        const copyNotification = document.getElementById('copyNotification');
 
         // Preview image before upload
         imageInput.addEventListener('change', function(e) {
@@ -103,20 +172,40 @@
                 return;
             }
 
-            // Create FormData object
-            const formData = new FormData();
-            formData.append('image', file);
-
             try {
-                // Here you would typically send the image to your server
-                // For now, we'll just simulate a successful upload
-                showStatus('Image uploaded successfully! Check the pictures directory.', 'success');
+                // Simulate upload and get URL (replace this with actual GitHub API call)
+                const imageUrl = `https://github.com/${GITHUB_USERNAME}/portflyo/raw/main/pictures/${file.name}`;
                 
-                // Reset form
+                // Show success message
+                showStatus('Image uploaded successfully!', 'success');
+                
+                // Display the URL
+                urlDisplay.textContent = imageUrl;
+                urlContainer.classList.add('visible');
+                
+                // Reset form but keep URL visible
                 uploadForm.reset();
                 imagePreview.style.display = 'none';
             } catch (error) {
                 showStatus('Error uploading image: ' + error.message, 'error');
+            }
+        });
+
+        // Copy URL functionality
+        copyButton.addEventListener('click', async function() {
+            const url = urlDisplay.textContent;
+            try {
+                await navigator.clipboard.writeText(url);
+                showCopyNotification();
+            } catch (err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = url;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showCopyNotification();
             }
         });
 
@@ -125,6 +214,16 @@
             uploadStatus.className = type;
             uploadStatus.style.display = 'block';
         }
+
+        function showCopyNotification() {
+            copyNotification.style.display = 'block';
+            setTimeout(() => {
+                copyNotification.style.display = 'none';
+            }, 2000);
+        }
+
+        // Get GitHub username from the current URL
+        const GITHUB_USERNAME = window.location.hostname.split('.')[0];
     </script>
 </body>
 </html> 
