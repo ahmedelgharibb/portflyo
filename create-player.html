@@ -492,7 +492,28 @@
                 const configContent = `const config = ${JSON.stringify(config, null, 4)};\nexport default config;`;
                 const configBase64 = btoa(configContent);
 
-                // Create the config file using GitHub API
+                // First, check if the file exists
+                let sha = null;
+                try {
+                    const checkResponse = await fetch(
+                        `https://api.github.com/repos/ahmedelgharibb/portflyo/contents/players/${config.folderName}/config.js`,
+                        {
+                            headers: {
+                                'Authorization': `token ${token}`,
+                                'Accept': 'application/vnd.github.v3+json'
+                            }
+                        }
+                    );
+                    
+                    if (checkResponse.ok) {
+                        const fileData = await checkResponse.json();
+                        sha = fileData.sha;
+                    }
+                } catch (error) {
+                    // File doesn't exist, which is fine
+                }
+
+                // Create or update the config file using GitHub API
                 const createConfigResponse = await fetch(
                     `https://api.github.com/repos/ahmedelgharibb/portflyo/contents/players/${config.folderName}/config.js`,
                     {
@@ -504,7 +525,8 @@
                         },
                         body: JSON.stringify({
                             message: `Create config.js for ${config.folderName}`,
-                            content: configBase64
+                            content: configBase64,
+                            ...(sha ? { sha } : {})
                         })
                     }
                 );
