@@ -286,6 +286,135 @@
     </div>
 
     <script>
+        // Default config from template1
+        const defaultConfig = {
+            personalInfo: {
+                name: "John Doe",
+                title: "Professional Athlete | Champion | Motivational Speaker",
+                bio: "With over 10 years of experience in the sports industry, I have achieved numerous accolades and continue to push the boundaries of excellence. My journey is a testament to hard work, dedication, and passion.",
+                contact: {
+                    phone: "+1 234 567 890",
+                    email: "john.doe@sportscout.com",
+                    address: "123 Sports Ave, Champion City"
+                }
+            },
+            branding: {
+                name: "Sport<span>scout</span>",
+                instagram: "https://www.instagram.com/portflyo/"
+            },
+            physicalInfo: {
+                height: "6'4\" (188 cm)",
+                weight: "180 lbs (82 kg)",
+                age: "25",
+                position: "Forward"
+            },
+            stats: {
+                matchesPlayed: "150+",
+                tournamentsWon: "50+",
+                trainingSessions: "100+",
+                yearsExperience: "10+"
+            },
+            timeline: [
+                {
+                    year: "2010",
+                    title: "Started Professional Career",
+                    description: "Began my journey as a professional athlete, competing in local tournaments."
+                },
+                {
+                    year: "2015",
+                    title: "First Major Win",
+                    description: "Won my first major tournament, marking a turning point in my career."
+                },
+                {
+                    year: "2020",
+                    title: "International Recognition",
+                    description: "Gained international recognition after winning a global championship."
+                }
+            ],
+            images: {
+                hero: "https://raw.githubusercontent.com/ahmedelgharibb/portflyo/main/pictures/IMG_8790.jpeg",
+                about: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=2033&auto=format&fit=crop",
+                gallery: [
+                    {
+                        image: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=1935&auto=format&fit=crop",
+                        title: "Championship Win",
+                        subtitle: "2022 Finals"
+                    },
+                    {
+                        image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1936&auto=format&fit=crop",
+                        title: "Training Session",
+                        subtitle: "2021"
+                    },
+                    {
+                        image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?q=80&w=2070&auto=format&fit=crop",
+                        title: "Award Ceremony",
+                        subtitle: "2020"
+                    }
+                ]
+            },
+            testimonials: [
+                {
+                    text: "John is one of the most dedicated athletes I have ever worked with. His commitment to excellence is unparalleled.",
+                    author: "Coach Smith"
+                }
+            ],
+            socialMedia: {
+                facebook: "#",
+                instagram: "https://www.instagram.com/portflyo/",
+                twitter: "#"
+            },
+            theme: {
+                primary: "#974fff",
+                secondary: "#000000",
+                accent: "#ffffff",
+                light: "#ffffff",
+                dark: "#000000"
+            },
+            islamicMessage: {
+                hadith: "كَلِمَتَانِ خَفِيفَتَانِ عَلَى اللِّسَانِ ثَقِيلَتَانِ فِي الْمِيزَانِ حَبِيبَتَانِ إِلَى الرَّحْمَنِ سُبْحَانَ اللَّهِ وَبِحَمْدِهِ سُبْحَانَ اللَّهِ الْعَظِيمِ",
+                attribution: "Sahih al-Bukhari 6406",
+                displayDelay: 3000
+            }
+        };
+
+        // Function to populate form with default values
+        function populateFormWithDefaults() {
+            // Personal Information
+            document.getElementById('name').value = defaultConfig.personalInfo.name;
+            document.getElementById('title').value = defaultConfig.personalInfo.title;
+            document.getElementById('bio').value = defaultConfig.personalInfo.bio;
+            document.getElementById('phone').value = defaultConfig.personalInfo.contact.phone;
+            document.getElementById('email').value = defaultConfig.personalInfo.contact.email;
+            document.getElementById('address').value = defaultConfig.personalInfo.contact.address;
+
+            // Physical Information
+            document.getElementById('height').value = defaultConfig.physicalInfo.height;
+            document.getElementById('weight').value = defaultConfig.physicalInfo.weight;
+            document.getElementById('age').value = defaultConfig.physicalInfo.age;
+            document.getElementById('position').value = defaultConfig.physicalInfo.position;
+
+            // Statistics
+            document.getElementById('matchesPlayed').value = defaultConfig.stats.matchesPlayed;
+            document.getElementById('tournamentsWon').value = defaultConfig.stats.tournamentsWon;
+            document.getElementById('trainingSessions').value = defaultConfig.stats.trainingSessions;
+            document.getElementById('yearsExperience').value = defaultConfig.stats.yearsExperience;
+
+            // Images
+            document.getElementById('heroImage').value = defaultConfig.images.hero;
+            document.getElementById('aboutImage').value = defaultConfig.images.about;
+            document.getElementById('galleryImage1').value = defaultConfig.images.gallery[0].image;
+            document.getElementById('galleryImage2').value = defaultConfig.images.gallery[1].image;
+            document.getElementById('galleryImage3').value = defaultConfig.images.gallery[2].image;
+
+            // Social Media
+            document.getElementById('facebook').value = defaultConfig.socialMedia.facebook;
+            document.getElementById('instagram').value = defaultConfig.socialMedia.instagram;
+            document.getElementById('twitter').value = defaultConfig.socialMedia.twitter;
+        }
+
+        // Call the function when the page loads
+        window.onload = populateFormWithDefaults;
+
         function showMessage(text, type) {
             const message = document.getElementById('message');
             message.textContent = text;
@@ -352,48 +481,15 @@
                         instagram: document.getElementById('instagram').value,
                         twitter: document.getElementById('twitter').value
                     },
-                    theme: {
-                        primary: '#974fff',
-                        secondary: '#000000',
-                        accent: '#ffffff',
-                        light: '#ffffff',
-                        dark: '#000000'
-                    },
-                    branding: {
-                        name: 'SportsScout'
-                    },
-                    timeline: [
-                        {
-                            year: '2020',
-                            title: 'Started Professional Career',
-                            description: 'Began my journey as a professional athlete.'
-                        },
-                        {
-                            year: '2021',
-                            title: 'First Major Win',
-                            description: 'Won my first major tournament.'
-                        },
-                        {
-                            year: '2022',
-                            title: 'International Recognition',
-                            description: 'Gained international recognition.'
-                        }
-                    ],
-                    testimonials: [
-                        {
-                            text: 'An exceptional athlete with great potential.',
-                            author: 'Coach Smith'
-                        }
-                    ],
-                    islamicMessage: {
-                        hadith: 'The strong person is not the one who can wrestle someone else down. The strong person is the one who can control himself when angry.',
-                        attribution: 'Sahih al-Bukhari 6114',
-                        displayDelay: 3000
-                    }
+                    theme: defaultConfig.theme,
+                    branding: defaultConfig.branding,
+                    timeline: defaultConfig.timeline,
+                    testimonials: defaultConfig.testimonials,
+                    islamicMessage: defaultConfig.islamicMessage
                 };
 
                 // Create the config file content
-                const configContent = `const config = ${JSON.stringify(config, null, 2)};\nexport default config;`;
+                const configContent = `const config = ${JSON.stringify(config, null, 4)};\nexport default config;`;
                 const configBase64 = btoa(configContent);
 
                 // Create the config file using GitHub API
