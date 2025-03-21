@@ -1,4 +1,4 @@
-const config = {
+export default {
     // Personal Information
     personalInfo: {
         name: "John Doe",
@@ -27,10 +27,10 @@ const config = {
 
     // Statistics
     stats: {
-        matchesPlayed: "150+",
-        tournamentsWon: "50+",
-        trainingSessions: "100+",
-        yearsExperience: "10+"
+        matchesPlayed: "150",
+        tournamentsWon: "50",
+        trainingSessions: "100",
+        yearsExperience: "10"
     },
 
     // Career Timeline
@@ -49,41 +49,14 @@ const config = {
             year: "2020",
             title: "International Recognition",
             description: "Gained international recognition after winning a global championship."
-        },
-        {
-            year: "2020",
-            title: "International Recognition",
-            description: "Gained international recognition after winning a global championship."
         }
     ],
- 
+
     // Images
     images: {
-        hero: "https://raw.githubusercontent.com/ahmedelgharibb/portflyo/main/pictures/IMG_8790.jpeg",
-        about: "https://raw.githubusercontent.com/ahmedelgharibb/portflyo/main/pictures/IMG_8790.jpeg",
-        gallery: [
-            {
-                image: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=1935&auto=format&fit=crop",
-                title: "Championship Win",
-                subtitle: "2022 Finals"
-            },
-            {
-                image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1936&auto=format&fit=crop",
-                title: "Training Session",
-                subtitle: "2021"
-            },
-            {
-                image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?q=80&w=2070&auto=format&fit=crop",
-                title: "Award Ceremony",
-                subtitle: "2020"
-            },
-            {
-                image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1936&auto=format&fit=crop",
-                title: "Training Session",
-                subtitle: "2021"
-            }
-            
-        ]
+        hero: "",
+        about: "",
+        gallery: []
     },
 
     // Testimonials
@@ -101,7 +74,7 @@ const config = {
         twitter: "#"
     },
 
-    // Theme Colors (CSS Variables)
+    // Theme Colors
     theme: {
         primary: "#974fff",
         secondary: "#000000",
@@ -110,13 +83,10 @@ const config = {
         dark: "#000000"
     },
 
-    // Islamic Message Configuration
+    // Islamic Message
     islamicMessage: {
-        hadith: "كَلِمَتَانِ خَفِيفَتَانِ عَلَى اللِّسَانِ ثَقِيلَتَانِ فِي الْمِيزَانِ حَبِيبَتَانِ إِلَى الرَّحْمَنِ سُبْحَانَ اللَّهِ وَبِحَمْدِهِ سُبْحَانَ اللَّهِ الْعَظِيمِ",
-        attribution: "حديث شريف",
-        displayDelay: 10000, // 10 seconds in milliseconds
-    },
-};
-
-// Export the config object
-export default config; 
+        hadith: "The strong believer is better and more beloved to Allah than the weak believer, while there is good in both.",
+        attribution: "Sahih Muslim",
+        displayDelay: 3000
+    }
+} 
