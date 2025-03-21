@@ -46,7 +46,7 @@ window.addEventListener('scroll', () => {
 
 // Hero Section Typing Effect
 const heroText = document.querySelector('.hero h1');
-const text = "Welcome to Sportscout";
+const text = "Yassin Abdelwahab";
 let index = 0;
 
 function typeWriter() {
