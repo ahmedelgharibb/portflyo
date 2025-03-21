@@ -490,7 +490,8 @@
 
                 // Create the config file content
                 const configContent = `const config = ${JSON.stringify(config, null, 4)};\nexport default config;`;
-                const configBase64 = btoa(configContent);
+                // Convert Unicode string to UTF-8 bytes, then to base64
+                const configBase64 = btoa(unescape(encodeURIComponent(configContent)));
 
                 // First, check if the file exists
                 let sha = null;
