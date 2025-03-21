@@ -10,154 +10,133 @@
 </head>
 <body>
     <!-- Config Script -->
-    <script>
-        // Function to apply config to the page
-        function applyConfig(config) {
-            try {
-                // Update theme colors
-                const root = document.documentElement;
-                Object.entries(config.theme).forEach(([key, value]) => {
-                    root.style.setProperty(`--${key}`, value);
-                });
-
-                // Update branding
-                document.querySelector('.hero h1 .highlight').textContent = config.branding.name.replace(/<\/?span>/g, '');
-
-                // Update personal information
-                document.querySelector('.about-content h3').textContent = config.personalInfo.name;
-                document.querySelector('.about-content p:first-of-type').textContent = config.personalInfo.title;
-                document.querySelector('.about-content p:last-of-type').textContent = config.personalInfo.bio;
-
-                // Update contact information
-                document.querySelector('.contact-method:nth-child(1) p').textContent = config.personalInfo.contact.phone;
-                document.querySelector('.contact-method:nth-child(2) p').textContent = config.personalInfo.contact.email;
-                document.querySelector('.contact-method:nth-child(3) p').textContent = config.personalInfo.contact.address;
-
-                // Update statistics
-                const statValues = document.querySelectorAll('.stat-value');
-                statValues[0].textContent = config.stats.matchesPlayed + '+';
-                statValues[1].textContent = config.stats.tournamentsWon + '+';
-                statValues[2].textContent = config.stats.trainingSessions + '+';
-                statValues[3].textContent = config.stats.yearsExperience + '+';
-
-                // Update physical information
-                const infoValues = document.querySelectorAll('.info-value');
-                infoValues[0].textContent = config.physicalInfo.height;
-                infoValues[1].textContent = config.physicalInfo.age;
-                infoValues[2].textContent = config.physicalInfo.weight;
-                infoValues[3].textContent = config.physicalInfo.position;
-
-                // Update images
-                const heroImg = document.querySelector('.hero-player img');
-                const aboutImg = document.querySelector('.about-image img');
-                
-                // Set hero image
-                if (config.images && config.images.hero) {
-                    heroImg.src = config.images.hero;
-                    heroImg.style.display = 'block';
-                }
-                
-                // Set about image
-                if (config.images && config.images.about) {
-                    aboutImg.src = config.images.about;
-                    aboutImg.style.display = 'block';
-                }
-
-                // Update timeline
-                const timelineContainer = document.querySelector('.timeline');
-                timelineContainer.innerHTML = config.timeline.map(item => `
-                    <div class="timeline-item">
-                        <div class="timeline-content">
-                            <span class="timeline-year">${item.year}</span>
-                            <h3>${item.title}</h3>
-                            <p>${item.description}</p>
-                        </div>
-                    </div>
-                `).join('');
-
-                // Update testimonials
-                const testimonialContainer = document.querySelector('.testimonial-item');
-                const testimonial = config.testimonials[0];
-                testimonialContainer.innerHTML = `
-                    <p class="testimonial-text">${testimonial.text}</p>
-                    <p class="testimonial-author">- ${testimonial.author}</p>
-                `;
-
-                // Update social media links
-                const socialLinks = document.querySelectorAll('.social-icon');
-                if (socialLinks.length >= 3) {
-                    socialLinks[0].href = config.socialMedia.facebook;
-                    socialLinks[1].href = config.socialMedia.instagram;
-                    socialLinks[2].href = config.socialMedia.twitter;
-                }
-
-                // Update Islamic message
-                const islamicMessage = document.getElementById('islamicMessage');
-                if (islamicMessage) {
-                    islamicMessage.querySelector('.message-text').textContent = config.islamicMessage.hadith;
-                    islamicMessage.querySelector('.message-attribution').textContent = config.islamicMessage.attribution;
-                }
-
-                console.log('Config applied successfully');
-            } catch (error) {
-                console.error('Error applying config:', error);
-            }
-        }
-
-        // Function to load config with retry mechanism
-        async function loadConfig(retries = 3) {
-            try {
-                // Add cache-busting parameters
-                const timestamp = new Date().getTime();
-                const random = Math.random();
-                const configUrl = `./config.js?t=${timestamp}&r=${random}`;
-                
-                const response = await fetch(configUrl);
-                if (!response.ok) {
-                    throw new Error(`Failed to load config: ${response.status} ${response.statusText}`);
-                }
-                
-                const configModule = await response.json();
-                window.playerConfig = configModule;
-                
-                // Apply config immediately
-                applyConfig(configModule);
-                
-                return configModule;
-            } catch (error) {
-                console.error('Error loading config:', error);
-                if (retries > 0) {
-                    console.log(`Retrying config load... (${retries} attempts left)`);
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    return loadConfig(retries - 1);
-                }
-                throw error;
-            }
-        }
+    <script type="module">
+        // Add timestamp and random number to prevent caching
+        const timestamp = new Date().getTime();
+        const random = Math.random();
+        const configUrl = `./config.js?t=${timestamp}&r=${random}`;
+        
+        // Function to reload the page
+        const reloadPage = () => {
+            window.location.reload();
+        };
 
         // Function to check for config changes
-        async function checkForChanges() {
+        const checkForChanges = async () => {
             try {
-                const newConfig = await loadConfig(0);
+                const response = await fetch(configUrl);
+                const newConfig = await response.json();
                 if (JSON.stringify(newConfig) !== JSON.stringify(window.playerConfig)) {
-                    console.log('Config changed, updating page...');
-                    window.location.reload();
+                    reloadPage();
                 }
             } catch (error) {
                 console.error('Error checking for changes:', error);
             }
-        }
+        };
 
-        // Initialize config loading
-        document.addEventListener('DOMContentLoaded', async () => {
+        // Load config with retry mechanism
+        const loadConfig = async (retries = 3) => {
             try {
-                await loadConfig();
-                // Check for changes every 2 seconds
-                setInterval(checkForChanges, 2000);
+                const config = await import(configUrl);
+                window.playerConfig = config;
+
+                // Apply configuration when DOM is loaded
+                document.addEventListener('DOMContentLoaded', () => {
+                    // Update theme colors
+                    const root = document.documentElement;
+                    Object.entries(config.theme).forEach(([key, value]) => {
+                        root.style.setProperty(`--${key}`, value);
+                    });
+
+                    // Update branding
+                    document.getElementById('brandName').innerHTML = config.branding.name;
+                    document.querySelector('.hero h1 .highlight').textContent = config.branding.name.replace(/<\/?span>/g, '');
+
+                    // Update personal information
+                    document.querySelector('.about-content h3').textContent = config.personalInfo.name;
+                    document.querySelector('.about-content p:first-of-type').textContent = config.personalInfo.title;
+                    document.querySelector('.about-content p:last-of-type').textContent = config.personalInfo.bio;
+
+                    // Update contact information
+                    document.querySelector('.contact-method:nth-child(1) p').textContent = config.personalInfo.contact.phone;
+                    document.querySelector('.contact-method:nth-child(2) p').textContent = config.personalInfo.contact.email;
+                    document.querySelector('.contact-method:nth-child(3) p').textContent = config.personalInfo.contact.address;
+
+                    // Update statistics
+                    const statValues = document.querySelectorAll('.stat-value');
+                    statValues[0].textContent = config.stats.matchesPlayed + '+';
+                    statValues[1].textContent = config.stats.tournamentsWon + '+';
+                    statValues[2].textContent = config.stats.trainingSessions + '+';
+                    statValues[3].textContent = config.stats.yearsExperience + '+';
+
+                    // Update physical information
+                    const infoValues = document.querySelectorAll('.info-value');
+                    infoValues[0].textContent = config.physicalInfo.height;
+                    infoValues[1].textContent = config.physicalInfo.age;
+                    infoValues[2].textContent = config.physicalInfo.weight;
+                    infoValues[3].textContent = config.physicalInfo.position;
+
+                    // Update images
+                    document.querySelector('.hero-player img').src = config.images.hero;
+                    document.querySelector('.about-image img').src = config.images.about;
+
+                    // Update gallery
+                    const galleryItems = document.querySelectorAll('.gallery-item');
+                    config.images.gallery.forEach((item, index) => {
+                        if (galleryItems[index]) {
+                            galleryItems[index].querySelector('img').src = item.image;
+                            galleryItems[index].querySelector('.gallery-title').textContent = item.title;
+                            galleryItems[index].querySelector('.gallery-subtitle').textContent = item.subtitle;
+                        }
+                    });
+
+                    // Update timeline
+                    const timelineContainer = document.querySelector('.timeline');
+                    timelineContainer.innerHTML = config.timeline.map(item => `
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <span class="timeline-year">${item.year}</span>
+                                <h3>${item.title}</h3>
+                                <p>${item.description}</p>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    // Update testimonials
+                    const testimonialContainer = document.querySelector('.testimonial-item');
+                    const testimonial = config.testimonials[0];
+                    testimonialContainer.innerHTML = `
+                        <p class="testimonial-text">${testimonial.text}</p>
+                        <p class="testimonial-author">- ${testimonial.author}</p>
+                    `;
+
+                    // Update social media links
+                    const socialLinks = document.querySelectorAll('.social-icon');
+                    socialLinks[0].href = config.socialMedia.facebook;
+                    socialLinks[1].href = config.socialMedia.instagram;
+                    socialLinks[2].href = config.socialMedia.twitter;
+
+                    // Update Islamic message
+                    const islamicMessage = document.getElementById('islamicMessage');
+                    if (islamicMessage) {
+                        islamicMessage.querySelector('.message-text').textContent = config.islamicMessage.hadith;
+                        islamicMessage.querySelector('.message-attribution').textContent = config.islamicMessage.attribution;
+                    }
+
+                    // Start checking for changes every 5 seconds
+                    setInterval(checkForChanges, 5000);
+                });
             } catch (error) {
-                console.error('Failed to initialize config:', error);
+                console.error('Error loading config:', error);
+                if (retries > 0) {
+                    console.log(`Retrying config load... (${retries} attempts left)`);
+                    setTimeout(() => loadConfig(retries - 1), 1000);
+                }
             }
-        });
+        };
+
+        // Start loading the config
+        loadConfig();
     </script>
     <!-- Preloader -->
     <div class="preloader">
@@ -218,8 +197,8 @@
                     <img src="https://raw.githubusercontent.com/ahmedelgharibb/portflyo/main/pictures/IMG_8790.jpeg" alt="About Image" loading="eager">
                 </div>
                 <div class="about-content">
-                    <h3>John Doe</h3>
-                    <p>Professional Athlete | Champion | Motivational Speaker</p>
+                    <h3>Yassin Abdelwahab</h3>
+                    <p>Professional Athlete | Champion </p>
                     <p>With over 10 years of experience in the sports industry, I have achieved numerous accolades and continue to push the boundaries of excellence. My journey is a testament to hard work, dedication, and passion.</p>
                 </div>
             </div>
@@ -232,16 +211,12 @@
             <h2 class="section-title">My Stats</h2>
             <div class="stats-grid">
                 <div class="stat-card">
-                    <span class="stat-value">150+</span>
-                    <span class="stat-label">Matches Played</span>
+                    <span class="stat-value">15</span>
+                    <span class="stat-label">PPG</span>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-value">50+</span>
+                    <span class="stat-value">20+</span>
                     <span class="stat-label">Tournaments Won</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-value">100+</span>
-                    <span class="stat-label">Training Sessions</span>
                 </div>
                 <div class="stat-card">
                     <span class="stat-value">10+</span>
@@ -258,15 +233,15 @@
             <div class="informations-grid">
                 <div class="info-card">
                     <span class="info-label">Height</span>
-                    <span class="info-value">6'2" (188 cm)</span>
+                    <span class="info-value">6'6 ft / 197 cm</span>
                 </div>
                 <div class="info-card">
                     <span class="info-label">Age</span>
-                    <span class="info-value">25</span>
+                    <span class="info-value">20</span>
                 </div>
                 <div class="info-card">
                     <span class="info-label">Weight</span>
-                    <span class="info-value">180 lbs (82 kg)</span>
+                    <span class="info-value">205 lbs / 93 kg</span>
                 </div>
                 <div class="info-card">
                     <span class="info-label">Position</span>
@@ -347,13 +322,7 @@
             </div>
             <div class="sponsors-grid">
                 <div class="sponsor-item">
-                    <img src="https://via.placeholder.com/150x60" alt="Sponsor 1">
-                </div>
-                <div class="sponsor-item">
-                    <img src="https://via.placeholder.com/150x60" alt="Sponsor 2">
-                </div>
-                <div class="sponsor-item">
-                    <img src="https://via.placeholder.com/150x60" alt="Sponsor 3">
+                    <img src="data:image/png;base64,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" alt="Sponsor 1">
                 </div>
             </div>
         </div>
@@ -371,13 +340,9 @@
                     </div>
                     <div class="contact-method">
                         <i class="fas fa-envelope"></i>
-                        <p>john.doe@sportscout.com</p>
+                        <p>yassinabdelwahab217@gmail.com</p>
                     </div>
-                    <div class="contact-method">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <p>123 Sports Ave, Champion City</p>
-                    </div>
-                </div>
+    
                 <form id="contactForm" class="contact-form" onsubmit="sendEmail(event)">
                     <input type="text" name="name" placeholder="Your Name" required>
                     <input type="email" name="email" placeholder="Your Email" required>
