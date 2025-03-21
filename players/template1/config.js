@@ -45,6 +45,11 @@
             "title": "International Recognition",
             "description": "Gained international recognition after winning a global championship."
         }
+                {
+            "year": "2020",
+            "title": "International Recognition",
+            "description": "Gained international recognition after winning a global championship."
+        }
     ],
 
     "testimonials": [
