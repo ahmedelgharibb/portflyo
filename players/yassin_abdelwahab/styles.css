@@ -97,8 +97,9 @@ section {
 
 .navbar .container {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
+  padding-left: 20px;
 }
 
 .logo {
@@ -113,6 +114,7 @@ section {
   margin-right: 30px;
   white-space: nowrap;
   letter-spacing: -0.5px;
+  margin-left: -20px;
 }
 
 .logo span {
@@ -123,6 +125,7 @@ section {
 .nav-links {
   display: flex;
   gap: 30px;
+  margin-left: auto;
 }
 
 .nav-links a {
@@ -196,6 +199,7 @@ section {
   height: 100%;
   object-fit: cover;
   object-position: center;
+  display: none; /* Initially hidden until loaded */
 }
 
 .hero h1 {
@@ -418,8 +422,11 @@ section {
 
 .about-image img {
   width: 100%;
-  display: block;
-  transition: transform 0.5s ease;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 10px;
+  display: none; /* Initially hidden until loaded */
 }
 
 .about-image:hover img {
