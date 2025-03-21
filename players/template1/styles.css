@@ -199,7 +199,6 @@ section {
   height: 100%;
   object-fit: cover;
   object-position: center;
-  display: none; /* Initially hidden until loaded */
 }
 
 .hero h1 {
@@ -422,11 +421,8 @@ section {
 
 .about-image img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  border-radius: 10px;
-  display: none; /* Initially hidden until loaded */
+  display: block;
+  transition: transform 0.5s ease;
 }
 
 .about-image:hover img {

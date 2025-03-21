@@ -77,20 +77,8 @@
                     infoValues[3].textContent = config.physicalInfo.position;
 
                     // Update images
-                    const heroImg = document.querySelector('.hero-player img');
-                    const aboutImg = document.querySelector('.about-image img');
-                    
-                    // Set hero image
-                    if (config.images && config.images.hero) {
-                        heroImg.src = config.images.hero;
-                        heroImg.style.display = 'block';
-                    }
-                    
-                    // Set about image
-                    if (config.images && config.images.about) {
-                        aboutImg.src = config.images.about;
-                        aboutImg.style.display = 'block';
-                    }
+                    document.querySelector('.hero-player img').src = config.images.hero;
+                    document.querySelector('.about-image img').src = config.images.about;
 
                     // Update gallery
                     const galleryItems = document.querySelectorAll('.gallery-item');
@@ -196,7 +184,7 @@
             </div>
         </div>
         <div class="hero-player">
-            <img src="" alt="Player Image" loading="eager" onerror="this.style.display='none'">
+            <img src="https://raw.githubusercontent.com/ahmedelgharibb/portflyo/main/pictures/IMG_8790.jpeg" alt="Player Image" loading="eager">
         </div>
     </section>
 
@@ -206,7 +194,7 @@
             <h2 class="section-title">About Me</h2>
             <div class="about-grid">
                 <div class="about-image">
-                    <img src="" alt="About Image" loading="eager" onerror="this.style.display='none'">
+                    <img src="https://raw.githubusercontent.com/ahmedelgharibb/portflyo/main/pictures/IMG_8790.jpeg" alt="About Image" loading="eager">
                 </div>
                 <div class="about-content">
                     <h3>John Doe</h3>
