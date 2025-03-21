@@ -407,7 +407,20 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to create website. Please check your token permissions.');
+                    const errorData = await response.json();
+                    let errorMessage = 'Failed to create website. ';
+                    
+                    if (response.status === 401) {
+                        errorMessage += 'Invalid token. Please check your GitHub token.';
+                    } else if (response.status === 403) {
+                        errorMessage += 'Token does not have required permissions. Please ensure your token has "repo" and "workflow" scopes.';
+                    } else if (errorData.message) {
+                        errorMessage += errorData.message;
+                    } else {
+                        errorMessage += 'Please check your token permissions.';
+                    }
+                    
+                    throw new Error(errorMessage);
                 }
 
                 // Show the website URL
