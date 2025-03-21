@@ -19,13 +19,6 @@ jobs:
         run: |
           cp -r players/template1/* players/${{ github.event.client_payload.folderName }}/
 
-      - name: Create config.js
-        run: |
-          cat > players/${{ github.event.client_payload.folderName }}/config.js << 'EOL'
-          const config = ${{ toJson(github.event.client_payload) }};
-          export default config;
-          EOL
-
       - name: Commit and push changes
         run: |
           git config --local user.email "action@github.com"
