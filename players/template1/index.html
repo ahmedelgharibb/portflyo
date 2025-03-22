@@ -408,16 +408,6 @@
                         <li><a href="#contact">Contact</a></li>
                     </ul>
                 </div>
-                <!-- Follow Me Section (Hidden)
-                <div>
-                    <h3 class="footer-title">Follow Me</h3>
-                    <div class="social-icons">
-                        <a href="#" class="social-icon">&#xf09a;</a>
-                        <a href="#" class="social-icon">&#xf16d;</a>
-                        <a href="#" class="social-icon">&#xf099;</a>
-                    </div>
-                </div>
-                -->
             </div>
             <div class="footer-bottom">
                 <p>&copy; 2025 sportscout. All rights reserved.</p>
@@ -437,39 +427,42 @@
     <script src="script.js"></script>
     <script>
         // Islamic Message Modal functionality
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM Content Loaded - Initializing Islamic Message Modal');
-            const modal = document.querySelector('.islamic-modal');
-            const overlay = document.querySelector('.islamic-modal-overlay');
-            const closeBtn = modal.querySelector('.close-btn');
-            const hadithText = modal.querySelector('.hadith-text');
-            const hadithAttribution = modal.querySelector('.hadith-attribution');
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await loadConfig();
+                
+                console.log('Initializing Islamic Message Modal');
+                const modal = document.querySelector('.islamic-modal');
+                const overlay = document.querySelector('.islamic-modal-overlay');
+                const closeBtn = modal.querySelector('.close-btn');
+                const hadithText = modal.querySelector('.hadith-text');
+                const hadithAttribution = modal.querySelector('.hadith-attribution');
 
-            // Set hadith text from config
-            console.log('Setting hadith text:', window.playerConfig.islamicMessage.hadith);
-            hadithText.textContent = window.playerConfig.islamicMessage.hadith;
-            hadithAttribution.textContent = window.playerConfig.islamicMessage.attribution;
+                // Set hadith text from config
+                console.log('Setting hadith text:', window.playerConfig.islamicMessage.hadith);
+                hadithText.textContent = window.playerConfig.islamicMessage.hadith;
+                hadithAttribution.textContent = window.playerConfig.islamicMessage.attribution;
 
-            // Show modal after delay
-            console.log('Setting timeout for', window.playerConfig.islamicMessage.displayDelay, 'milliseconds');
-            setTimeout(() => {
-                console.log('Showing modal now');
-                modal.classList.add('show');
-                overlay.classList.add('show');
-            }, window.playerConfig.islamicMessage.displayDelay);
+                // Show modal after delay
+                setTimeout(() => {
+                    console.log('Showing modal now');
+                    modal.classList.add('show');
+                    overlay.classList.add('show');
+                }, window.playerConfig.islamicMessage.displayDelay || 3000);
 
-            // Close modal when clicking close button or overlay
-            closeBtn.addEventListener('click', () => {
-                console.log('Close button clicked');
-                modal.classList.remove('show');
-                overlay.classList.remove('show');
-            });
+                // Close modal when clicking close button or overlay
+                closeBtn.addEventListener('click', () => {
+                    modal.classList.remove('show');
+                    overlay.classList.remove('show');
+                });
 
-            overlay.addEventListener('click', () => {
-                console.log('Overlay clicked');
-                modal.classList.remove('show');
-                overlay.classList.remove('show');
-            });
+                overlay.addEventListener('click', () => {
+                    modal.classList.remove('show');
+                    overlay.classList.remove('show');
+                });
+            } catch (error) {
+                console.error('Error initializing Islamic message:', error);
+            }
         });
 
         // Email functionality

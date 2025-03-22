@@ -46,18 +46,23 @@ window.addEventListener('scroll', () => {
 
 // Hero Section Typing Effect
 const heroText = document.querySelector('.hero h1');
-const text = "Welcome to Sportscout";
 let index = 0;
 
 function typeWriter() {
+    const playerName = window.playerConfig?.personalInfo?.name || 'Welcome';
+    const text = `Welcome ${playerName}`;
     if (index < text.length) {
-        heroText.innerHTML += text.charAt(index);
+        heroText.innerHTML = text.substring(0, index + 1);
         index++;
         setTimeout(typeWriter, 100);
     }
 }
 
-typeWriter();
+// Don't start typing until config is loaded
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadConfig();
+    typeWriter();
+});
 
 // Stats Counter Animation
 const statCards = document.querySelectorAll('.stat-card');
