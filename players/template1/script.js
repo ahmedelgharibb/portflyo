@@ -16,11 +16,21 @@ const mobileNavLinks = document.querySelectorAll('.mobile-nav-links a');
 
 mobileMenuBtn.addEventListener('click', () => {
     mobileMenu.classList.toggle('active');
+    mobileMenuBtn.classList.toggle('active');
+});
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', (e) => {
+    if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target) && mobileMenu.classList.contains('active')) {
+        mobileMenu.classList.remove('active');
+        mobileMenuBtn.classList.remove('active');
+    }
 });
 
 mobileNavLinks.forEach(link => {
     link.addEventListener('click', () => {
         mobileMenu.classList.remove('active');
+        mobileMenuBtn.classList.remove('active');
     });
 });
 
@@ -85,14 +95,19 @@ const observer = new IntersectionObserver((entries, observer) => {
                 const updateCount = () => {
                     if (count < target) {
                         count += increment;
-                        value.textContent = Math.ceil(count);
-                        requestAnimationFrame(updateCount);
+                        value.textContent = Math.ceil(count) + '+';
                     } else {
-                        value.textContent = target;
+                        value.textContent = target + '+';
                     }
                 };
 
-                updateCount();
+                const countInterval = setInterval(() => {
+                    if (count < target) {
+                        updateCount();
+                    } else {
+                        clearInterval(countInterval);
+                    }
+                }, 16);
             });
             observer.unobserve(statsSection);
         }

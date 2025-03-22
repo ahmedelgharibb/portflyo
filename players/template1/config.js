@@ -80,8 +80,8 @@
     },
 
     "islamicMessage": {
-        "hadith": "The strong believer is better and more beloved to Allah than the weak believer, while there is good in both.",
-        "attribution": "Sahih Muslim",
-        "displayDelay": 3000
+        "hadith": "كلمتان حبيبتان إلى الرحمن، خفيفتان على اللسان، ثقيلتان في الميزان: سبحان الله وبحمده، سبحان الله العظيم.",
+        "attribution": "حديث شريف",
+        "displayDelay": 10000
     }
 } 
