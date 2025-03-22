@@ -1036,17 +1036,13 @@ footer {
   }
   
   .hero-content {
-    width: 80%;
+    width: 100%;
+    text-align: center;
+    padding: 0 20px;
   }
   
   .hero-player {
-    width: 100%;
-    opacity: 0.3;
-    clip-path: none;
-  }
-  
-  .hero-player img {
-    object-position: center;
+    display: none; /* Hide hero image on mobile */
   }
   
   .timeline::after {
