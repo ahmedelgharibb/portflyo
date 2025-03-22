@@ -185,7 +185,7 @@
     <div class="mobile-menu">
         <div class="menu-header">
             <div class="menu-title">
-                <i class="fas fa-lock"></i>
+                <i class="fas fa-bars"></i>
                 Menu
             </div>
             <button class="close-btn">&times;</button>
@@ -226,7 +226,7 @@
                 </div>
                 <div class="about-content">
                     <h3>John Doe</h3>
-                    <p>Professional Athlete | Champion | Motivational Speaker</p>
+                    <p class="title"><strong>Professional Athlete | Champion | Motivational Speaker</strong></p>
                     <p>With over 10 years of experience in the sports industry, I have achieved numerous accolades and continue to push the boundaries of excellence. My journey is a testament to hard work, dedication, and passion.</p>
                 </div>
             </div>
@@ -434,27 +434,43 @@
                 const hadithText = modal.querySelector('.hadith-text');
                 const hadithAttribution = modal.querySelector('.hadith-attribution');
 
-                // Set hadith text from config
-                console.log('Setting hadith text:', window.playerConfig.islamicMessage.hadith);
-                hadithText.textContent = window.playerConfig.islamicMessage.hadith;
-                hadithAttribution.textContent = window.playerConfig.islamicMessage.attribution;
+                // Function to get random message
+                function getRandomMessage() {
+                    const messages = window.playerConfig.islamicMessage.messages;
+                    const randomIndex = Math.floor(Math.random() * messages.length);
+                    return messages[randomIndex];
+                }
+
+                // Set random hadith text from config
+                const randomMessage = getRandomMessage();
+                console.log('Setting hadith text:', randomMessage.hadith);
+                hadithText.textContent = randomMessage.hadith;
+                hadithAttribution.textContent = randomMessage.attribution;
 
                 // Show modal after delay
                 setTimeout(() => {
                     console.log('Showing modal now');
                     modal.classList.add('show');
                     overlay.classList.add('show');
+                    document.body.style.overflow = 'hidden'; // Prevent scrolling
                 }, window.playerConfig.islamicMessage.displayDelay || 3000);
 
-                // Close modal when clicking close button or overlay
-                closeBtn.addEventListener('click', () => {
+                // Function to close modal
+                function closeModal() {
                     modal.classList.remove('show');
                     overlay.classList.remove('show');
-                });
+                    document.body.style.overflow = ''; // Restore scrolling
+                }
 
-                overlay.addEventListener('click', () => {
-                    modal.classList.remove('show');
-                    overlay.classList.remove('show');
+                // Close modal when clicking close button or overlay
+                closeBtn.addEventListener('click', closeModal);
+                overlay.addEventListener('click', closeModal);
+
+                // Close modal when pressing Escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && modal.classList.contains('show')) {
+                        closeModal();
+                    }
                 });
             } catch (error) {
                 console.error('Error initializing Islamic message:', error);

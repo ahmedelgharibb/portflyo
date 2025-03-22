@@ -1330,18 +1330,20 @@ footer {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0.7);
-    background: rgba(255, 255, 255, 0.95);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.98));
     padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border-radius: 30px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
     z-index: 2000;
     text-align: center;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.5s ease;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     max-width: 90%;
     width: 600px;
     direction: rtl;
+    border: 2px solid rgba(151, 79, 255, 0.1);
+    overflow: hidden;
 }
 
 .islamic-modal.show {
@@ -1351,34 +1353,47 @@ footer {
 }
 
 .islamic-modal .hadith-text {
-    font-size: 24px;
+    font-size: 28px;
     line-height: 1.8;
     color: #333;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     font-family: 'Traditional Arabic', serif;
+    position: relative;
+    padding: 20px;
+    background: rgba(151, 79, 255, 0.05);
+    border-radius: 15px;
 }
 
 .islamic-modal .hadith-attribution {
-    font-size: 18px;
-    color: #666;
+    font-size: 20px;
+    color: var(--primary);
     margin-bottom: 30px;
     font-style: italic;
+    font-weight: 600;
 }
 
 .islamic-modal .close-btn {
     position: absolute;
-    top: 15px;
-    left: 15px;
-    background: none;
+    top: 20px;
+    left: 20px;
+    background: rgba(151, 79, 255, 0.1);
     border: none;
     font-size: 24px;
-    color: #666;
+    color: var(--primary);
     cursor: pointer;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .islamic-modal .close-btn:hover {
-    color: #333;
+    background: var(--primary);
+    color: white;
+    transform: rotate(90deg);
 }
 
 .islamic-modal-overlay {
@@ -1387,11 +1402,12 @@ footer {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.7);
     opacity: 0;
     visibility: hidden;
     transition: all 0.5s ease;
     z-index: 1999;
+    backdrop-filter: blur(5px);
 }
 
 .islamic-modal-overlay.show {
@@ -1404,19 +1420,42 @@ footer {
 .islamic-modal::after {
     content: '☪';
     position: absolute;
-    font-size: 24px;
-    color: var(--primary);
+    font-size: 120px;
+    color: rgba(151, 79, 255, 0.05);
+    z-index: -1;
 }
 
 .islamic-modal::before {
-    top: 20px;
-    right: 20px;
+    top: -20px;
+    right: -20px;
+    transform: rotate(-15deg);
 }
 
 .islamic-modal::after {
-    bottom: 20px;
-    left: 20px;
-    transform: rotate(180deg);
+    bottom: -20px;
+    left: -20px;
+    transform: rotate(165deg);
+}
+
+/* Add animation for text */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.islamic-modal.show .hadith-text,
+.islamic-modal.show .hadith-attribution {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.islamic-modal.show .hadith-attribution {
+    animation-delay: 0.2s;
 }
 
 @keyframes spin {
