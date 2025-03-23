@@ -2,19 +2,13 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  output: 'standalone',
-  distDir: '.next',
+  output: 'export',
   images: {
+    unoptimized: true,
     domains: [
       'images.unsplash.com',
       'cdn-icons-png.flaticon.com'
     ],
-  },
-  experimental: {
-    outputFileTracingRoot: undefined,
-    outputFileTracingIncludes: {
-      '/**/*': ['./public/**/*'],
-    },
   },
 }
 
