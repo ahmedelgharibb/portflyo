@@ -1,3 +1,4 @@
+import React from 'react'
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
@@ -5,6 +6,7 @@ import { Inter } from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://portflyo-blond.vercel.app'),
   title: 'Dr. Sarah Johnson - Mathematics Educator',
   description: 'Professional portfolio of Dr. Sarah Johnson, Ph.D. in Mathematics Education with over 12 years of teaching experience.',
   keywords: 'mathematics teacher, education, online teaching, exam preparation',
