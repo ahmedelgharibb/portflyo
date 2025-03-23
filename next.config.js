@@ -3,6 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   output: 'export',
+  trailingSlash: true,
   images: {
     unoptimized: true,
     domains: [
@@ -10,6 +11,8 @@ const nextConfig = {
       'cdn-icons-png.flaticon.com'
     ],
   },
+  basePath: '',
+  assetPrefix: '',
 }
 
 module.exports = nextConfig 

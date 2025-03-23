@@ -1,17 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaGraduationCap, FaChalkboardTeacher, FaSchool, FaChartBar, FaLink, FaUserTie, FaEnvelope } from 'react-icons/fa';
+import Image from 'next/image';
 
 interface TeacherData {
   name: string;
   degree: string;
   yearsOfExperience: number;
+  profileImage: string;
   institutions: {
     name: string;
     type: 'school' | 'center' | 'online';
     role: string;
+    logo?: string;
   }[];
   studentResults: {
     aStar: number;
@@ -21,34 +24,65 @@ interface TeacherData {
   links: {
     title: string;
     url: string;
+    icon?: string;
   }[];
   contactEmail: string;
   workWithMeForm: string;
+  bio: string;
 }
 
 const TeacherPortfolio = () => {
   const [activeSection, setActiveSection] = useState('about');
 
   const teacherData: TeacherData = {
-    name: "John Doe",
-    degree: "M.Ed in Mathematics Education",
-    yearsOfExperience: 8,
+    name: "Dr. Sarah Johnson",
+    degree: "Ph.D. in Mathematics Education",
+    yearsOfExperience: 12,
+    profileImage: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=500&h=500&fit=crop",
+    bio: "Passionate mathematics educator with over a decade of experience in both traditional and online teaching environments. Specialized in advanced mathematics and exam preparation.",
     institutions: [
-      { name: "International School", type: "school", role: "Senior Mathematics Teacher" },
-      { name: "Math Excellence Center", type: "center", role: "Lead Instructor" },
-      { name: "Global Learning Platform", type: "online", role: "Online Tutor" }
+      { 
+        name: "Cambridge International School", 
+        type: "school", 
+        role: "Head of Mathematics Department",
+        logo: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=200&h=200&fit=crop"
+      },
+      { 
+        name: "Math Excellence Academy", 
+        type: "center", 
+        role: "Lead Instructor",
+        logo: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=200&h=200&fit=crop"
+      },
+      { 
+        name: "Global Math Hub", 
+        type: "online", 
+        role: "Senior Online Tutor",
+        logo: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=200&h=200&fit=crop"
+      }
     ],
     studentResults: {
-      aStar: 45,
-      a: 35,
-      total: 80
+      aStar: 65,
+      a: 25,
+      total: 90
     },
     links: [
-      { title: "LinkedIn", url: "https://linkedin.com/in/johndoe" },
-      { title: "Research Paper", url: "https://example.com/research" },
-      { title: "Teaching Blog", url: "https://example.com/blog" }
+      { 
+        title: "LinkedIn Profile", 
+        url: "https://linkedin.com/in/sarahjohnson",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174857.png"
+      },
+      { 
+        title: "Research Publications", 
+        url: "https://researchgate.net/sarahjohnson",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174857.png"
+      },
+      { 
+        title: "Teaching Blog", 
+        url: "https://sarahjohnson.teachable.com",
+        icon: "https://cdn-icons-png.flaticon.com/512/174/174857.png"
+      }
     ],
-    contactEmail: "john.doe@example.com",
+    contactEmail: "sarah.johnson@example.com",
     workWithMeForm: "https://forms.google.com/example"
   };
 
@@ -93,11 +127,22 @@ const TeacherPortfolio = () => {
         >
           {activeSection === 'about' && (
             <section className="bg-white rounded-lg shadow-lg p-8">
-              <h2 className="text-3xl font-bold mb-6">About Me</h2>
-              <div className="space-y-4">
-                <p className="text-xl font-semibold">{teacherData.name}</p>
-                <p className="text-gray-600">Degree: {teacherData.degree}</p>
-                <p className="text-gray-600">Years of Experience: {teacherData.yearsOfExperience}</p>
+              <div className="flex flex-col md:flex-row items-center gap-8">
+                <div className="relative w-48 h-48 rounded-full overflow-hidden">
+                  <Image
+                    src={teacherData.profileImage}
+                    alt={teacherData.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-3xl font-bold mb-4">About Me</h2>
+                  <p className="text-xl font-semibold mb-2">{teacherData.name}</p>
+                  <p className="text-gray-600 mb-4">{teacherData.degree}</p>
+                  <p className="text-gray-600 mb-4">Years of Experience: {teacherData.yearsOfExperience}</p>
+                  <p className="text-gray-700">{teacherData.bio}</p>
+                </div>
               </div>
             </section>
           )}
@@ -107,10 +152,22 @@ const TeacherPortfolio = () => {
               <h2 className="text-3xl font-bold mb-6">Teaching Institutions</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {teacherData.institutions.map((institution, index) => (
-                  <div key={index} className="border rounded-lg p-4">
-                    <h3 className="font-semibold text-lg">{institution.name}</h3>
-                    <p className="text-gray-600 capitalize">{institution.type}</p>
-                    <p className="text-gray-600">{institution.role}</p>
+                  <div key={index} className="border rounded-lg p-4 flex items-center gap-4">
+                    {institution.logo && (
+                      <div className="relative w-16 h-16 rounded-full overflow-hidden">
+                        <Image
+                          src={institution.logo}
+                          alt={institution.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="font-semibold text-lg">{institution.name}</h3>
+                      <p className="text-gray-600 capitalize">{institution.type}</p>
+                      <p className="text-gray-600">{institution.role}</p>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -130,6 +187,9 @@ const TeacherPortfolio = () => {
                   <p className="mt-2">A ({teacherData.studentResults.a}%)</p>
                 </div>
               </div>
+              <p className="text-center mt-4 text-gray-600">
+                Total Success Rate: {teacherData.studentResults.total}%
+              </p>
             </section>
           )}
 
@@ -143,9 +203,17 @@ const TeacherPortfolio = () => {
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50 transition-colors"
                   >
-                    {link.title}
+                    {link.icon && (
+                      <Image
+                        src={link.icon}
+                        alt={link.title}
+                        width={24}
+                        height={24}
+                      />
+                    )}
+                    <span>{link.title}</span>
                   </a>
                 ))}
               </div>
